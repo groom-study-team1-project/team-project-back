@@ -31,6 +31,22 @@
 
 # BackEnd
 
+# 브랜치 전략
+
+## Format
+`branch-type/#issue-id`
+
+## Rule
+- 적절한 브랜치 생성
+- 작업 후 해당 브랜치를 생성했던 브랜치로 PR
+- 작업 완료된 브랜치는 삭제
+
+## Branch Type - Github Flow
+![image](https://github.com/dnd-side-project/dnd-10th-9-backend/assets/50333168/1dc87948-57cf-4b1e-94ab-13c691c2cf76)
+- `main` : 제품 배포
+- `feat` : 기능 개발
+- `fix` : 버그 수정
+
 ## BackEnd 구성
 
 - 3 Tier Architecure
