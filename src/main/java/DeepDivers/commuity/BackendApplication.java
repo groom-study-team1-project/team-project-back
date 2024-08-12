@@ -1,4 +1,4 @@
-package DeepDivers.commuity;
+package deepdivers.commuity;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

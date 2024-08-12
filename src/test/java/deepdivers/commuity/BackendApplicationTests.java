@@ -1,4 +1,4 @@
-package DeepDivers.commuity;
+package deepdivers.commuity;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

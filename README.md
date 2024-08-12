@@ -59,7 +59,7 @@
 src/
 ├── main/
 │   ├── java/
-│   │   └── DeepDivers/
+│   │   └── deepdivers/
 │   │       └── commuity/         
 │   │           ├── BackendApplication.java  
 │   │           ├── config/            
@@ -85,7 +85,7 @@ src/
 │       └── templates/                 
 └── test/
     └── java/
-        └── DeepDivers/
+        └── deepdivers/
             └── Commuity/           
                 ├── controller/        
                 │   └── UserControllerTest.java
