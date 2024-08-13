@@ -13,10 +13,11 @@ import io.swagger.v3.oas.models.servers.Server;
 @Configuration
 public class OpenApiConfig {
 
-	private static String SERVER_DESCRIPTION = "구름 커뮤니티 API";
-	private static String DOCS_TITLE = "구름 딥다이브 API";
-	private static String DOCS_VERSION = "v1.0.0";
-	private static String DOCS_DESCRIPTION = "구름 딥다이브 수강생 커뮤니티 API";
+	private static final String SERVER_DESCRIPTION = "구름 커뮤니티 API";
+	private static final String DOCS_TITLE = "구름 딥다이브 API";
+	private static final String DOCS_VERSION = "v1.0.0";
+	private static final String DOCS_DESCRIPTION = "구름 딥다이브 수강생 커뮤니티 API";
+
 	private final String devUrl;
 
 	public OpenApiConfig(@Value("${goorm.community.server.url}") final String dveUrl) {
