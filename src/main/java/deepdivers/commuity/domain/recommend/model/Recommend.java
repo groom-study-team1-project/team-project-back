@@ -1,6 +1,7 @@
-package deepdivers.commuity.domain.member.model;
+package deepdivers.commuity.domain.recommend.model;
 
-import deepdivers.commuity.domain.common.BaseEntity;
+import deepdivers.commuity.domain.member.model.Member;
+import deepdivers.commuity.domain.post.model.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -13,24 +14,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         uniqueConstraints = @UniqueConstraint(
-                name = "uk_account_email",
-                columnNames = {"email"}
+                name = "uk_recommend_member_post",
+                columnNames = {"member_id", "post_id"}
         )
 )
-public class Account extends BaseEntity {
+public class Recommend {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @Column(nullable = false, length = 100)
-    private String email;
-
-    @Column(nullable = false, length = 100)
-    private String password;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id", nullable = false)
+    private Post post;
 
 }
