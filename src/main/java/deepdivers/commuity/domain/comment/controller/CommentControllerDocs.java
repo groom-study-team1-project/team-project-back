@@ -1,5 +1,6 @@
 package deepdivers.commuity.domain.comment.controller;
 
+import deepdivers.commuity.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -21,14 +22,14 @@ public interface CommentControllerDocs {
             description = """
                     1. Request의 변수 정보가 ...
                     """,
-            content = {}
+            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     @ApiResponse(
             responseCode = "404",
             description = """
                     1. 존재하지 않는 ...
                     """,
-            content = {}
+            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     void example();
 
