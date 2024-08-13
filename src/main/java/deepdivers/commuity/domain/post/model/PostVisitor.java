@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Table(
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_post_visitor_post_id_ip_addr",
-                columnNames = {"post_id", "ip_addr"}
+                columnNames = {"postId", "ipAddr"}
         )
 )
 public class PostVisitor {

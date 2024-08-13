@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         indexes = {
-                @Index(name = "idx_post_hashtag_post_id", columnList = "post_id"),
-                @Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtag_id")
+                @Index(name = "idx_post_hashtag_post_id", columnList = "postId"),
+                @Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtagId")
         }
 )
 public class PostHashtag extends BaseEntity {

@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Table(
         uniqueConstraints = @UniqueConstraint(
                 name = "uk_recommend_member_post",
-                columnNames = {"member_id", "post_id"}
+                columnNames = {"memberId", "postId"}
         )
 )
 public class Recommend {

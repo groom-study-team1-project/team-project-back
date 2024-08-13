@@ -1,6 +1,8 @@
 package deepdivers.commuity.domain.post.model;
 
+import deepdivers.commuity.domain.common.BaseEntity;
 import deepdivers.commuity.domain.hashtag.model.PostHashtag;
+import deepdivers.commuity.domain.member.model.Member;
 import deepdivers.commuity.domain.post.model.vo.PostStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -19,15 +21,15 @@ import java.util.Set;
 @Table(
         indexes = {
                 @Index(name = "idx_post_title", columnList = "title"),
-                @Index(name = "idx_post_view_count_id", columnList = "view_count, id"),
-                @Index(name = "idx_post_recommend_count_id", columnList = "recommend_count, id"),
-                @Index(name = "idx_post_category_id_id", columnList = "category_id, id"),
-                @Index(name = "idx_post_created_at", columnList = "created_at"),
-                @Index(name = "idx_post_member_id_id", columnList = "member_id, id"),
-                @Index(name = "idx_post_category_id_member_id_id", columnList = "category_id, member_id, id")
+                @Index(name = "idx_post_view_count_id", columnList = "viewCount, id"),
+                @Index(name = "idx_post_recommend_count_id", columnList = "recommendCount, id"),
+                @Index(name = "idx_post_category_id_id", columnList = "categoryId, id"),
+                @Index(name = "idx_post_created_at", columnList = "createdAt"),
+                @Index(name = "idx_post_member_id_id", columnList = "memberId, id"),
+                @Index(name = "idx_post_category_id_member_id_id", columnList = "categoryId, memberId, id")
         }
 )
-public class Post {
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +38,10 @@ public class Post {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
 
     @Column(nullable = false, length = 100)
     private String title;
