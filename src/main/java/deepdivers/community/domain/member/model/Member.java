@@ -31,6 +31,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 20)
     private String nickname;
 
+    @ColumnDefault("profile.png")
     @Column(nullable = false)
     private String imageUrl;
 
