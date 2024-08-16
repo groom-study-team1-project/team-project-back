@@ -1,6 +1,5 @@
 package deepdivers.community.domain.member.model;
 
-import deepdivers.community.domain.member.dto.request.MemberInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -27,6 +26,10 @@ public class Contact {
     @Builder
     public Contact(final String tel) {
         this.tel = tel;
+    }
+
+    public static Contact createDefault(final String tel) {
+        return new Contact(tel);
     }
 
 }

@@ -1,7 +1,7 @@
 package deepdivers.community.domain.member.model;
 
 import deepdivers.community.domain.common.BaseEntity;
-import deepdivers.community.domain.member.dto.request.MemberInfo;
+import deepdivers.community.domain.member.dto.request.info.MemberRegisterInfo;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
 import jakarta.persistence.*;
@@ -62,17 +62,13 @@ public class Member extends BaseEntity {
         this.status = MemberStatus.REGISTERED;
     }
 
-    public static Member registerMember(final MemberInfo memberInfo) {
-        final Contact contact = Contact.builder()
-                .tel(memberInfo.tel())
-                .build();
-
-        return Member.builder()
-                .nickname(memberInfo.nickname())
-                .imageUrl(memberInfo.imageUrl())
-                .contact(contact)
-                .activityStats(ActivityStats.createDefault())
-                .build();
+    public static Member registerMember(final MemberRegisterInfo memberRegisterInfo) {
+        return new Member(
+                memberRegisterInfo.nickname(),
+                memberRegisterInfo.imageUrl(),
+                Contact.createDefault(memberRegisterInfo.tel()),
+                ActivityStats.createDefault()
+        );
     }
 
 }

@@ -1,7 +1,7 @@
 package deepdivers.community.domain.member.model;
 
 import deepdivers.community.domain.common.BaseEntity;
-import deepdivers.community.domain.member.dto.request.MemberAccount;
+import deepdivers.community.domain.member.dto.request.info.MemberAccountInfo;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class Account extends BaseEntity {
     @Column(nullable = false, length = 100)
     private String password;
 
-    public static Account accountSignUp(final MemberAccount account, final Member memberInfo) {
+    public static Account accountSignUp(final MemberAccountInfo account, final Member memberInfo) {
         return new Account(null, memberInfo, account.email(), account.password());
     }
 

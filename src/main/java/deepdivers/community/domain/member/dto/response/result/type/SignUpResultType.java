@@ -1,4 +1,4 @@
-package deepdivers.community.domain.member.dto.response.result;
+package deepdivers.community.domain.member.dto.response.result.type;
 
 import deepdivers.community.domain.common.ResultType;
 import lombok.AllArgsConstructor;
