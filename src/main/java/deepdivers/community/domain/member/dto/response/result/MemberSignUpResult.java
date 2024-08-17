@@ -17,11 +17,7 @@ public record MemberSignUpResult(
 ) {
 
     public static MemberSignUpResult from(final Account account) {
-        return new MemberSignUpResult(
-                account.getId(),
-                account.getMember().getNickname(),
-                account.getCreatedAt()
-        );
+        return new MemberSignUpResult(account.getId(), account.getMember().getNickname(), account.getCreatedAt());
     }
 
 }

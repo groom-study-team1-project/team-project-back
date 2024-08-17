@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Getter
@@ -31,11 +32,15 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    @Column(nullable = false, length = 20)
-    private String nickname;
-
     @Column(nullable = false)
     private String imageUrl;
+
+    @Column(length = 100)
+    @ColumnDefault("''")
+    private String aboutMe;
+
+    @Embedded
+    private Nickname nickname;
 
     @Embedded
     private Contact contact;
@@ -48,17 +53,12 @@ public class Member extends BaseEntity {
     private MemberStatus status;
 
     @Builder
-    public Member(
-            final String nickname,
-            final String imageUrl,
-            final Contact contact,
-            final ActivityStats activityStats
-    ) {
+    public Member(final String nickname, final String imageUrl, final String phoneNumber) {
         this.role = MemberRole.NORMAL;
-        this.nickname = nickname;
+        this.nickname = Nickname.from(nickname);
         this.imageUrl = imageUrl;
-        this.contact = contact;
-        this.activityStats = activityStats;
+        this.contact = Contact.fromPhoneNumber(phoneNumber);
+        this.activityStats = ActivityStats.createDefault();
         this.status = MemberStatus.REGISTERED;
     }
 
@@ -66,9 +66,12 @@ public class Member extends BaseEntity {
         return new Member(
                 memberRegisterInfo.nickname(),
                 memberRegisterInfo.imageUrl(),
-                Contact.createDefault(memberRegisterInfo.tel()),
-                ActivityStats.createDefault()
+                memberRegisterInfo.phoneNumber()
         );
+    }
+
+    public String getNickname() {
+        return nickname.getValue();
     }
 
 }

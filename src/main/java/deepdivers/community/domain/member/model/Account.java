@@ -2,6 +2,7 @@ package deepdivers.community.domain.member.model;
 
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.dto.request.info.MemberAccountInfo;
+import deepdivers.community.utility.encryptor.Encryptor;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,10 +35,15 @@ public class Account extends BaseEntity {
     private String email;
 
     @Column(nullable = false, length = 100)
-    private String password;
+    private Password password;
 
-    public static Account accountSignUp(final MemberAccountInfo account, final Member memberInfo) {
-        return new Account(null, memberInfo, account.email(), account.password());
+    public static Account accountSignUp(
+            final MemberAccountInfo account,
+            final Encryptor encryptor,
+            final Member memberInfo
+    ) {
+        final Password password = Password.of(encryptor, account.password());
+        return new Account(null, memberInfo, account.email(), password);
     }
 
 }

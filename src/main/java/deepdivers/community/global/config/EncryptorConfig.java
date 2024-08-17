@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Primary;
 public class EncryptorConfig {
 
     @Bean
+    @Primary
     @EncryptorBean(EncryptorTypes.PASSWORD)
     public Encryptor passwordEncryptor() {
         return new PasswordEncryptor();
