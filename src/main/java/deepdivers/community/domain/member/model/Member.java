@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
@@ -35,8 +36,7 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String imageUrl;
 
-    @Column(length = 100)
-    @ColumnDefault("''")
+    @Column(length = 100, nullable = false)
     private String aboutMe;
 
     @Embedded
@@ -57,7 +57,8 @@ public class Member extends BaseEntity {
         this.role = MemberRole.NORMAL;
         this.nickname = Nickname.from(nickname);
         this.imageUrl = imageUrl;
-        this.contact = Contact.fromPhoneNumber(phoneNumber);
+        this.aboutMe = StringUtils.EMPTY;
+        this.contact = Contact.from(phoneNumber);
         this.activityStats = ActivityStats.createDefault();
         this.status = MemberStatus.REGISTERED;
     }

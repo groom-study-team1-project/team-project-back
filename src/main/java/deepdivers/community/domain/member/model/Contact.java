@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 @Embeddable
 @Getter
@@ -22,15 +23,17 @@ public class Contact {
     @Column(nullable = false, length = 20)
     private String phoneNumber;
 
-    @Column(length = 100)
+    @Column(nullable = false, length = 100)
     private String githubAddr;
 
-    @Column(length = 200)
+    @Column(nullable = false, length = 200)
     private String blogAddr;
 
     @Builder
     public Contact(final String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        this.githubAddr = StringUtils.EMPTY;
+        this.blogAddr = StringUtils.EMPTY;
     }
 
 
@@ -40,7 +43,7 @@ public class Contact {
         }
     }
 
-    public static Contact fromPhoneNumber(final String phoneNumber) {
+    public static Contact from(final String phoneNumber) {
         validatePhoneNumber(phoneNumber);
         return new Contact(phoneNumber);
     }
