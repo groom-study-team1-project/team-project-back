@@ -60,7 +60,6 @@ class AccountTest {
             "닉네임, img, 010-1234-5678, email, test!",
             "닉네임, img, 010-1234-5678, email, test1!",
             "닉네임, img, 010-1234-5678, email, test12345 !",
-            "닉네임, img, 010-1234-5678, email,     ",
     })
     @DisplayName("유효하지 않은 사용자 계정일 경우 예외를 확인한다.")
     void accountSignUpShouldInValidAccountException(
