@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
                 columnNames = {"email"}
         )
 )
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Account extends BaseEntity {
 
     @Id

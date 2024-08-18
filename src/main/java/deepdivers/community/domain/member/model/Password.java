@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
@@ -20,13 +21,15 @@ public class Password {
             Pattern.compile("^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,16}$");
 
     @Column(name = "password", nullable = false, length = 100)
-    private String val;
+    @Getter
+    private String value;
 
     public static Password of(final Encryptor encryptor, final String password) {
-        if (Objects.isNull(password) || !PATTERN.matcher(password).matches()) {
+        final String passwordAfterTrimmed = password.trim();
+        if (!PATTERN.matcher(passwordAfterTrimmed).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD_FORMAT);
         }
-        return new Password(encryptor.encrypt(password));
+        return new Password(encryptor.encrypt(passwordAfterTrimmed));
     }
 
 }

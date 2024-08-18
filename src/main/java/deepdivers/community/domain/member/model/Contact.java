@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
 public class Contact {
+
     private static final Pattern PATTERN = Pattern.compile("^01(?:0|1|[6-9])-(?!0000)\\d{4}-(?!0000)\\d{4}$");
 
     @Column(nullable = false, length = 20)
@@ -38,14 +39,15 @@ public class Contact {
 
 
     private static void validatePhoneNumber(final String phoneNumber) {
-        if (Objects.isNull(phoneNumber) || !PATTERN.matcher(phoneNumber).matches()) {
+        if (!PATTERN.matcher(phoneNumber).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_PHONE_NUMBER_FORMAT);
         }
     }
 
     public static Contact from(final String phoneNumber) {
-        validatePhoneNumber(phoneNumber);
-        return new Contact(phoneNumber);
+        final String phoneNumberAfterTrimmed = phoneNumber.trim();
+        validatePhoneNumber(phoneNumberAfterTrimmed);
+        return new Contact(phoneNumberAfterTrimmed);
     }
 
 }

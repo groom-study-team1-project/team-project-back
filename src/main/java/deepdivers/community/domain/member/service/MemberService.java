@@ -2,7 +2,7 @@ package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.type.SignUpResultType;
+import deepdivers.community.domain.member.dto.response.result.type.MemberResultType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Account;
 import deepdivers.community.domain.member.model.Member;
@@ -11,7 +11,6 @@ import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
-import deepdivers.community.utility.encryptor.EncryptorTypes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,7 @@ public class MemberService {
         final Member member = Member.registerMember(request.memberRegisterInfo());
         final Account account = Account.accountSignUp(request.memberAccountInfo(), encryptor, member);
 
-        return MemberSignUpResponse.of(SignUpResultType.MEMBER_SIGN_UP_SUCCESS, accountRepository.save(account));
+        return MemberSignUpResponse.of(MemberResultType.MEMBER_SIGN_UP_SUCCESS, accountRepository.save(account));
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {
