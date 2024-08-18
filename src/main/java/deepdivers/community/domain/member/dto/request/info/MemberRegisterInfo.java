@@ -12,7 +12,7 @@ public record MemberRegisterInfo(
         @NotBlank(message = "사용자 이미지 정보가 필요합니다.")
         String imageUrl,
         @Schema(description = "사용자 전화번호", example = "010-0000-0000")
-        @NotBlank(message = "사용자 전화번호가 필요합니다.")
+        @NotBlank(message = "사용자 전화번호 정보가 필요합니다.")
         String phoneNumber
 ) {
 }
