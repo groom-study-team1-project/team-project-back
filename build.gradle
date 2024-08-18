@@ -29,6 +29,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.querydsl:querydsl-jpa:5.1.0'
+	implementation 'org.mindrot:jbcrypt:0.4'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
@@ -39,6 +40,7 @@ dependencies {
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'io.rest-assured:spring-mock-mvc'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
