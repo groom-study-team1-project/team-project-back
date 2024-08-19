@@ -24,8 +24,8 @@
 
 <img alt="Visual Studio Code" src="https://img.shields.io/badge/Visual%20Studio%20Code-007ACC.svg?&style=for-the-badge&logo=Visual-Studio-Code&logoColor=white"/><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-000000.svg?&style=for-the-badge&logo=IntelliJ-IDEA&logoColor=white"/><img alt="Git" src="https://img.shields.io/badge/Git-F05032.svg?&style=for-the-badge&logo=Git&logoColor=white"/><img alt="Github" src="https://img.shields.io/badge/Github-181717.svg?&style=for-the-badge&logo=Github&logoColor=white"/><img alt="KakaoTalk" src="https://img.shields.io/badge/KakaoTalk-FFCD00.svg?&style=for-the-badge&logo=KakaoTalk&logoColor=black"/><img alt="Discord" src="https://img.shields.io/badge/Discord-5865F2.svg?&style=for-the-badge&logo=Discord&logoColor=white"/><img alt="Notion" src="https://img.shields.io/badge/Notion-000000.svg?&style=for-the-badge&logo=Notion&logoColor=white"/><img alt="Figma" src="https://img.shields.io/badge/Figma-F24E1E.svg?&style=for-the-badge&logo=Figma&logoColor=white"/>
 
-- [커밋 컨벤션](https://github.com/groom-study-team1-project/team-project-back.wiki.git)
-- [코드 컨벤션](https://github.com/groom-study-team1-project/team-project-back.wiki.git)
+- [커밋 컨벤션]([https://github.com/groom-study-team1-project/team-project-back.wiki.git](https://github.com/groom-study-team1-project/team-project-back/wiki/%EC%BB%A4%EB%B0%8B-%EC%BB%A8%EB%B2%A4%EC%85%98))
+- [코드 컨벤션]([https://github.com/groom-study-team1-project/team-project-back.wiki.git](https://github.com/groom-study-team1-project/team-project-back/wiki/%EC%BD%94%EB%93%9C-%EC%BB%A8%EB%B2%A4%EC%85%98))
 
 # FrontEnd
 
