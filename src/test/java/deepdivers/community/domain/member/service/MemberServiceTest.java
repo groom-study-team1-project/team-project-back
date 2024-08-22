@@ -1,15 +1,14 @@
 package deepdivers.community.domain.member.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import deepdivers.community.domain.common.ResultType;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.request.info.MemberAccountInfo;
-import deepdivers.community.domain.member.dto.request.info.MemberRegisterInfo;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.MemberSignUpResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberResultType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.domain.member.model.Account;
-import deepdivers.community.domain.member.repository.AccountRepository;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import java.time.LocalDateTime;
@@ -19,10 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.as;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 @SpringBootTest
 @Transactional
 class MemberServiceTest {
@@ -31,18 +26,13 @@ class MemberServiceTest {
     private MemberService memberService;
 
     @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
     private MemberRepository memberRepository;
 
     @Test
     @DisplayName("회원 가입이 성공했을 경우를 통합 테스트한다.")
     void signUpSuccessTest() {
         // Given, test.sql
-        MemberAccountInfo accountInfo = new MemberAccountInfo("test@mail.com", "password1234!");
-        MemberRegisterInfo registerInfo = new MemberRegisterInfo("test", "test", "010-1234-5678");
-        MemberSignUpRequest request = new MemberSignUpRequest(accountInfo, registerInfo);
+        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", "test", "test", "010-1234-5678");
         long lastAccountId = 10L;
         LocalDateTime testStartTime = LocalDateTime.now();
 
@@ -57,7 +47,7 @@ class MemberServiceTest {
         assertThat(response.code()).isEqualTo(resultType.getCode());
         assertThat(response.message()).isEqualTo(resultType.getMessage());
         assertThat(responseResult.id()).isEqualTo(lastAccountId + 1L);
-        assertThat(responseResult.nickname()).isEqualTo(registerInfo.nickname());
+        assertThat(responseResult.nickname()).isEqualTo(request.nickname());
         assertThat(responseResult.createdAt()).isBetween(testStartTime, testEndTime);
     }
 
@@ -65,9 +55,7 @@ class MemberServiceTest {
     @DisplayName("중복 이메일로 회원 가입 시 예외 발생하는 경우를 테스트한다.")
     void signUpDuplicateEmailTest() {
         // Given test.sql
-        MemberAccountInfo accountInfo = new MemberAccountInfo("email1@test.com", "password1!");
-        MemberRegisterInfo registerInfo = new MemberRegisterInfo("test", "test", "010-1234-5678");
-        MemberSignUpRequest request = new MemberSignUpRequest(accountInfo, registerInfo);
+        MemberSignUpRequest request = new MemberSignUpRequest("email1@test.com", "password1!", "test", "test", "010-1234-5678");
 
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))
@@ -79,9 +67,7 @@ class MemberServiceTest {
     @DisplayName("중복 닉네임으로 회원 가입 시 예외 발생 테스트")
     void signUpDuplicateNicknameTest() {
         // Given
-        MemberAccountInfo accountInfo = new MemberAccountInfo("test@mail.com", "password123!");
-        MemberRegisterInfo registerInfo = new MemberRegisterInfo("User9", "test", "010-1234-5678");
-        MemberSignUpRequest request = new MemberSignUpRequest(accountInfo, registerInfo);
+        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password123!", "User9", "test", "010-1234-5678");
 
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))

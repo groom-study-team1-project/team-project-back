@@ -1,7 +1,7 @@
 package deepdivers.community.domain.member.dto.response.result;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import deepdivers.community.domain.member.model.Account;
+import deepdivers.community.domain.member.model.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
@@ -16,8 +16,8 @@ public record MemberSignUpResult(
         LocalDateTime createdAt
 ) {
 
-    public static MemberSignUpResult from(final Account account) {
-        return new MemberSignUpResult(account.getId(), account.getMember().getNickname(), account.getCreatedAt());
+    public static MemberSignUpResult from(final Member member) {
+        return new MemberSignUpResult(member.getId(), member.getNickname(), member.getCreatedAt());
     }
 
 }
