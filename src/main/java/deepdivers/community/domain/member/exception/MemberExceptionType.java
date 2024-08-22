@@ -13,7 +13,8 @@ public enum MemberExceptionType implements ExceptionType {
     INVALID_NICKNAME_FORMAT(2002, "사용자 닉네임은 영어 대소문자와 한글 및 숫자의 조합으로 작성해주세요."),
     ALREADY_REGISTERED_EMAIL(2003, "이미 가입된 사용자 이메일입니다."),
     ALREADY_REGISTERED_NICKNAME(2004, "이미 가입된 사용자 닉네임입니다."),
-    INVALID_PHONE_NUMBER_FORMAT(2005, "전화번호 형식을 맞춰주세요. ex) 010-0000-0000");
+    INVALID_PHONE_NUMBER_FORMAT(2005, "전화번호 형식을 맞춰주세요. ex) 010-0000-0000"),
+    NOT_FOUND_ACCOUNT(2006, "존재하지 않는 이메일 계정입니다.");
 
     private final int code;
     private final String message;

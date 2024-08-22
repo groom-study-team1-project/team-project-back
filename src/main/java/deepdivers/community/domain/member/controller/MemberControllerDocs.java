@@ -32,4 +32,6 @@ public interface MemberControllerDocs {
     )
     ResponseEntity<MemberSignUpResponse> signUp(MemberSignUpRequest request);
 
+    ResponseEntity<String> login(String email, String password);
+
 }
