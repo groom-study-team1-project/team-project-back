@@ -4,7 +4,7 @@
 [구름톤 딥다이브 풀스택 개발자 10회차 1차 스터디 프로젝트](https://deepdive.goorm.io/)
 
 # 👨‍👨‍👧 Team 소개
-|조일문|복원빈|김서현|김형진|장보미|홍승표|김지환|이용수|
+|조일문|복원빈|김서현|김형진|장보미|홍승표|김지환|이용수| 
 |:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
 |<img src="https://avatars.githubusercontent.com/u/166813835?s=96&v=4" width="150px" height="120px" />|<img src="https://avatars.githubusercontent.com/u/134473627?s=96&v=4" width="150px" height="120px" />|<img src="https://avatars.githubusercontent.com/u/102343601?s=96&v=4" width="150px" height="120px" />|<img src="https://avatars.githubusercontent.com/u/127084974?s=96&v=4" width="150px" height="120px" />|<img src="https://avatars.githubusercontent.com/u/119410207?s=96&v=4" width="150px" height="120px" />|<img src="https://avatars.githubusercontent.com/u/177714078?s=96&v=4" width="150px" height="120px" />|<img src="https://avatars.githubusercontent.com/u/50333168?s=96&v=4" width="150px" height="120px" />|<img src="https://avatars.githubusercontent.com/u/92203627?s=96&v=4" width="150px" height="120px" />|
 |[PM, BE](https://github.com/KRjasoncho)|[CTO FE](https://github.com/Seio924)|[FE](https://github.com/shyeon0602)|[FE](https://github.com/hyoungjinKim)|[FE](https://github.com/AYunBOM)|[FE](https://github.com/88hong)|[CTO BE](https://github.com/jihwankim128)|[BE](https://github.com/Re-Note)|
