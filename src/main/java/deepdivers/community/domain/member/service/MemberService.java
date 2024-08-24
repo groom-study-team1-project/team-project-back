@@ -8,6 +8,8 @@ import deepdivers.community.domain.member.dto.response.result.type.MemberStatusT
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
+import deepdivers.community.domain.token.dto.TokenResponse;
+import deepdivers.community.domain.token.service.TokenService;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.utility.encryptor.Encryptor;
@@ -24,6 +26,7 @@ public class MemberService {
     @EncryptorBean
     private final Encryptor encryptor;
     private final MemberRepository memberRepository;
+    private final TokenService tokenService;
 
     public MemberSignUpResponse signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
@@ -38,8 +41,10 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
         member.getPassword().matches(encryptor, request.password());
 
+        final TokenResponse tokenResponse = tokenService.login(member);
+
         return switch (member.getStatus()) {
-            case REGISTERED -> MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, member);
+            case REGISTERED -> MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
             case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
             case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
         };

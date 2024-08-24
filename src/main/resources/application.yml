@@ -36,3 +36,11 @@ goorm:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
+
+token:
+  secret:
+    key: SpringBootJWTHelperTokenSecretKeyValue123!@#
+  access-token:
+    expiration-time: 1800000
+  refresh-token:
+    expiration-time: 43200000
