@@ -1,11 +1,12 @@
 package deepdivers.community.domain.member.service;
 
+import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.type.MemberResultType;
+import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.model.vo.MemberStatus;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
@@ -28,16 +29,20 @@ public class MemberService {
         signUpValidate(request);
         final Member member = Member.of(request, encryptor);
 
-        return MemberSignUpResponse.of(MemberResultType.MEMBER_SIGN_UP_SUCCESS, memberRepository.save(member));
+        return MemberSignUpResponse.of(MemberStatusType.MEMBER_SIGN_UP_SUCCESS, memberRepository.save(member));
     }
 
     @Transactional(readOnly = true)
-    public Member login(final String email, final String password) {
-        final Member member = memberRepository.findByEmail(email)
+    public MemberLoginResponse login(final MemberLoginRequest request) {
+        final Member member = memberRepository.findByEmail(request.email())
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
-        member.getPassword().matches(encryptor, password);
+        member.getPassword().matches(encryptor, request.password());
 
-        return member;
+        return switch (member.getStatus()) {
+            case REGISTERED -> MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, member);
+            case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+            case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+        };
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {

@@ -8,12 +8,13 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.type.MemberResultType;
+import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.global.config.EncryptorConfig;
 import deepdivers.community.global.exception.GlobalExceptionHandler;
 import deepdivers.community.utility.encryptor.Encryptor;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +52,7 @@ class MemberControllerTest {
         MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
 
         Member account = Member.of(request, this.encryptor);
-        MemberSignUpResponse mockResponse = MemberSignUpResponse.of(MemberResultType.MEMBER_SIGN_UP_SUCCESS, account);
+        MemberSignUpResponse mockResponse = MemberSignUpResponse.of(MemberStatusType.MEMBER_SIGN_UP_SUCCESS, account);
         given(memberService.signUp(any(MemberSignUpRequest.class))).willReturn(mockResponse);
 
         // when
@@ -63,7 +64,7 @@ class MemberControllerTest {
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()
-                .as(MemberSignUpResponse.class);
+                .as(new TypeRef<>(){});
 
         // then
         assertThat(response).isNotNull();

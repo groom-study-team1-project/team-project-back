@@ -1,9 +1,6 @@
 package deepdivers.community.global.exception.model;
 
-public interface ExceptionType {
+import deepdivers.community.domain.common.StatusType;
 
-    int getCode();
-
-    String getMessage();
-
+public interface ExceptionType extends StatusType {
 }

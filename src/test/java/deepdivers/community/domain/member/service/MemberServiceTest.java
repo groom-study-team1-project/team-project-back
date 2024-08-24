@@ -3,11 +3,11 @@ package deepdivers.community.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.common.ResultType;
+import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.MemberSignUpResult;
-import deepdivers.community.domain.member.dto.response.result.type.MemberResultType;
+import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
@@ -41,11 +41,11 @@ class MemberServiceTest {
 
         // Then
         LocalDateTime testEndTime = LocalDateTime.now();
-        ResultType resultType = MemberResultType.MEMBER_SIGN_UP_SUCCESS;
+        StatusType statusType = MemberStatusType.MEMBER_SIGN_UP_SUCCESS;
         MemberSignUpResult responseResult = response.result();
         assertThat(response).isNotNull();
-        assertThat(response.code()).isEqualTo(resultType.getCode());
-        assertThat(response.message()).isEqualTo(resultType.getMessage());
+        assertThat(response.status().code()).isEqualTo(statusType.getCode());
+        assertThat(response.status().message()).isEqualTo(statusType.getMessage());
         assertThat(responseResult.id()).isEqualTo(lastAccountId + 1L);
         assertThat(responseResult.nickname()).isEqualTo(request.nickname());
         assertThat(responseResult.createdAt()).isBetween(testStartTime, testEndTime);

@@ -1,6 +1,8 @@
 package deepdivers.community.domain.member.controller;
 
+import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +34,6 @@ public interface MemberControllerDocs {
     )
     ResponseEntity<MemberSignUpResponse> signUp(MemberSignUpRequest request);
 
-    ResponseEntity<String> login(String email, String password);
+    ResponseEntity<MemberLoginResponse> login(MemberLoginRequest request);
 
 }
