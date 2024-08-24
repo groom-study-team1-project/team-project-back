@@ -2,6 +2,7 @@ package deepdivers.community.domain.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+@Schema(description = "응답 상태")
 public record StatusResponse (
         @Schema(description = "응답 코드", example = "9999")
         int code,

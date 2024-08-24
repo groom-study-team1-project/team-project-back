@@ -16,8 +16,8 @@ public enum MemberExceptionType implements ExceptionType {
     INVALID_PHONE_NUMBER_FORMAT(2005, "전화번호 형식을 맞춰주세요. ex) 010-0000-0000"),
     NOT_FOUND_ACCOUNT(2006, "존재하지 않는 이메일 계정입니다."),
     INVALID_MEMBER_PASSWORD(2007, "일치하지 않은 사용자 비밀번호입니다."),
-    MEMBER_LOGIN_DORMANCY(2008, "휴면 계정입니다."),
-    MEMBER_LOGIN_UNREGISTER(2009, "탈퇴처리중인 계정입니다.");
+    MEMBER_LOGIN_DORMANCY(2008, "휴면처리 된 계정입니다."),
+    MEMBER_LOGIN_UNREGISTER(2009, "탈퇴처리가 진행중인 계정입니다.");
 
     private final int code;
     private final String message;
