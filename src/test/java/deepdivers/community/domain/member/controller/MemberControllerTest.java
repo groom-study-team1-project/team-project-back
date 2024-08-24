@@ -6,8 +6,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
+import deepdivers.community.domain.member.dto.response.result.MemberLoginResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
@@ -35,6 +38,8 @@ class MemberControllerTest {
 
     @MockBean
     private Encryptor encryptor;
+
+    private MemberSignUpRequest request;
 
     @BeforeEach
     void setUp() {
@@ -76,6 +81,7 @@ class MemberControllerTest {
     void signUpWrongEmailFormatReturns400BadRequest() {
         // given
         MemberSignUpRequest request = new MemberSignUpRequest("test@ma .com", "test1234!", "테스트", "테스트", "010-1234-5678");
+
         // when, then
         RestAssuredMockMvc
                 .given().log().all()
@@ -161,5 +167,32 @@ class MemberControllerTest {
                 .body("message", containsString("사용자 전화번호 정보가 필요합니다."));
     }
 
+    @Test
+    @DisplayName("로그인 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+    void loginSuccessfullyReturns200OK() {
+        // given, test.sql
+        MemberSignUpRequest signUpRequest = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
+
+        Member member = Member.of(signUpRequest, this.encryptor);
+        MemberLoginResponse mockResponse = MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, member);
+        given(memberService.login(any(MemberLoginRequest.class))).willReturn(mockResponse);
+
+        MemberLoginRequest loginRequest = new MemberLoginRequest("test@email.com", "test1234!");
+
+        // when
+        MemberLoginResponse response = RestAssuredMockMvc
+                .given().log().all()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(loginRequest)
+                .when().post("/members/login")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract()
+                .as(new TypeRef<>(){});
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+    }
 
 }
