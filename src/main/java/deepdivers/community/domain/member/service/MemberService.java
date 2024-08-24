@@ -5,8 +5,10 @@ import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.type.MemberResultType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.model.vo.MemberStatus;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,15 @@ public class MemberService {
         final Member member = Member.of(request, encryptor);
 
         return MemberSignUpResponse.of(MemberResultType.MEMBER_SIGN_UP_SUCCESS, memberRepository.save(member));
+    }
+
+    @Transactional(readOnly = true)
+    public Member login(final String email, final String password) {
+        final Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
+        member.getPassword().matches(encryptor, password);
+
+        return member;
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {

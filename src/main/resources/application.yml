@@ -23,6 +23,10 @@ spring:
         format_sql: true
         default_batch_fetch_size: 50
     defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:prod.sql
 
 goorm:
   community:

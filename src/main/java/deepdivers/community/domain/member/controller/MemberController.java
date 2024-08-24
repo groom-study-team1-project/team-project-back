@@ -2,6 +2,7 @@ package deepdivers.community.domain.member.controller;
 
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
+import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,9 +26,13 @@ public class MemberController implements MemberControllerDocs {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(String email, String password) {
-        return null;
+    public ResponseEntity<String> login(final String email, final String password) {
+        final Member member = memberService.login(email, password);
+        return switch (member.getStatus()) {
+            case REGISTERED -> ResponseEntity.ok(String.valueOf(member.getId()));
+            case DORMANCY -> ResponseEntity.ok("휴면 회원입니다.");
+            case UNREGISTERED -> ResponseEntity.ok("삭제 처리중입니다.");
+        };
     }
-
 
 }

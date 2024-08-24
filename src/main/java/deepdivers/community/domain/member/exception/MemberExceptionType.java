@@ -14,7 +14,8 @@ public enum MemberExceptionType implements ExceptionType {
     ALREADY_REGISTERED_EMAIL(2003, "이미 가입된 사용자 이메일입니다."),
     ALREADY_REGISTERED_NICKNAME(2004, "이미 가입된 사용자 닉네임입니다."),
     INVALID_PHONE_NUMBER_FORMAT(2005, "전화번호 형식을 맞춰주세요. ex) 010-0000-0000"),
-    NOT_FOUND_ACCOUNT(2006, "존재하지 않는 이메일 계정입니다.");
+    NOT_FOUND_ACCOUNT(2006, "존재하지 않는 이메일 계정입니다."),
+    INVALID_MEMBER_PASSWORD(2007, "일치하지 않은 사용자 비밀번호입니다.");
 
     private final int code;
     private final String message;
