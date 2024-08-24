@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -39,8 +40,16 @@ public class TokenHelperImpl implements TokenHelper {
                 .compact();
     }
 
-    public void issueRefreshToken() {
+    public String issueRefreshToken(final Long memberId) {
+        final Date now = new Date();
+        final Date expiryDate = new Date(now.getTime() + refreshTokenPlusHour);
 
+        return Jwts.builder()
+                .signWith(secretKey)
+                .claim("memberId", memberId)
+                .expiration(expiryDate)
+                .issuedAt(now)
+                .compact();
     }
 
     public void validationTokenWithThrow(String token) {

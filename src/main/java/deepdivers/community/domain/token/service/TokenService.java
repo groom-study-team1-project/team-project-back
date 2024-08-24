@@ -21,7 +21,8 @@ public class TokenService {
         data.put("memberRole", member.getRole());
 
         final String accessToken = tokenHelper.issueAccessToken(data);
-        return TokenResponse.from(accessToken);
+        final String refreshToken = tokenHelper.issueRefreshToken(member.getId());
+        return TokenResponse.from(accessToken, refreshToken);
     }
 
 }

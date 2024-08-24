@@ -6,7 +6,7 @@ import java.util.Map;
 public interface TokenHelper {
 
     String issueAccessToken(Map<String, Object> data);
-    void issueRefreshToken();
+    String issueRefreshToken(Long memberId);
     void validationTokenWithThrow(String token);
 
 }
