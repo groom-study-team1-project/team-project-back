@@ -1,12 +1,12 @@
 package deepdivers.community.global.security.jwt;
 
-import deepdivers.community.domain.token.dto.TokenResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-public interface TokenHelper {
+public interface AuthHelper {
 
     String issueAccessToken(Map<String, Object> data);
     String issueRefreshToken(Long memberId);
     void validationTokenWithThrow(String token);
-
+    String resolveToken(HttpServletRequest request);
 }

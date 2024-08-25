@@ -15,6 +15,7 @@ import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
 import deepdivers.community.domain.member.repository.MemberRepository;
+import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import java.time.LocalDateTime;
@@ -93,7 +94,7 @@ class MemberServiceTest {
 
         // Then, test.sql
         StatusType statusType = MemberStatusType.MEMBER_LOGIN_SUCCESS;
-        MemberLoginResult responseResult = response.result();
+        TokenResponse responseResult = response.result();
 
         assertThat(response).isNotNull();
         assertThat(response.status().code()).isEqualTo(statusType.getCode());

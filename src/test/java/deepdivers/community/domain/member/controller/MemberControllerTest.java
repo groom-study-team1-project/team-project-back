@@ -6,11 +6,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import deepdivers.community.domain.member.controller.open.MemberController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.MemberLoginResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;

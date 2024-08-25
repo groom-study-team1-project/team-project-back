@@ -1,4 +1,4 @@
-package deepdivers.community.domain.member.controller;
+package deepdivers.community.domain.member.controller.open;
 
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
