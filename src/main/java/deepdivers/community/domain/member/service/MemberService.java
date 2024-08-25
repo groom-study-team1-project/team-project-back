@@ -37,17 +37,28 @@ public class MemberService {
 
     @Transactional(readOnly = true)
     public MemberLoginResponse login(final MemberLoginRequest request) {
-        final Member member = memberRepository.findByEmail(request.email())
-                .filter(it -> encryptor.matches(request.password(), it.getPassword()))
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
+        final Member member = authenticateMember(request.email(), request.password());
+        validateMemberStatus(member);
 
         final TokenResponse tokenResponse = tokenService.login(member);
+        return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
+    }
 
-        return switch (member.getStatus()) {
-            case REGISTERED -> MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
-            case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
-            case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
-        };
+    private Member authenticateMember(final String email, final String password) {
+        return memberRepository.findByEmail(email)
+                .filter(member -> encryptor.matches(password, member.getPassword()))
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
+    }
+
+    private void validateMemberStatus(final Member member) {
+        switch (member.getStatus()) {
+            case REGISTERED:
+                break;
+            case DORMANCY:
+                throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+            case UNREGISTERED:
+                throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+        }
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {

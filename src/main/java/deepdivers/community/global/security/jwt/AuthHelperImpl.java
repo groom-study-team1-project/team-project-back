@@ -58,13 +58,13 @@ public class AuthHelperImpl implements AuthHelper {
                 .compact();
     }
 
-    public String issueRefreshToken(final Long memberId) {
+    public String issueRefreshToken(final Map<String, Object> data) {
         final Date now = new Date();
         final Date expiryDate = new Date(now.getTime() + refreshTokenPlusHour);
 
         return Jwts.builder()
                 .signWith(secretKey)
-                .claim("memberId", memberId)
+                .claims(data)
                 .expiration(expiryDate)
                 .issuedAt(now)
                 .compact();

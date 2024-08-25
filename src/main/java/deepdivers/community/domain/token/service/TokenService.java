@@ -14,16 +14,32 @@ public class TokenService {
 
     private final AuthHelper authHelper;
 
-    public TokenResponse login(final Member member) {
-        final Map<String, Object> data = new HashMap<>();
-        data.put("memberId", member.getId());
-        data.put("memberNickname", member.getNickname());
-        data.put("memberRole", member.getRole());
+    private static final String KEY_MEMBER_ID = "memberId";
+    private static final String KEY_MEMBER_NICKNAME = "memberNickname";
+    private static final String KEY_MEMBER_ROLE = "memberRole";
 
-        final String accessToken = authHelper.issueAccessToken(data);
-        final String refreshToken = authHelper.issueRefreshToken(member.getId());
+    public TokenResponse login(final Member member) {
+        Map<String, Object> accessTokenData = createAccessTokenData(member);
+        String accessToken = authHelper.issueAccessToken(accessTokenData);
+
+        Map<String, Object> refreshTokenData = createRefreshTokenData(member);
+        String refreshToken = authHelper.issueRefreshToken(refreshTokenData);
 
         return TokenResponse.of(accessToken, refreshToken);
+    }
+
+    private Map<String, Object> createAccessTokenData(final Member member) {
+        final Map<String, Object> data = new HashMap<>();
+        data.put(KEY_MEMBER_ID, member.getId());
+        data.put(KEY_MEMBER_NICKNAME, member.getNickname());
+        data.put(KEY_MEMBER_ROLE, member.getRole());
+        return data;
+    }
+
+    private Map<String, Object> createRefreshTokenData(final Member member) {
+        final Map<String, Object> data = new HashMap<>();
+        data.put(KEY_MEMBER_ID, member.getId());
+        return data;
     }
 
 }
