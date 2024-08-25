@@ -84,6 +84,10 @@ public class Member extends BaseEntity {
         return new Member(request, encryptor);
     }
 
+    public String getPassword() {
+        return this.password.getValue();
+    }
+
     public String getNickname() {
         return nickname.getValue();
     }

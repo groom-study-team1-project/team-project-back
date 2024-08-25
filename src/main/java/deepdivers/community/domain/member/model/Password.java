@@ -32,11 +32,8 @@ public class Password {
         return new Password(encryptor.encrypt(passwordAfterTrimmed));
     }
 
-    public void matches(final Encryptor encryptor,final String password) {
-        final Boolean isCorrect = encryptor.matches(password, this.value);
-        if (!isCorrect) {
-            throw new BadRequestException(MemberExceptionType.INVALID_MEMBER_PASSWORD);
-        }
+    public boolean matches(final Encryptor encryptor,final String password) {
+        return encryptor.matches(password, this.value);
     }
 
 }

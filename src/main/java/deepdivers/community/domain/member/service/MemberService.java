@@ -38,8 +38,8 @@ public class MemberService {
     @Transactional(readOnly = true)
     public MemberLoginResponse login(final MemberLoginRequest request) {
         final Member member = memberRepository.findByEmail(request.email())
+                .filter(it -> encryptor.matches(request.password(), it.getPassword()))
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
-        member.getPassword().matches(encryptor, request.password());
 
         final TokenResponse tokenResponse = tokenService.login(member);
 
