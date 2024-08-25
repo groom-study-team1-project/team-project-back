@@ -4,8 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
+import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.member.controller.open.MemberController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
@@ -14,6 +16,7 @@ import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
+import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.global.config.EncryptorConfig;
 import deepdivers.community.global.exception.GlobalExceptionHandler;
 import deepdivers.community.utility.encryptor.Encryptor;
@@ -28,26 +31,16 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(controllers = MemberController.class)
 @Import(EncryptorConfig.class)
-class MemberControllerTest {
-
-    @MockBean
-    private MemberService memberService;
-
-    @MockBean
-    private Encryptor encryptor;
-
-    private MemberSignUpRequest request;
+class MemberControllerTest extends ControllerTest {
 
     @BeforeEach
-    void setUp() {
-        RestAssuredMockMvc.standaloneSetup(
-                MockMvcBuilders
-                        .standaloneSetup(new MemberController(memberService))
-                        .setControllerAdvice(GlobalExceptionHandler.class)
-        );
+    void setUp(WebApplicationContext webApplicationContext) throws Exception {
+        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+        mockingAuthArgumentResolver();
     }
 
     @Test
@@ -173,8 +166,8 @@ class MemberControllerTest {
         // given, test.sql
         MemberSignUpRequest signUpRequest = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
 
-        Member member = Member.of(signUpRequest, this.encryptor);
-        MemberLoginResponse mockResponse = MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, member);
+        TokenResponse tokenResponse = TokenResponse.of("1", "1");
+        MemberLoginResponse mockResponse = MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
         given(memberService.login(any(MemberLoginRequest.class))).willReturn(mockResponse);
 
         MemberLoginRequest loginRequest = new MemberLoginRequest("test@email.com", "test1234!");

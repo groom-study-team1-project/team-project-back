@@ -3,6 +3,7 @@ package deepdivers.community.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
@@ -16,8 +17,11 @@ import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
+import deepdivers.community.domain.token.service.TokenService;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.global.security.jwt.AuthHelper;
+import deepdivers.community.global.security.jwt.AuthPayload;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,9 +35,8 @@ class MemberServiceTest {
 
     @Autowired
     private MemberService memberService;
-
     @Autowired
-    private MemberRepository memberRepository;
+    private AuthHelper authHelper;
 
     @Test
     @DisplayName("회원 가입이 성공했을 경우를 테스트한다.")
@@ -85,7 +88,7 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("로그인이 성공했을 경우를 테스트한다.")
-    void loginSuccessTest() {
+    void loginSuccessTest() throws JsonProcessingException {
         // Given, test.sql
         MemberLoginRequest loginRequest = new MemberLoginRequest("email2@test.com", "password2!");
 
@@ -99,9 +102,17 @@ class MemberServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.status().code()).isEqualTo(statusType.getCode());
         assertThat(response.status().message()).isEqualTo(statusType.getMessage());
-        assertThat(responseResult.id()).isEqualTo(2L);
-        assertThat(responseResult.nickname()).isEqualTo("User2");
-        assertThat(responseResult.role()).isEqualTo(MemberRole.NORMAL);
+
+        assertThat(responseResult.accessToken()).isNotNull().isNotEmpty();
+        assertThat(responseResult.accessToken()).matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$");
+
+        assertThat(responseResult.refreshToken()).isNotNull().isNotEmpty();
+        assertThat(responseResult.refreshToken()).matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$");
+
+        AuthPayload authPayload = authHelper.parseToken(responseResult.accessToken());
+        assertThat(authPayload.memberId()).isEqualTo(2L);
+        assertThat(authPayload.memberNickname()).isEqualTo("User2");
+        assertThat(authPayload.memberRole()).isEqualTo(MemberRole.NORMAL.toString());
     }
 
     @Test
@@ -124,8 +135,8 @@ class MemberServiceTest {
 
         // When
         assertThatThrownBy(() -> memberService.login(loginRequest))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_MEMBER_PASSWORD);
+                .isInstanceOf(NotFoundException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
     }
 
     @Test

@@ -44,6 +44,11 @@ public class MemberService {
         return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 
+    public Member getMemberWithThrow(final Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    }
+
     private Member authenticateMember(final String email, final String password) {
         return memberRepository.findByEmail(email)
                 .filter(member -> encryptor.matches(password, member.getPassword()))

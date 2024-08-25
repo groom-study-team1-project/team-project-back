@@ -42,7 +42,7 @@ class MemberTest {
         // then
         assertThat(member).isNotNull();
         assertThat(member.getEmail()).isEqualTo(email);
-        assertThat(member.getPassword().getValue()).isEqualTo(encryptedPassword);
+        assertThat(member.getPassword()).isEqualTo(encryptedPassword);
     }
 
     @ParameterizedTest

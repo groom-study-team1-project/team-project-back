@@ -1,7 +1,6 @@
 package deepdivers.community.global.security.jwt;
 
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -17,7 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @RequiredArgsConstructor
 public class AuthorizationResolver implements HandlerMethodArgumentResolver {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
     private final AuthHelper authHelper;
 
     @Override
@@ -35,7 +34,8 @@ public class AuthorizationResolver implements HandlerMethodArgumentResolver {
         final RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
         final String token = (String) attrs.getAttribute("token", RequestAttributes.SCOPE_REQUEST);
         final AuthPayload authPayload = authHelper.parseToken(token);
-        return memberRepository.findById(authPayload.memberId());
+
+        return memberService.getMemberWithThrow(authPayload.memberId());
     }
 
 }
