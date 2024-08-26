@@ -23,7 +23,7 @@ public class ControllerTest {
     @MockBean
     protected Encryptor encryptor;
 
-    protected void mockingAuthArgumentResolver() throws Exception {
+    protected void mockingAuthArgumentResolver() {
         AuthPayload tokenPayload = new AuthPayload(1L, "1", "1", 1L, 1L);
         given(authHelper.resolveToken(any())).willReturn("token");
         given(authHelper.parseToken(anyString())).willReturn(tokenPayload);

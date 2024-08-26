@@ -10,6 +10,6 @@ public interface AuthHelper {
     String issueRefreshToken(Map<String, Object> data);
     void validationTokenWithThrow(String token);
     String resolveToken(HttpServletRequest request);
-    AuthPayload parseToken(String token) throws JsonProcessingException;
+    AuthPayload parseToken(String token);
 
 }

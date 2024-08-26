@@ -99,10 +99,14 @@ public class AuthHelperImpl implements AuthHelper {
     }
 
 
-    public AuthPayload parseToken(final String token) throws JsonProcessingException {
+    public AuthPayload parseToken(final String token) {
         final String[] chunks = token.split(TOKEN_DELIMITER);
         final String payload = new String(Decoders.BASE64.decode(chunks[1]));
-        return objectMapper.readValue(payload, AuthPayload.class);
+        try {
+            return objectMapper.readValue(payload, AuthPayload.class);
+        } catch (final JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

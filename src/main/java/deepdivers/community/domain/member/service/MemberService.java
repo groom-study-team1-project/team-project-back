@@ -40,7 +40,7 @@ public class MemberService {
         final Member member = authenticateMember(request.email(), request.password());
         validateMemberStatus(member);
 
-        final TokenResponse tokenResponse = tokenService.login(member);
+        final TokenResponse tokenResponse = tokenService.tokenGenerator(member);
         return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 

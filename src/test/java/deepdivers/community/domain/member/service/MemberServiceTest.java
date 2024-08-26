@@ -3,21 +3,16 @@ package deepdivers.community.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.MemberLoginResult;
 import deepdivers.community.domain.member.dto.response.result.MemberSignUpResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.vo.MemberRole;
-import deepdivers.community.domain.member.model.vo.MemberStatus;
-import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.domain.token.service.TokenService;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
@@ -88,7 +83,7 @@ class MemberServiceTest {
 
     @Test
     @DisplayName("로그인이 성공했을 경우를 테스트한다.")
-    void loginSuccessTest() throws JsonProcessingException {
+    void loginSuccessTest() {
         // Given, test.sql
         MemberLoginRequest loginRequest = new MemberLoginRequest("email2@test.com", "password2!");
 
