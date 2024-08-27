@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.utility.time.TimeProvider;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -33,21 +34,24 @@ public class AuthHelperImpl implements AuthHelper {
     private final long accessTokenPlusHour;
     private final long refreshTokenPlusHour;
     private final ObjectMapper objectMapper;
+    private final TimeProvider timeProvider;
 
     public AuthHelperImpl(
             @Value("${token.secret.key}") final String secretKey,
             @Value("${token.access-token.expiration-time}") final long accessTokenPlusHour,
             @Value("${token.refresh-token.expiration-time}") final long refreshTokenPlusHour,
-            final ObjectMapper objectMapper
+            final ObjectMapper objectMapper,
+            final TimeProvider timeProvider
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
         this.accessTokenPlusHour = accessTokenPlusHour;
         this.refreshTokenPlusHour = refreshTokenPlusHour;
         this.objectMapper = objectMapper;
+        this.timeProvider = timeProvider;
     }
 
     public String issueAccessToken(final Map<String, Object> data) {
-        final Date now = new Date();
+        final Date now = timeProvider.getCurrentDate();
         final Date expiryDate = new Date(now.getTime() + accessTokenPlusHour);
 
         return Jwts.builder()
@@ -59,7 +63,7 @@ public class AuthHelperImpl implements AuthHelper {
     }
 
     public String issueRefreshToken(final Map<String, Object> data) {
-        final Date now = new Date();
+        final Date now = timeProvider.getCurrentDate();
         final Date expiryDate = new Date(now.getTime() + refreshTokenPlusHour);
 
         return Jwts.builder()
@@ -76,11 +80,11 @@ public class AuthHelperImpl implements AuthHelper {
                 .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token);
-        } catch (final SignatureException e) {
-            throw new BadRequestException(TokenExceptionType.SIGNATURE_TOKEN);
         } catch (final ExpiredJwtException e) {
             throw new BadRequestException(TokenExceptionType.EXPIRED_TOKEN);
-        } catch (final UnsupportedJwtException e) {
+        } catch (final SignatureException e) {
+            throw new BadRequestException(TokenExceptionType.SIGNATURE_TOKEN);
+        }  catch (final UnsupportedJwtException e) {
             throw new BadRequestException(TokenExceptionType.UNSUPPORTED_TOKEN);
         } catch (final MalformedJwtException e) {
             throw new BadRequestException(TokenExceptionType.MALFORMED_TOKEN);

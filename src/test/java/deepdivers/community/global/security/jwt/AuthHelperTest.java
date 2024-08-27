@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.utility.time.TimeProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -27,19 +28,22 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class AuthHelperTest {
 
-    private AuthHelperImpl authHelper;
+    private AuthHelper authHelper;
 
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private TimeProvider timeProvider;
+
     private static final String MEMBER_ID = "memberId";
     private final String secretKey = "thisIsATestSecretKeyForJwtTokenGenerationAndValidation";
-    private final long accessTokenExpirationTime = 3600000; // 1 hour
-    private final long refreshTokenExpirationTime = 86400000; // 24 hours
+    private final long accessTokenExpirationTime = 3600000;
+    private final long refreshTokenExpirationTime = 86400000;
 
     @BeforeEach
     void setUp() {
-        authHelper = new AuthHelperImpl(secretKey, accessTokenExpirationTime, refreshTokenExpirationTime, objectMapper);
+        authHelper = new AuthHelperImpl(secretKey, accessTokenExpirationTime, refreshTokenExpirationTime, objectMapper, timeProvider);
     }
 
     @Test
@@ -48,6 +52,7 @@ class AuthHelperTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put(MEMBER_ID, 1L);
+        when(timeProvider.getCurrentDate()).thenReturn(new Date());
 
         // When
         String token = authHelper.issueAccessToken(claims);
@@ -65,6 +70,7 @@ class AuthHelperTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put(MEMBER_ID, 1L);
+        when(timeProvider.getCurrentDate()).thenReturn(new Date());
 
         // When
         String token = authHelper.issueRefreshToken(claims);
@@ -82,6 +88,7 @@ class AuthHelperTest {
         // Given
         Map<String, Object> claims = new HashMap<>();
         claims.put(MEMBER_ID, 1L);
+        when(timeProvider.getCurrentDate()).thenReturn(new Date());
         String token = authHelper.issueAccessToken(claims);
 
         // When & Then
@@ -137,7 +144,7 @@ class AuthHelperTest {
         String token = Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                 .claims(claims)
-                .expiration(new Date(System.currentTimeMillis() - 1000)) // 만료된 토큰
+                .expiration(new Date(System.currentTimeMillis() - 1000))
                 .compact();
 
         // When & Then

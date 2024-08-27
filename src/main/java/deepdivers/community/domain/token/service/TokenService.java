@@ -60,8 +60,6 @@ public class TokenService {
     }
 
     private AuthPayload validateRefreshToken(final String accessToken, final String refreshToken) {
-        authHelper.validationTokenWithThrow(accessToken);
-        log.warn("Access token validation failed");
         authHelper.validationTokenWithThrow(refreshToken);
         log.warn("Refresh token validation failed");
         final AuthPayload accessTokenPayload = authHelper.parseToken(accessToken);
