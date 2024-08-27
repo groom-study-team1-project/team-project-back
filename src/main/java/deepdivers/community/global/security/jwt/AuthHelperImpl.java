@@ -36,8 +36,8 @@ public class AuthHelperImpl implements AuthHelper {
 
     public AuthHelperImpl(
             @Value("${token.secret.key}") final String secretKey,
-            @Value("${token.access-token.expiration-time}") final int accessTokenPlusHour,
-            @Value("${token.refresh-token.expiration-time}") final int refreshTokenPlusHour,
+            @Value("${token.access-token.expiration-time}") final long accessTokenPlusHour,
+            @Value("${token.refresh-token.expiration-time}") final long refreshTokenPlusHour,
             final ObjectMapper objectMapper
     ) {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
@@ -77,11 +77,11 @@ public class AuthHelperImpl implements AuthHelper {
                 .build()
                 .parseSignedClaims(token);
         } catch (final SignatureException e) {
-            throw new BadRequestException(TokenExceptionType.UNSUPPORTED_TOKEN);
+            throw new BadRequestException(TokenExceptionType.SIGNATURE_TOKEN);
         } catch (final ExpiredJwtException e) {
             throw new BadRequestException(TokenExceptionType.EXPIRED_TOKEN);
         } catch (final UnsupportedJwtException e) {
-            throw new BadRequestException(TokenExceptionType.SIGNATURE_TOKEN);
+            throw new BadRequestException(TokenExceptionType.UNSUPPORTED_TOKEN);
         } catch (final MalformedJwtException e) {
             throw new BadRequestException(TokenExceptionType.MALFORMED_TOKEN);
         } catch (final Exception e) {
