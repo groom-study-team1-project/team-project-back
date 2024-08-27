@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ public class TokenController {
 
     private final TokenService tokenService;
 
-    @GetMapping("/re-issue")
+    @PatchMapping("/re-issue")
     public ResponseEntity<ReissueResponse> reIssue(
             @Parameter(hidden = true)
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false)
@@ -35,9 +36,6 @@ public class TokenController {
             @RequestHeader(value = "Refresh-Token", required = false)
             final String refreshToken
     ) {
-        if (Objects.isNull(refreshToken)) {
-            throw new BadRequestException(TokenExceptionType.NOT_FOUND_TOKEN);
-        }
         final ReissueResponse response = tokenService.reIssueAccessToken(accessToken, refreshToken);
         return ResponseEntity.ok(response);
     }
