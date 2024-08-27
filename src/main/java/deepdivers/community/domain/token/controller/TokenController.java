@@ -31,6 +31,7 @@ public class TokenController {
             @Parameter(hidden = true)
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false)
             final String accessToken,
+            @Parameter(hidden = true)
             @RequestHeader(value = "Refresh-Token", required = false)
             final String refreshToken
     ) {

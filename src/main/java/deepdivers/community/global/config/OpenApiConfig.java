@@ -33,13 +33,17 @@ public class OpenApiConfig {
 	public OpenAPI openAPI() {
 		final Server server = generateServer();
 		final Info info = generateInfo();
-		final SecurityScheme securityScheme = generateScheme();
-		final SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth");
+		final SecurityScheme accessTokenScheme = generateAccessTokenScheme();
+		final SecurityScheme refreshTokenScheme = generateRefreshTokenScheme();
+		final SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth").addList("refreshAuth");
 
 		return new OpenAPI()
 			.info(info)
 			.servers(List.of(server))
-			.components(new Components().addSecuritySchemes("bearerAuth", securityScheme))
+			.components(new Components()
+					.addSecuritySchemes("bearerAuth", accessTokenScheme)
+					.addSecuritySchemes("refreshAuth", refreshTokenScheme)
+			)
 			.security(List.of(securityRequirement));
 	}
 
@@ -57,7 +61,7 @@ public class OpenApiConfig {
 				.description(DOCS_DESCRIPTION);
 	}
 
-	private SecurityScheme generateScheme() {
+	private SecurityScheme generateAccessTokenScheme() {
 		return new SecurityScheme()
 				.type(Type.HTTP)
 				.in(In.HEADER)
@@ -65,6 +69,14 @@ public class OpenApiConfig {
 				.scheme("bearer")
 				.bearerFormat("JWT")
 				.description("Bearer JWT");
+	}
+
+	private SecurityScheme generateRefreshTokenScheme() {
+		return new SecurityScheme()
+				.type(Type.APIKEY)
+				.in(In.HEADER)
+				.name("Refresh-Token")
+				.description("Refresh Token");
 	}
 
 }
