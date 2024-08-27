@@ -2,6 +2,7 @@ package deepdivers.community.global.security.jwt;
 
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -33,10 +34,9 @@ public class AuthorizationResolver implements HandlerMethodArgumentResolver {
             final NativeWebRequest webRequest,
             final WebDataBinderFactory binderFactory
     ) throws Exception {
-        final RequestAttributes attrs = RequestContextHolder.getRequestAttributes();
-        final String token = (String) attrs.getAttribute("token", RequestAttributes.SCOPE_REQUEST);
-        log.warn("resolve : {}", token);
-        final AuthPayload authPayload = authHelper.parseToken(token);
+        final RequestAttributes attrs = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
+        final String accessToken = (String) attrs.getAttribute("accessToken", RequestAttributes.SCOPE_REQUEST);
+        final AuthPayload authPayload = authHelper.parseToken(accessToken);
 
         return memberService.getMemberWithThrow(authPayload.memberId());
     }

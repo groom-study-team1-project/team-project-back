@@ -89,10 +89,9 @@ public class AuthHelperImpl implements AuthHelper {
         }
     }
 
-    public String resolveToken(final HttpServletRequest request) {
-        final String token = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(token) && token.startsWith(BEARER_TOKEN_PREFIX)) {
-            return token.split(BLANK)[1];
+    public String resolveToken(final String bearerAccessToken) {
+        if (StringUtils.hasText(bearerAccessToken) && bearerAccessToken.startsWith(BEARER_TOKEN_PREFIX)) {
+            return bearerAccessToken.split(BLANK)[1];
         }
 
         throw new BadRequestException(TokenExceptionType.NOT_FOUND_TOKEN);

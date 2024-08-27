@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -25,10 +26,11 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     ) {
         log.info("Authorization Interceptor url : {}", request.getRequestURI());
 
-        final String token = authHelper.resolveToken(request);
-        authHelper.validationTokenWithThrow(token);
+        final String accessTokenReq = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String accessToken = authHelper.resolveToken(accessTokenReq);
+        authHelper.validationTokenWithThrow(accessToken);
         final RequestAttributes context = Objects.requireNonNull(RequestContextHolder.getRequestAttributes());
-        context.setAttribute("token", token, RequestAttributes.SCOPE_REQUEST);
+        context.setAttribute("accessToken", accessToken, RequestAttributes.SCOPE_REQUEST);
 
         return true;
     }
