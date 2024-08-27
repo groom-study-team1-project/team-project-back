@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/token")
 @RequiredArgsConstructor
-public class TokenController {
+public class TokenController implements TokenControllerDocs {
 
     private final TokenService tokenService;
 

@@ -12,15 +12,12 @@ import deepdivers.community.global.security.jwt.AuthPayload;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class TokenService {
 
-    private static final Logger log = LoggerFactory.getLogger(TokenService.class);
     private final AuthHelper authHelper;
 
     private static final String KEY_MEMBER_ID = "memberId";
@@ -61,7 +58,6 @@ public class TokenService {
 
     private AuthPayload validateRefreshToken(final String accessToken, final String refreshToken) {
         authHelper.validationTokenWithThrow(refreshToken);
-        log.warn("Refresh token validation failed");
         final AuthPayload accessTokenPayload = authHelper.parseToken(accessToken);
         final AuthPayload refreshTokenPayload = authHelper.parseToken(refreshToken);
 
