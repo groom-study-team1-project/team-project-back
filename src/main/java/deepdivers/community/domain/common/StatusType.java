@@ -1,8 +1,9 @@
 package deepdivers.community.domain.common;
 
-public interface ResultType {
+public interface StatusType {
 
-    Integer getCode();
+    int getCode();
+
     String getMessage();
 
 }

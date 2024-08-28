@@ -1,5 +1,10 @@
 package deepdivers.community.global.config;
 
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.security.SecurityScheme.In;
+import io.swagger.v3.oas.models.security.SecurityScheme.Type;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -26,18 +31,52 @@ public class OpenApiConfig {
 
 	@Bean
 	public OpenAPI openAPI() {
-		final Server server = new Server();
-		server.setUrl(this.devUrl);
-		server.setDescription(SERVER_DESCRIPTION);
-
-		final Info info = new Info()
-			.title(DOCS_TITLE)
-			.version(DOCS_VERSION)
-			.description(DOCS_DESCRIPTION);
+		final Server server = generateServer();
+		final Info info = generateInfo();
+		final SecurityScheme accessTokenScheme = generateAccessTokenScheme();
+		final SecurityScheme refreshTokenScheme = generateRefreshTokenScheme();
+		final SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth").addList("refreshAuth");
 
 		return new OpenAPI()
 			.info(info)
-			.servers(List.of(server));
+			.servers(List.of(server))
+			.components(new Components()
+					.addSecuritySchemes("bearerAuth", accessTokenScheme)
+					.addSecuritySchemes("refreshAuth", refreshTokenScheme)
+			)
+			.security(List.of(securityRequirement));
+	}
+
+	private Server generateServer() {
+		final Server server = new Server();
+		server.setUrl(this.devUrl);
+		server.setDescription(SERVER_DESCRIPTION);
+		return server;
+	}
+
+	private Info generateInfo() {
+		return new Info()
+				.title(DOCS_TITLE)
+				.version(DOCS_VERSION)
+				.description(DOCS_DESCRIPTION);
+	}
+
+	private SecurityScheme generateAccessTokenScheme() {
+		return new SecurityScheme()
+				.type(Type.HTTP)
+				.in(In.HEADER)
+				.name("Authorization")
+				.scheme("bearer")
+				.bearerFormat("JWT")
+				.description("Bearer JWT");
+	}
+
+	private SecurityScheme generateRefreshTokenScheme() {
+		return new SecurityScheme()
+				.type(Type.APIKEY)
+				.in(In.HEADER)
+				.name("Refresh-Token")
+				.description("Refresh Token");
 	}
 
 }

@@ -16,6 +16,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,6 +33,7 @@ import org.apache.commons.lang3.StringUtils;
                 columnNames = {"nickname"}
         )
 )
+@AllArgsConstructor
 public class Member extends BaseEntity {
 
     @Id
@@ -82,6 +84,10 @@ public class Member extends BaseEntity {
 
     public static Member of(final MemberSignUpRequest request, final Encryptor encryptor) {
         return new Member(request, encryptor);
+    }
+
+    public String getPassword() {
+        return this.password.getValue();
     }
 
     public String getNickname() {

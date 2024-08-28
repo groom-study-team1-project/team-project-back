@@ -1,6 +1,8 @@
-package deepdivers.community.domain.member.controller;
+package deepdivers.community.domain.member.controller.open;
 
+import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.service.MemberService;
 import jakarta.validation.Valid;
@@ -25,9 +27,9 @@ public class MemberController implements MemberControllerDocs {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(String email, String password) {
-        return null;
+    public ResponseEntity<MemberLoginResponse> login(@RequestBody final MemberLoginRequest request) {
+        final MemberLoginResponse response = memberService.login(request);
+        return ResponseEntity.ok(response);
     }
-
 
 }

@@ -23,6 +23,10 @@ spring:
         format_sql: true
         default_batch_fetch_size: 50
     defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:prod.sql
 
 goorm:
   community:
@@ -32,3 +36,11 @@ goorm:
 logging:
   level:
     org.hibernate.orm.jdbc.bind: trace
+
+token:
+  secret:
+    key: SpringBootJWTHelperTokenSecretKeyValue123!@#
+  access-token:
+    expiration-time: 1800000
+  refresh-token:
+    expiration-time: 43200000

@@ -32,4 +32,8 @@ public class Password {
         return new Password(encryptor.encrypt(passwordAfterTrimmed));
     }
 
+    public boolean matches(final Encryptor encryptor,final String password) {
+        return encryptor.matches(password, this.value);
+    }
+
 }
