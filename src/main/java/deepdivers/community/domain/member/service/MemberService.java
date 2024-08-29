@@ -45,6 +45,7 @@ public class MemberService {
         return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 
+    @Transactional(readOnly = true)
     public MemberProfileResponse getProfile(final Member me, final Long memberId) {
         final Member profileOwner = getMemberWithThrow(memberId);
         if (me.equals(profileOwner)) {

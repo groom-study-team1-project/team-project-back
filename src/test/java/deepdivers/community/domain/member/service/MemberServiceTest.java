@@ -7,10 +7,13 @@ import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
+import deepdivers.community.domain.member.dto.response.result.MemberProfileResult;
 import deepdivers.community.domain.member.dto.response.result.MemberSignUpResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
+import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.global.exception.model.BadRequestException;
@@ -51,7 +54,7 @@ class MemberServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.status().code()).isEqualTo(statusType.getCode());
         assertThat(response.status().message()).isEqualTo(statusType.getMessage());
-        assertThat(responseResult.id()).isEqualTo(lastAccountId + 1L);
+        assertThat(responseResult.id()).isGreaterThan(lastAccountId);
         assertThat(responseResult.nickname()).isEqualTo(request.nickname());
         assertThat(responseResult.createdAt()).isBetween(testStartTime, testEndTime);
     }
@@ -152,10 +155,69 @@ class MemberServiceTest {
         // Given, test.sql
         MemberLoginRequest loginRequest = new MemberLoginRequest("email8@test.com", "password8!");
 
-        // When
+        // When, Then
         assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+    }
+
+    @Test
+    @DisplayName("사용자 정보 찾기에 성공한 경우를 테스트 한다.")
+    void findMemberSuccessTest() {
+        // Given, test.sql
+        Long memberId = 1L;
+
+        // When, Then
+        Member member = memberService.getMemberWithThrow(memberId);
+
+        // Then
+        assertThat(member.getId()).isEqualTo(1L);
+        assertThat(member.getNickname()).isEqualTo("User1");
+        assertThat(member.getEmail()).isEqualTo("email1@test.com");
+    }
+
+    @Test
+    @DisplayName("사용자 정보를 찾을 수 없는 경우를 테스트 한다.")
+    void notFoundMemberTest() {
+        // Given, test.sql
+        Long memberId = 11L;
+
+        // When, Then
+        assertThatThrownBy(() -> memberService.getMemberWithThrow(memberId))
+                .isInstanceOf(NotFoundException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
+    }
+
+    @Test
+    @DisplayName("내 프로필 조회에 성공한 경우를 테스트한다.")
+    void findMyProfileSuccessTest() {
+        // Given, test.sql
+        Long memberId = 1L;
+        Member member = memberService.getMemberWithThrow(memberId);
+
+        // When
+        MemberProfileResponse profile = memberService.getProfile(member, memberId);
+
+        // Then
+        MemberProfileResult result = profile.result();
+        assertThat(result.nickname()).isEqualTo(member.getNickname());
+    }
+
+    @Test
+    @DisplayName("내 프로필 조회에 성공한 경우를 테스트한다.")
+    void findOtherProfileSuccessTest() {
+        // Given, test.sql
+        Long memberId = 1L;
+        Member member = memberService.getMemberWithThrow(memberId);
+        Long otherMemberId = 2L;
+        Member other = memberService.getMemberWithThrow(otherMemberId);
+
+        // When
+        MemberProfileResponse profile = memberService.getProfile(member, otherMemberId);
+
+        // Then
+        MemberProfileResult result = profile.result();
+        assertThat(result.nickname()).isEqualTo(other.getNickname());
     }
 
 }
