@@ -4,37 +4,35 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.member.controller.api.MemberApiController;
 import deepdivers.community.domain.member.controller.open.MemberController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.global.config.EncryptorConfig;
-import deepdivers.community.global.exception.GlobalExceptionHandler;
-import deepdivers.community.utility.encryptor.Encryptor;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-@WebMvcTest(controllers = MemberController.class)
-@Import(EncryptorConfig.class)
+@WebMvcTest(controllers = {
+        MemberController.class,
+        MemberApiController.class
+})
 class MemberControllerTest extends ControllerTest {
 
     @BeforeEach
@@ -86,7 +84,6 @@ class MemberControllerTest extends ControllerTest {
                 .body("code", equalTo(101))
                 .body("message", containsString("이메일 형식으로 입력해주세요."));
     }
-
 
     @Test
     @DisplayName("회원가입 요청 시 이메일 정보가 존재하지 않는다면 400 BadRequest 를 반환한다.")
@@ -163,7 +160,7 @@ class MemberControllerTest extends ControllerTest {
     @Test
     @DisplayName("로그인 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
     void loginSuccessfullyReturns200OK() {
-        // given, test.sql
+        // given
         MemberSignUpRequest signUpRequest = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
 
         TokenResponse tokenResponse = TokenResponse.of("1", "1");
@@ -187,5 +184,31 @@ class MemberControllerTest extends ControllerTest {
         assertThat(response).isNotNull();
         assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
     }
+
+    @Test
+    @DisplayName("프로필 조회 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+    void findProfileSuccessfullyReturns200OK() {
+        // given
+        MemberSignUpRequest signUpRequest = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
+        Member member = Member.of(signUpRequest, encryptor);
+        MemberProfileResponse mockResponse = MemberProfileResponse.of(
+                MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, member);
+        given(memberService.getProfile(any(Member.class), anyLong())).willReturn(mockResponse);
+        Long profileOwnerId = 1L;
+
+        // when
+        MemberProfileResponse response = RestAssuredMockMvc.given().log().all()
+                .pathParam("memberId", profileOwnerId)
+                .when().get("/api/members/{memberId}/me")
+                .then().log().all()
+                .status(HttpStatus.OK)
+                .extract()
+                .as(MemberProfileResponse.class);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+    }
+
 
 }

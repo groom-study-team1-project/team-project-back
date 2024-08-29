@@ -45,8 +45,8 @@ public class MemberService {
         return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 
-    public MemberProfileResponse getProfile(final Member me, final Long profileOwnerId) {
-        final Member profileOwner = getMemberWithThrow(profileOwnerId);
+    public MemberProfileResponse getProfile(final Member me, final Long memberId) {
+        final Member profileOwner = getMemberWithThrow(memberId);
         if (me.equals(profileOwner)) {
             return MemberProfileResponse.of(MemberStatusType.VIEW_OWN_PROFILE_SUCCESS, me);
         }

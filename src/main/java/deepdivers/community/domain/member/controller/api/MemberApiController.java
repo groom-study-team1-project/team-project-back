@@ -18,12 +18,12 @@ public class MemberApiController implements MemberApiControllerDocs {
 
     private final MemberService memberService;
 
-    @GetMapping("/{profileOwnerId}/me")
+    @GetMapping("/{memberId}/me")
     public ResponseEntity<MemberProfileResponse> me(
             @Auth final Member member,
-            @PathVariable final Long profileOwnerId
+            @PathVariable final Long memberId
     ) {
-        final MemberProfileResponse profile = memberService.getProfile(member, profileOwnerId);
+        final MemberProfileResponse profile = memberService.getProfile(member, memberId);
         return ResponseEntity.ok(profile);
     }
 
