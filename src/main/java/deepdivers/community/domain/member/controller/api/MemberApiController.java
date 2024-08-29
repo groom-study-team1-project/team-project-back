@@ -1,5 +1,6 @@
 package deepdivers.community.domain.member.controller.api;
 
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.global.security.jwt.Auth;
@@ -18,11 +19,11 @@ public class MemberApiController implements MemberApiControllerDocs {
     private final MemberService memberService;
 
     @GetMapping("/{profileOwnerId}/me")
-    public ResponseEntity<Member> me(
+    public ResponseEntity<MemberProfileResponse> me(
             @Auth final Member member,
             @PathVariable final Long profileOwnerId
     ) {
-        Member profile = memberService.getProfile(member.getId(), profileOwnerId);
+        final MemberProfileResponse profile = memberService.getProfile(member, profileOwnerId);
         return ResponseEntity.ok(profile);
     }
 

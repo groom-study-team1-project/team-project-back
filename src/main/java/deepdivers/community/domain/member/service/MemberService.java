@@ -3,6 +3,7 @@ package deepdivers.community.domain.member.service;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
@@ -44,13 +45,13 @@ public class MemberService {
         return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 
-    public Member getProfile(final Long memberId, final Long profileOwnerId) {
-        final Member me = getMemberWithThrow(memberId);
+    public MemberProfileResponse getProfile(final Member me, final Long profileOwnerId) {
         final Member profileOwner = getMemberWithThrow(profileOwnerId);
         if (me.equals(profileOwner)) {
-            return me;
+            return MemberProfileResponse.of(MemberStatusType.VIEW_OWN_PROFILE_SUCCESS, me);
         }
-        return profileOwner;
+
+        return MemberProfileResponse.of(MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, profileOwner);
     }
 
     @Transactional(readOnly = true)
