@@ -44,6 +44,16 @@ public class MemberService {
         return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 
+    public Member getProfile(final Long memberId, final Long profileOwnerId) {
+        final Member me = getMemberWithThrow(memberId);
+        final Member profileOwner = getMemberWithThrow(profileOwnerId);
+        if (me.equals(profileOwner)) {
+            return me;
+        }
+        return profileOwner;
+    }
+
+    @Transactional(readOnly = true)
     public Member getMemberWithThrow(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
