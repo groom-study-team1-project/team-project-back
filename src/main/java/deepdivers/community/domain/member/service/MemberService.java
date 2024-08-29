@@ -61,6 +61,11 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
+    public String profileImageUpload(final Long memberId) {
+        // todo 사용자 프로필을 업로드 함.
+        return null;
+    }
+
     private Member authenticateMember(final String email, final String password) {
         return memberRepository.findByEmail(email)
                 .filter(member -> encryptor.matches(password, member.getPassword()))

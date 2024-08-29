@@ -27,6 +27,12 @@ spring:
     init:
       mode: always
       data-locations: classpath:prod.sql
+  profiles:
+    include: private
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 35MB
 
 goorm:
   community:
