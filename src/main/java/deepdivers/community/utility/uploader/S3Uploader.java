@@ -36,12 +36,12 @@ public class S3Uploader {
         }
     }
 
-    public String upload(final MultipartFile file, final Long memberId) {
+    public String profileImageUpload(final MultipartFile file, final Long memberId) {
         final String fileName = parseSaveFileName(Objects.requireNonNull(file.getOriginalFilename()));
         final String key = String.format("profiles/%d/%s", memberId, fileName);
         final PutObjectRequest putObjectRequest = getPutObjectRequest(file, key);
 
-        upload(putObjectRequest, file);
+        profileImageUpload(putObjectRequest, file);
 
         return String.format("%s/%s", baseUrl, key);
     }
@@ -60,7 +60,7 @@ public class S3Uploader {
         return fileBaseName + "_" + System.currentTimeMillis() + fileExtension;
     }
 
-    private void upload(final PutObjectRequest putObjectRequest, final MultipartFile file) {
+    private void profileImageUpload(final PutObjectRequest putObjectRequest, final MultipartFile file) {
         try (final InputStream inputStream = file.getInputStream()) {
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
         } catch (final IOException e) {

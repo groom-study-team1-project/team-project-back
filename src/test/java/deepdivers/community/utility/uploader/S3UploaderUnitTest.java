@@ -4,13 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.function.Consumer;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,9 +12,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.mock.web.MockMultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3Utilities;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 class S3UploaderUnitTest {
 
@@ -35,13 +27,13 @@ class S3UploaderUnitTest {
 
     @Test
     @DisplayName("S3 이미지 업로드를 단위테스트 한다.")
-    void uploadSuccessfully() {
+    void profileImageUploadSuccessfully() {
         // Given
         MockMultipartFile file = generateMockMultipartFile();
         Long memberId = 1L;
 
         // When
-        String uploadedUrl = s3Uploader.upload(file, memberId);
+        String uploadedUrl = s3Uploader.profileImageUpload(file, memberId);
 
         // Then
         ArgumentCaptor<PutObjectRequest> putObjectRequestCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);

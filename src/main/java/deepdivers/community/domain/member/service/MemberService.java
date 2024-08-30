@@ -15,9 +15,11 @@ import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
+import deepdivers.community.utility.uploader.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +30,7 @@ public class MemberService {
     private final Encryptor encryptor;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
+    private final S3Uploader s3Uploader;
 
     public MemberSignUpResponse signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
@@ -61,9 +64,9 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    public String profileImageUpload(final Long memberId) {
-        // todo 사용자 프로필을 업로드 함.
-        return null;
+    public Object profileImageUpload(final MultipartFile imageFile, final Long memberId) {
+        final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
+        return uploadUrl;
     }
 
     private Member authenticateMember(final String email, final String password) {

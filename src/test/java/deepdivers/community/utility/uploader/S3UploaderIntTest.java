@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -52,7 +51,7 @@ class S3UploaderIntTest {
 
     @Test
     @DisplayName("S3 이미지 업로드를 통합 테스트 한다.")
-    void uploadSuccessfully() {
+    void profileImageUploadSuccessfully() {
         // Given
         MockMultipartFile file = new MockMultipartFile(
                 "file", "test.jpg", "image/jpeg", "test image content".getBytes()
@@ -60,7 +59,7 @@ class S3UploaderIntTest {
         Long memberId = 1L;
 
         // When
-        String result = s3Uploader.upload(file, memberId);
+        String result = s3Uploader.profileImageUpload(file, memberId);
 
         // Then
         assertTrue(result.contains("test-bucket"));
