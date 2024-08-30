@@ -1,0 +1,13 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  cloud:
+    aws:
+      s3:
+        bucket: test-bucket
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: test
+        secret-key: test
