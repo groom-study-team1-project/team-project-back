@@ -1,5 +1,6 @@
 package deepdivers.community.utility.uploader;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -13,6 +14,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.mock.web.MockMultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -24,34 +26,34 @@ class S3UploaderUnitTest {
 
     private S3Uploader s3Uploader;
     private S3Client s3ClientMock;
-    private S3Utilities s3UtilitiesMock;
 
     @BeforeEach
     void setUp() {
         s3ClientMock = mock(S3Client.class);
-        s3UtilitiesMock = mock(S3Utilities.class);
-        when(s3ClientMock.utilities()).thenReturn(s3UtilitiesMock);
-        s3Uploader = new S3Uploader("test-bucket", s3ClientMock);
+        s3Uploader = new S3Uploader("test-bucket", "http://localhost:4566", "us-east-1", s3ClientMock);
     }
 
     @Test
     @DisplayName("S3 이미지 업로드를 단위테스트 한다.")
-    void uploadSuccessfully() throws IOException, URISyntaxException {
+    void uploadSuccessfully() {
         // Given
         MockMultipartFile file = generateMockMultipartFile();
         Long memberId = 1L;
-        String expectedUrl = "https://test-bucket.s3.amazonaws.com/profiles/1/test.jpg";
-
-        when(s3ClientMock.putObject(any(PutObjectRequest.class), any(RequestBody.class)))
-                .thenReturn(PutObjectResponse.builder().build());
-        when(s3UtilitiesMock.getUrl(any(Consumer.class))).thenReturn(new URI(expectedUrl).toURL());
 
         // When
         String uploadedUrl = s3Uploader.upload(file, memberId);
 
         // Then
-        verify(s3ClientMock).putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        Assertions.assertThat(uploadedUrl).isEqualTo(expectedUrl);
+        ArgumentCaptor<PutObjectRequest> putObjectRequestCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);
+        verify(s3ClientMock).putObject(putObjectRequestCaptor.capture(), any(RequestBody.class));
+
+        PutObjectRequest capturedRequest = putObjectRequestCaptor.getValue();
+        assertThat(capturedRequest.bucket()).isEqualTo("test-bucket");
+        assertThat(capturedRequest.key()).startsWith("profiles/1/");
+        assertThat(capturedRequest.key()).endsWith(".jpg");
+
+        assertThat(uploadedUrl).startsWith("http://localhost:4566/test-bucket/profiles/1/");
+        assertThat(uploadedUrl).endsWith(".jpg");
     }
 
     private MockMultipartFile generateMockMultipartFile() {

@@ -1,4 +1,4 @@
-package deepdivers.community.global.config;
+package deepdivers.community.global.config.localstack;
 
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.utility.DockerImageName;
