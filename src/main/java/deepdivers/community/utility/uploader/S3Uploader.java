@@ -12,18 +12,28 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
-public class S3ImageUploader {
+public class S3Uploader {
 
     private final String bucket;
-    private final S3Client amazonS3;
+    private final String baseUrl;
+    private final S3Client s3Client;
 
-    public S3ImageUploader(
+    public S3Uploader(
             @Value("${spring.cloud.aws.s3.bucket}")
             final String bucket,
-            final S3Client amazonS3
+            @Value("${spring.cloud.aws.s3.endpoint}")
+            final String baseUrl,
+            @Value("${spring.cloud.aws.region.static}")
+            final String region,
+            final S3Client s3Client
     ) {
         this.bucket = bucket;
-        this.amazonS3 = amazonS3;
+        this.s3Client = s3Client;
+        if (baseUrl.isEmpty()) {
+            this.baseUrl = String.format("https://%s.s3.%s.amazonaws.com", bucket, region);
+        } else {
+            this.baseUrl = String.format("%s/%s", baseUrl, bucket);
+        }
     }
 
     public String upload(final MultipartFile file, final Long memberId) {
@@ -31,11 +41,9 @@ public class S3ImageUploader {
         final String key = String.format("profiles/%d/%s", memberId, fileName);
         final PutObjectRequest putObjectRequest = getPutObjectRequest(file, key);
 
-        amazonS3.putObject(putObjectRequest, getRequestBody(file));
+        upload(putObjectRequest, file);
 
-        return amazonS3.utilities()
-                .getUrl(builder -> builder.bucket(bucket).key(key))
-                .toString();
+        return String.format("%s/%s", baseUrl, key);
     }
 
     private PutObjectRequest getPutObjectRequest(final MultipartFile file, final String key) {
@@ -52,9 +60,9 @@ public class S3ImageUploader {
         return fileBaseName + "_" + System.currentTimeMillis() + fileExtension;
     }
 
-    private RequestBody getRequestBody(final MultipartFile file) {
+    private void upload(final PutObjectRequest putObjectRequest, final MultipartFile file) {
         try (final InputStream inputStream = file.getInputStream()) {
-            return RequestBody.fromInputStream(inputStream, file.getSize());
+            s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }

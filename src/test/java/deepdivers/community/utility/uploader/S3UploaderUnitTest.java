@@ -20,9 +20,9 @@ import software.amazon.awssdk.services.s3.S3Utilities;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
-class S3ImageUploaderUnitTest {
+class S3UploaderUnitTest {
 
-    private S3ImageUploader s3ImageUploader;
+    private S3Uploader s3Uploader;
     private S3Client s3ClientMock;
     private S3Utilities s3UtilitiesMock;
 
@@ -31,7 +31,7 @@ class S3ImageUploaderUnitTest {
         s3ClientMock = mock(S3Client.class);
         s3UtilitiesMock = mock(S3Utilities.class);
         when(s3ClientMock.utilities()).thenReturn(s3UtilitiesMock);
-        s3ImageUploader = new S3ImageUploader("test-bucket", s3ClientMock);
+        s3Uploader = new S3Uploader("test-bucket", s3ClientMock);
     }
 
     @Test
@@ -47,7 +47,7 @@ class S3ImageUploaderUnitTest {
         when(s3UtilitiesMock.getUrl(any(Consumer.class))).thenReturn(new URI(expectedUrl).toURL());
 
         // When
-        String uploadedUrl = s3ImageUploader.upload(file, memberId);
+        String uploadedUrl = s3Uploader.upload(file, memberId);
 
         // Then
         verify(s3ClientMock).putObject(any(PutObjectRequest.class), any(RequestBody.class));
