@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +36,7 @@ public class MemberApiController implements MemberApiControllerDocs {
     @PostMapping(value = "/profile-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<MemberProfileImageResponse> profileImageUpload(
             @Auth final Member member,
-            @ModelAttribute final MultipartFile imageFile
+            @RequestParam final MultipartFile imageFile
     ) {
         final MemberProfileImageResponse response = memberService.profileImageUpload(imageFile, member.getId());
         return ResponseEntity.ok(response);

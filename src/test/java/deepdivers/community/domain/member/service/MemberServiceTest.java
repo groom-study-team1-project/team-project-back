@@ -7,10 +7,12 @@ import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
+import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.MemberProfileResult;
 import deepdivers.community.domain.member.dto.response.result.MemberSignUpResult;
+import deepdivers.community.domain.member.dto.response.result.ProfileImageUploadResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
@@ -20,12 +22,15 @@ import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
+import deepdivers.community.utility.uploader.S3Exception;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
 @Transactional
@@ -218,6 +223,39 @@ class MemberServiceTest {
         // Then
         MemberProfileResult result = profile.result();
         assertThat(result.nickname()).isEqualTo(other.getNickname());
+    }
+
+    @Test
+    @DisplayName("다른 사용자 프로필 조회에 성공한 경우를 테스트한다.")
+    void imageUploadSuccessTest() {
+        // Given
+        Long memberId = 1L;
+        MultipartFile file = new MockMultipartFile(
+                "file", "test.jpg", "image/jpeg", "test image content".getBytes()
+        );
+
+        // When
+        MemberProfileImageResponse other = memberService.profileImageUpload(file, memberId);
+
+        // Then
+        ProfileImageUploadResult result = other.result();
+        assertThat(result.imageUrl()).contains(memberId.toString());
+    }
+
+
+    @Test
+    @DisplayName("S3 이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
+    void InvalidImageUploadShouldBadRequestException() {
+        // Given
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test.jpg", "text/plain", "test image content".getBytes()
+        );
+        Long memberId = 1L;
+
+        // When, Then
+        assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
     }
 
 }
