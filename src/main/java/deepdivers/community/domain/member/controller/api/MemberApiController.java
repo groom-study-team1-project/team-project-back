@@ -1,5 +1,6 @@
 package deepdivers.community.domain.member.controller.api;
 
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.global.security.jwt.Auth;
@@ -21,8 +22,11 @@ public class MemberApiController implements MemberApiControllerDocs {
     private final MemberService memberService;
 
     @PostMapping(value = "/profile-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<?> member(@Auth final Member member, @ModelAttribute final MultipartFile imageFile) {
-        var response = memberService.profileImageUpload(imageFile, member.getId());
+    public ResponseEntity<MemberProfileResponse> profileImageUpload(
+            @Auth final Member member,
+            @ModelAttribute final MultipartFile imageFile
+    ) {
+        final MemberProfileResponse response = memberService.profileImageUpload(imageFile, member.getId());
         return ResponseEntity.ok(response);
     }
 

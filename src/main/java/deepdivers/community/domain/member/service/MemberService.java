@@ -2,9 +2,11 @@ package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
+import deepdivers.community.domain.member.dto.response.result.ProfileImageUploadResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
@@ -64,9 +66,9 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    public Object profileImageUpload(final MultipartFile imageFile, final Long memberId) {
+    public MemberProfileResponse profileImageUpload(final MultipartFile imageFile, final Long memberId) {
         final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
-        return uploadUrl;
+        return MemberProfileResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, uploadUrl);
     }
 
     private Member authenticateMember(final String email, final String password) {
