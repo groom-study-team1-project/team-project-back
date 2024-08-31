@@ -1,14 +1,16 @@
 package deepdivers.community.utility.uploader;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
 import deepdivers.community.global.config.localstack.SimpleLocalStackContainer;
+import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.localstack.LocalStackContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -19,7 +21,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Testcontainers
-@ActiveProfiles("test")
 class S3UploaderIntTest {
 
     @Container
@@ -66,4 +67,32 @@ class S3UploaderIntTest {
         assertTrue(result.contains("profiles/1/"));
         assertTrue(result.endsWith(".jpg"));
     }
+
+    @Test
+    @DisplayName("S3 이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
+    void InvalidImageUploadShouldBadRequestException() {
+        // Given
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test.jpg", "text/plain", "test image content".getBytes()
+        );
+        Long memberId = 1L;
+
+        // When, Then
+        assertThatThrownBy(() -> s3Uploader.profileImageUpload(file, memberId))
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
+    }
+
+    @Test
+    @DisplayName("S3 이미지 업로드 시 이미지 파일이 없을 경우 예외가 발생한다.")
+    void InvalidImageUploadShouldNotFoundException() {
+        // Given
+        Long memberId = 1L;
+
+        // When, Then
+        assertThatThrownBy(() -> s3Uploader.profileImageUpload(null, memberId))
+                .isInstanceOf(NotFoundException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.NOT_FOUND_FILE);
+    }
+
 }

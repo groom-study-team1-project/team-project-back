@@ -1,6 +1,7 @@
 package deepdivers.community.utility.uploader;
 
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -53,8 +54,8 @@ public class S3Uploader {
     }
 
     private void validateImageFile(final MultipartFile file) {
-        if (file.isEmpty()) {
-            throw new BadRequestException(S3Exception.NOT_FOUND_FILE);
+        if (Objects.isNull(file) || file.isEmpty()) {
+            throw new NotFoundException(S3Exception.NOT_FOUND_FILE);
         }
 
         final String contentType = file.getContentType();
@@ -62,7 +63,7 @@ public class S3Uploader {
             throw new BadRequestException(S3Exception.INVALID_IMAGE);
         }
 
-        final String extension = getExtension(file);
+        final String extension = getExtension(file).substring(1);
         if (!ALLOWED_EXTENSIONS.contains(extension)) {
             throw new BadRequestException(S3Exception.INVALID_IMAGE);
         }
