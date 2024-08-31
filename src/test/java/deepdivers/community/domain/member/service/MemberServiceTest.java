@@ -204,7 +204,7 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("내 프로필 조회에 성공한 경우를 테스트한다.")
+    @DisplayName("다른 사용자 프로필 조회에 성공한 경우를 테스트한다.")
     void findOtherProfileSuccessTest() {
         // Given, test.sql
         Long memberId = 1L;

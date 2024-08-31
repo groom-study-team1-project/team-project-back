@@ -3,7 +3,7 @@ package deepdivers.community.domain.member.dto.response.result;
 import deepdivers.community.domain.member.model.Contact;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "사용자 연락수단")
+@Schema(description = "사용자 연락처 정보")
 public record MemberContactResult(
         @Schema(description = "사용자 전화번호", example = "010-1234-5678")
         String phoneNumber,

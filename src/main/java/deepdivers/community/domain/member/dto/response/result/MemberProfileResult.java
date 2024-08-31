@@ -21,9 +21,9 @@ public record MemberProfileResult(
         String role,
         @Schema(description = "사용자 이미지", example = "image.png")
         String imageUrl,
-        @Schema(description = "사용자 소개", example = "안녕하세요. 구름 딥다이브 수강생입니다.")
+        @Schema(description = "사용자 소개", example = "안녕하세요. 구름톤 딥다이브 수강생입니다.")
         String aboutMe,
-        @Schema(description = "사용자 연락수단")
+        @Schema(description = "사용자 연락처 정보")
         MemberContactResult contact,
         @Schema(description = "사용자 활동 통계")
         MemberActivityStatsResult activityStats
