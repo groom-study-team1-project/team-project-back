@@ -1,6 +1,8 @@
 spring:
   application:
     name: backend
+  profiles:
+    active: local
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE
@@ -13,7 +15,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
@@ -26,7 +28,11 @@ spring:
   sql:
     init:
       mode: always
-      data-locations: classpath:test.sql
+      data-locations: classpath:prod.sql
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 35MB
 
 goorm:
   community:

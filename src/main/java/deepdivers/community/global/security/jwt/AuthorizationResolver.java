@@ -38,6 +38,7 @@ public class AuthorizationResolver implements HandlerMethodArgumentResolver {
         final String accessToken = (String) attrs.getAttribute("accessToken", RequestAttributes.SCOPE_REQUEST);
         final AuthPayload authPayload = authHelper.parseToken(accessToken);
 
+        // Todo 캐싱 처리
         return memberService.getMemberWithThrow(authPayload.memberId());
     }
 

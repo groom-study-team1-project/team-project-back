@@ -31,6 +31,7 @@ public class TokenService {
         );
     }
 
+    // Todo 블랙 리스트 관리
     public ReissueResponse reIssueAccessToken(final String bearerAccessToken, final String refreshToken) {
         final String accessToken = authHelper.resolveToken(bearerAccessToken);
         final AuthPayload authPayload = validateRefreshToken(accessToken, refreshToken);

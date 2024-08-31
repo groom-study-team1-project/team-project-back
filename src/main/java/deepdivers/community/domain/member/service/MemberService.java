@@ -3,6 +3,7 @@ package deepdivers.community.domain.member.service;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
+import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
@@ -15,9 +16,11 @@ import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
+import deepdivers.community.utility.uploader.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ public class MemberService {
     private final Encryptor encryptor;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
+    private final S3Uploader s3Uploader;
 
     public MemberSignUpResponse signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
@@ -59,6 +63,11 @@ public class MemberService {
     public Member getMemberWithThrow(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    }
+
+    public MemberProfileImageResponse profileImageUpload(final MultipartFile imageFile, final Long memberId) {
+        final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
+        return MemberProfileImageResponse.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, uploadUrl);
     }
 
     private Member authenticateMember(final String email, final String password) {
