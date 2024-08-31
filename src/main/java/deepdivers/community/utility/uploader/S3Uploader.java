@@ -1,7 +1,10 @@
 package deepdivers.community.utility.uploader;
 
+import deepdivers.community.global.exception.model.BadRequestException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +16,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
 public class S3Uploader {
+
+    private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif");
+    private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif");
 
     private final String bucket;
     private final String baseUrl;
@@ -37,13 +43,29 @@ public class S3Uploader {
     }
 
     public String profileImageUpload(final MultipartFile file, final Long memberId) {
-        final String fileName = parseSaveFileName(Objects.requireNonNull(file.getOriginalFilename()));
-        final String key = String.format("profiles/%d/%s", memberId, fileName);
-        final PutObjectRequest putObjectRequest = getPutObjectRequest(file, key);
+        validateImageFile(file);
 
-        profileImageUpload(putObjectRequest, file);
+        final String fileName = parseSaveFileName(file);
+        final String key = String.format("profiles/%d/%s", memberId, fileName);
+        profileImageUpload(getPutObjectRequest(file, key), file);
 
         return String.format("%s/%s", baseUrl, key);
+    }
+
+    private void validateImageFile(final MultipartFile file) {
+        if (file.isEmpty()) {
+            throw new BadRequestException(S3Exception.NOT_FOUND_FILE);
+        }
+
+        final String contentType = file.getContentType();
+        if (Objects.isNull(contentType) || !ALLOWED_MIME_TYPES.contains(contentType)) {
+            throw new BadRequestException(S3Exception.INVALID_IMAGE);
+        }
+
+        final String extension = getExtension(file);
+        if (!ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new BadRequestException(S3Exception.INVALID_IMAGE);
+        }
     }
 
     private PutObjectRequest getPutObjectRequest(final MultipartFile file, final String key) {
@@ -54,8 +76,13 @@ public class S3Uploader {
                 .build();
     }
 
-    private String parseSaveFileName(final String originalFilename) {
-        final String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+    private String getExtension(final MultipartFile file) {
+        final String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+        return originalFilename.substring(originalFilename.lastIndexOf("."));
+    }
+
+    private String parseSaveFileName(final MultipartFile file) {
+        final String fileExtension = getExtension(file);
         final String fileBaseName = UUID.randomUUID().toString().substring(0, 8);
         return fileBaseName + "_" + System.currentTimeMillis() + fileExtension;
     }

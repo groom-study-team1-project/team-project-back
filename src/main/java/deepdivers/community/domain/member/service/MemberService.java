@@ -4,7 +4,6 @@ import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.dto.response.result.ProfileImageUploadResult;
 import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
@@ -51,16 +50,6 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberProfileResponse getProfile(final Member me, final Long memberId) {
-        final Member profileOwner = getMemberWithThrow(memberId);
-        if (me.equals(profileOwner)) {
-            return MemberProfileResponse.of(MemberStatusType.VIEW_OWN_PROFILE_SUCCESS, me);
-        }
-
-        return MemberProfileResponse.of(MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, profileOwner);
-    }
-
-    @Transactional(readOnly = true)
     public Member getMemberWithThrow(final Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
@@ -68,7 +57,7 @@ public class MemberService {
 
     public MemberProfileResponse profileImageUpload(final MultipartFile imageFile, final Long memberId) {
         final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
-        return MemberProfileResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, uploadUrl);
+        return MemberProfileResponse.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, uploadUrl);
     }
 
     private Member authenticateMember(final String email, final String password) {
