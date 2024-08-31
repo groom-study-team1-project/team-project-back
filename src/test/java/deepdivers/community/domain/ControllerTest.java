@@ -12,8 +12,10 @@ import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.utility.encryptor.Encryptor;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@Import(Encryptor.class)
 public class ControllerTest {
 
     @MockBean

@@ -11,8 +11,7 @@ public record MemberSignUpResult(
         Long id,
         @Schema(description = "회원 닉네임", example = "구름이")
         String nickname,
-        @Schema(description = "회원가입일", example = "1900-01-01 00:00:00", type = "string")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        @Schema(description = "회원가입일", example = "2024-08-20T13:00:00")
         LocalDateTime createdAt
 ) {
 
