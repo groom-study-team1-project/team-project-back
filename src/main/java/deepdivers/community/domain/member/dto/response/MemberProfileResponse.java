@@ -6,7 +6,7 @@ import deepdivers.community.domain.member.dto.response.result.MemberProfileResul
 import deepdivers.community.domain.member.model.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "사용자 프로필 조회")
+@Schema(description = "사용자 프로필 조회 응답")
 public record MemberProfileResponse(
         @Schema(description = "사용자 프로필 조회 상태")
         StatusResponse status,

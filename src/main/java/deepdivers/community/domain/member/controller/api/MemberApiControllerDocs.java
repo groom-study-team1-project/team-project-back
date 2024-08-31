@@ -19,7 +19,7 @@ public interface MemberApiControllerDocs {
     @ApiResponse(
             responseCode = "1002, 1003",
             description = """
-                    1. 본인 프로필 조회에 성공하였습니다..
+                    1. 본인 프로필 조회에 성공하였습니다.
                     2. 다른 사용자의 프로필 조회에 성공하였습니다.
                     """
     )
@@ -33,6 +33,21 @@ public interface MemberApiControllerDocs {
     )
     ResponseEntity<MemberProfileResponse> me(Member member, Long profileOwnerId);
 
+    @Operation(summary = "이미지 업로드", description = "프로필 이미지를 업로드하는 기능")
+    @ApiResponse(
+            responseCode = "1004",
+            description = """
+                    1. 사용자 프로필 이미지 업로드에 성공하였습니다.
+                    """
+    )
+    @ApiResponse(
+            responseCode = "2009\n9000~9005",
+            description = """
+                    1. 사용자 정보를 찾을 수 없습니다.
+                    2. 토큰 관련 예외입니다.
+                    """,
+            content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
     ResponseEntity<MemberProfileImageResponse> profileImageUpload(Member member, MultipartFile imageFile);
 
 }
