@@ -1,9 +1,10 @@
 package deepdivers.community.domain.member.controller.open;
 
+import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
+import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,7 +35,7 @@ public interface MemberControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<MemberSignUpResponse> signUp(MemberSignUpRequest request);
+    ResponseEntity<NoContent> signUp(MemberSignUpRequest request);
 
     @Operation(summary = "로그인", description = "로그인을 하는 기능")
     @ApiResponse(
@@ -53,6 +54,6 @@ public interface MemberControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<MemberLoginResponse> login(MemberLoginRequest request);
+    ResponseEntity<API<TokenResponse>> login(MemberLoginRequest request);
 
 }

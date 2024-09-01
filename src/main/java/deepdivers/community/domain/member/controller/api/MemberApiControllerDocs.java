@@ -1,6 +1,7 @@
 package deepdivers.community.domain.member.controller.api;
 
-import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
+import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
@@ -31,7 +32,7 @@ public interface MemberApiControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<MemberProfileResponse> me(Member member, Long profileOwnerId);
+    ResponseEntity<API<MemberProfileResponse>> me(Member member, Long profileOwnerId);
 
     @Operation(summary = "이미지 업로드", description = "프로필 이미지를 업로드하는 기능")
     @ApiResponse(
@@ -48,6 +49,6 @@ public interface MemberApiControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<MemberProfileImageResponse> profileImageUpload(Member member, MultipartFile imageFile);
+    ResponseEntity<API<ImageUploadResponse>> profileImageUpload(Member member, MultipartFile imageFile);
 
 }

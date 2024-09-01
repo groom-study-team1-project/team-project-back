@@ -12,11 +12,8 @@ import deepdivers.community.domain.member.controller.api.MemberApiController;
 import deepdivers.community.domain.member.controller.open.MemberController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
+import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
+import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import io.restassured.common.mapper.TypeRef;
@@ -25,7 +22,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
@@ -216,18 +212,18 @@ class MemberControllerTest extends ControllerTest {
         // given
         String contentBody = "image";
         String imageUrl = "testurl.png";
-        MemberProfileImageResponse mockResponse = MemberProfileImageResponse.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, imageUrl);
+        ImageUploadResponse mockResponse = ImageUploadResponse.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, imageUrl);
         given(memberService.profileImageUpload(any(MultipartFile.class), anyLong())).willReturn(mockResponse);
 
         // when
-        MemberProfileImageResponse response = RestAssuredMockMvc.given().log().all()
+        ImageUploadResponse response = RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .multiPart("imageFile", contentBody, MediaType.IMAGE_PNG_VALUE)
                 .when().post("/api/members/profile-image")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()
-                .as(MemberProfileImageResponse.class);
+                .as(ImageUploadResponse.class);
 
         // then
         assertThat(response).isNotNull();

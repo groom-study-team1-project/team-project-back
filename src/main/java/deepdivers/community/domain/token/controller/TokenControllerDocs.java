@@ -1,5 +1,6 @@
 package deepdivers.community.domain.token.controller;
 
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.ReissueResponse;
 import deepdivers.community.domain.token.dto.TokenResponse;
@@ -39,6 +40,6 @@ public interface TokenControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<ReissueResponse> reIssue(String accessToken, String refreshToken);
+    ResponseEntity<API<TokenResponse>> reIssue(String accessToken, String refreshToken);
 
 }

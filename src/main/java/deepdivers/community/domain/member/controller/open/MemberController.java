@@ -1,10 +1,11 @@
 package deepdivers.community.domain.member.controller.open;
 
+import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
 import deepdivers.community.domain.member.service.MemberService;
+import deepdivers.community.domain.token.dto.TokenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,14 +22,14 @@ public class MemberController implements MemberControllerDocs {
     private final MemberService memberService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<MemberSignUpResponse> signUp(@Valid @RequestBody final MemberSignUpRequest request) {
-        final MemberSignUpResponse response = memberService.signUp(request);
+    public ResponseEntity<NoContent> signUp(@Valid @RequestBody final MemberSignUpRequest request) {
+        final NoContent response = memberService.signUp(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<MemberLoginResponse> login(@RequestBody final MemberLoginRequest request) {
-        final MemberLoginResponse response = memberService.login(request);
+    public ResponseEntity<API<TokenResponse>> login(@RequestBody final MemberLoginRequest request) {
+        final API<TokenResponse> response = memberService.login(request);
         return ResponseEntity.ok(response);
     }
 

@@ -6,14 +6,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
+import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.MemberProfileResult;
-import deepdivers.community.domain.member.dto.response.result.MemberSignUpResult;
-import deepdivers.community.domain.member.dto.response.result.ProfileImageUploadResult;
-import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
+import deepdivers.community.domain.member.dto.response.ProfileImageUploadResponse;
+import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.vo.MemberRole;
@@ -55,7 +51,7 @@ class MemberServiceTest {
         // Then
         LocalDateTime testEndTime = LocalDateTime.now();
         StatusType statusType = MemberStatusType.MEMBER_SIGN_UP_SUCCESS;
-        MemberSignUpResult responseResult = response.result();
+        MemberSignUpResponse responseResult = response.result();
         assertThat(response).isNotNull();
         assertThat(response.status().code()).isEqualTo(statusType.getCode());
         assertThat(response.status().message()).isEqualTo(statusType.getMessage());
@@ -204,7 +200,7 @@ class MemberServiceTest {
         MemberProfileResponse profile = memberService.getProfile(member, memberId);
 
         // Then
-        MemberProfileResult result = profile.result();
+        MemberProfileResponse result = profile.result();
         assertThat(result.nickname()).isEqualTo(member.getNickname());
     }
 
@@ -221,7 +217,7 @@ class MemberServiceTest {
         MemberProfileResponse profile = memberService.getProfile(member, otherMemberId);
 
         // Then
-        MemberProfileResult result = profile.result();
+        MemberProfileResponse result = profile.result();
         assertThat(result.nickname()).isEqualTo(other.getNickname());
     }
 
@@ -235,10 +231,10 @@ class MemberServiceTest {
         );
 
         // When
-        MemberProfileImageResponse other = memberService.profileImageUpload(file, memberId);
+        ImageUploadResponse other = memberService.profileImageUpload(file, memberId);
 
         // Then
-        ProfileImageUploadResult result = other.result();
+        ProfileImageUploadResponse result = other.result();
         assertThat(result.imageUrl()).contains(memberId.toString());
     }
 
