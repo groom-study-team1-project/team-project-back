@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.StatusResponse;
 import deepdivers.community.domain.token.dto.ReissueResponse;
 import deepdivers.community.domain.token.dto.TokenResponse;
@@ -41,12 +42,11 @@ class TokenControllerTest extends ControllerTest {
         String accessToken = "Bearer accessToken";
         String refreshToken = "refreshToken";
         TokenResponse tokenRes = TokenResponse.of("new access", "new refresh");
-        StatusResponse statusRes = StatusResponse.from(TokenStatusType.RE_ISSUE_SUCCESS);
-        ReissueResponse mockRes = new ReissueResponse(statusRes, tokenRes);
+        API<TokenResponse> mockRes = API.of(TokenStatusType.RE_ISSUE_SUCCESS, tokenRes);
         given(tokenService.reIssueAccessToken(anyString(), anyString())).willReturn(mockRes);
 
         // when
-        ReissueResponse response = RestAssuredMockMvc
+        API<TokenResponse> response = RestAssuredMockMvc
                 .given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .header("Refresh-Token", refreshToken)

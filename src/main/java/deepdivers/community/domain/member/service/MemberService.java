@@ -35,7 +35,7 @@ public class MemberService {
 
     public NoContent signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
-        
+
         final Member member = Member.of(request, encryptor);
         memberRepository.save(member);
 
@@ -71,7 +71,7 @@ public class MemberService {
 
     public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
         final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
-        return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, new ImageUploadResponse(uploadUrl));
+        return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
     }
 
     private Member authenticateMember(final String email, final String password) {

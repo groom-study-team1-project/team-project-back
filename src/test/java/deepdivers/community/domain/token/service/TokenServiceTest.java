@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.token.dto.ReissueResponse;
@@ -76,17 +77,17 @@ class TokenServiceTest {
         timeProvider.setClock(fixedClock);
 
         // When
-        ReissueResponse reissueResponse = tokenService.reIssueAccessToken(bearerToken, initialTokens.refreshToken());
+        API<TokenResponse> response = tokenService.reIssueAccessToken(bearerToken, initialTokens.refreshToken());
 
         // Then
         timeProvider.reset();
         AuthPayload initialPayload = authHelper.parseToken(initialTokens.accessToken());
-        AuthPayload newPayload = authHelper.parseToken(reissueResponse.result().accessToken());
+        AuthPayload newPayload = authHelper.parseToken(response.result().accessToken());
 
-        assertThat(reissueResponse).isNotNull();
-        assertThat(reissueResponse.status().code()).isEqualTo(TokenStatusType.RE_ISSUE_SUCCESS.getCode());
-        assertThat(reissueResponse.result().accessToken()).isNotEqualTo(initialTokens.accessToken());
-        assertThat(reissueResponse.result().refreshToken()).isNotEqualTo(initialTokens.refreshToken());
+        assertThat(response).isNotNull();
+        assertThat(response.status().code()).isEqualTo(TokenStatusType.RE_ISSUE_SUCCESS.getCode());
+        assertThat(response.result().accessToken()).isNotEqualTo(initialTokens.accessToken());
+        assertThat(response.result().refreshToken()).isNotEqualTo(initialTokens.refreshToken());
         assertThat(newPayload.memberId()).isEqualTo(member.getId());
         assertThat(newPayload.exp()).isGreaterThan(initialPayload.exp());
     }
