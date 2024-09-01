@@ -1,5 +1,6 @@
 package deepdivers.community.domain.token.controller;
 
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.ReissueResponse;
 import deepdivers.community.domain.token.dto.TokenResponse;
@@ -28,7 +29,7 @@ public class TokenController implements TokenControllerDocs {
     private final TokenService tokenService;
 
     @PatchMapping("/re-issue")
-    public ResponseEntity<ReissueResponse> reIssue(
+    public ResponseEntity<API<TokenResponse>> reIssue(
             @Parameter(hidden = true)
             @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false)
             final String accessToken,
@@ -36,7 +37,7 @@ public class TokenController implements TokenControllerDocs {
             @RequestHeader(value = "Refresh-Token", required = false)
             final String refreshToken
     ) {
-        final ReissueResponse response = tokenService.reIssueAccessToken(accessToken, refreshToken);
+        final API<TokenResponse> response = tokenService.reIssueAccessToken(accessToken, refreshToken);
         return ResponseEntity.ok(response);
     }
 

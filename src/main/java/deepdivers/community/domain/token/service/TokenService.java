@@ -1,5 +1,6 @@
 package deepdivers.community.domain.token.service;
 
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.StatusResponse;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.ReissueResponse;
@@ -32,12 +33,12 @@ public class TokenService {
     }
 
     // Todo 블랙 리스트 관리
-    public ReissueResponse reIssueAccessToken(final String bearerAccessToken, final String refreshToken) {
+    public API<TokenResponse> reIssueAccessToken(final String bearerAccessToken, final String refreshToken) {
         final String accessToken = authHelper.resolveToken(bearerAccessToken);
         final AuthPayload authPayload = validateRefreshToken(accessToken, refreshToken);
         final TokenResponse response = tokenGenerator(authPayload);
 
-        return new ReissueResponse(StatusResponse.from(TokenStatusType.RE_ISSUE_SUCCESS), response);
+        return API.of(TokenStatusType.RE_ISSUE_SUCCESS, response);
     }
 
     private TokenResponse tokenGenerator(final AuthPayload memberInfo) {

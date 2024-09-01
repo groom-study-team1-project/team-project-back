@@ -8,15 +8,15 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.api.MemberApiController;
 import deepdivers.community.domain.member.controller.open.MemberController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
+import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
+import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import io.restassured.common.mapper.TypeRef;
@@ -25,7 +25,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
@@ -50,11 +49,11 @@ class MemberControllerTest extends ControllerTest {
         MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
 
         Member account = Member.of(request, this.encryptor);
-        MemberSignUpResponse mockResponse = MemberSignUpResponse.of(MemberStatusType.MEMBER_SIGN_UP_SUCCESS, account);
+        NoContent mockResponse = NoContent.from(MemberStatusType.MEMBER_SIGN_UP_SUCCESS);
         given(memberService.signUp(any(MemberSignUpRequest.class))).willReturn(mockResponse);
 
         // when
-        MemberSignUpResponse response = RestAssuredMockMvc
+        NoContent response = RestAssuredMockMvc
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(request)
@@ -164,13 +163,13 @@ class MemberControllerTest extends ControllerTest {
     void loginSuccessfullyReturns200OK() {
         // given
         TokenResponse tokenResponse = TokenResponse.of("1", "1");
-        MemberLoginResponse mockResponse = MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
+        API<TokenResponse> mockResponse = API.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
         given(memberService.login(any(MemberLoginRequest.class))).willReturn(mockResponse);
 
         MemberLoginRequest loginRequest = new MemberLoginRequest("test@email.com", "test1234!");
 
         // when
-        MemberLoginResponse response = RestAssuredMockMvc
+        API<TokenResponse> response = RestAssuredMockMvc
                 .given().log().all()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(loginRequest)
@@ -191,19 +190,19 @@ class MemberControllerTest extends ControllerTest {
         // given
         MemberSignUpRequest signUpRequest = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
         Member member = Member.of(signUpRequest, encryptor);
-        MemberProfileResponse mockResponse = MemberProfileResponse.of(
-                MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, member);
+        MemberProfileResponse memberProfileResponse = MemberProfileResponse.from(member);
+        API<MemberProfileResponse> mockResponse = API.of(MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, memberProfileResponse);
         given(memberService.getProfile(any(Member.class), anyLong())).willReturn(mockResponse);
         Long profileOwnerId = 1L;
 
         // when
-        MemberProfileResponse response = RestAssuredMockMvc.given().log().all()
+        API<MemberProfileResponse> response = RestAssuredMockMvc.given().log().all()
                 .pathParam("memberId", profileOwnerId)
                 .when().get("/api/members/{memberId}/me")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()
-                .as(MemberProfileResponse.class);
+                .as(new TypeRef<>(){});
 
         // then
         assertThat(response).isNotNull();
@@ -216,18 +215,19 @@ class MemberControllerTest extends ControllerTest {
         // given
         String contentBody = "image";
         String imageUrl = "testurl.png";
-        MemberProfileImageResponse mockResponse = MemberProfileImageResponse.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, imageUrl);
+        ImageUploadResponse uploadResponse = ImageUploadResponse.of(imageUrl);
+        API<ImageUploadResponse> mockResponse = API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, uploadResponse);
         given(memberService.profileImageUpload(any(MultipartFile.class), anyLong())).willReturn(mockResponse);
 
         // when
-        MemberProfileImageResponse response = RestAssuredMockMvc.given().log().all()
+        API<ImageUploadResponse> response = RestAssuredMockMvc.given().log().all()
                 .contentType(MediaType.MULTIPART_FORM_DATA)
                 .multiPart("imageFile", contentBody, MediaType.IMAGE_PNG_VALUE)
                 .when().post("/api/members/profile-image")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()
-                .as(MemberProfileImageResponse.class);
+                .as(new TypeRef<>(){});
 
         // then
         assertThat(response).isNotNull();

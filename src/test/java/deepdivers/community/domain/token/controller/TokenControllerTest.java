@@ -1,35 +1,26 @@
 package deepdivers.community.domain.token.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.StatusResponse;
-import deepdivers.community.domain.member.controller.open.MemberController;
-import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
-import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.ReissueResponse;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.dto.TokenStatusType;
 import deepdivers.community.domain.token.service.TokenService;
-import deepdivers.community.global.security.jwt.AuthHelper;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(controllers = TokenController.class)
@@ -51,12 +42,11 @@ class TokenControllerTest extends ControllerTest {
         String accessToken = "Bearer accessToken";
         String refreshToken = "refreshToken";
         TokenResponse tokenRes = TokenResponse.of("new access", "new refresh");
-        StatusResponse statusRes = StatusResponse.from(TokenStatusType.RE_ISSUE_SUCCESS);
-        ReissueResponse mockRes = new ReissueResponse(statusRes, tokenRes);
+        API<TokenResponse> mockRes = API.of(TokenStatusType.RE_ISSUE_SUCCESS, tokenRes);
         given(tokenService.reIssueAccessToken(anyString(), anyString())).willReturn(mockRes);
 
         // when
-        ReissueResponse response = RestAssuredMockMvc
+        API<TokenResponse> response = RestAssuredMockMvc
                 .given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .header("Refresh-Token", refreshToken)

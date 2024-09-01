@@ -1,12 +1,12 @@
 package deepdivers.community.domain.member.service;
 
+import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
+import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
+import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
@@ -33,30 +33,34 @@ public class MemberService {
     private final TokenService tokenService;
     private final S3Uploader s3Uploader;
 
-    public MemberSignUpResponse signUp(final MemberSignUpRequest request) {
+    public NoContent signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
-        final Member member = Member.of(request, encryptor);
 
-        return MemberSignUpResponse.of(MemberStatusType.MEMBER_SIGN_UP_SUCCESS, memberRepository.save(member));
+        final Member member = Member.of(request, encryptor);
+        memberRepository.save(member);
+
+        return NoContent.from(MemberStatusType.MEMBER_SIGN_UP_SUCCESS);
     }
 
     @Transactional(readOnly = true)
-    public MemberLoginResponse login(final MemberLoginRequest request) {
+    public API<TokenResponse> login(final MemberLoginRequest request) {
         final Member member = authenticateMember(request.email(), request.password());
         validateMemberStatus(member);
 
         final TokenResponse tokenResponse = tokenService.tokenGenerator(member);
-        return MemberLoginResponse.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
+        return API.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 
     @Transactional(readOnly = true)
-    public MemberProfileResponse getProfile(final Member me, final Long memberId) {
+    public API<MemberProfileResponse> getProfile(final Member me, final Long memberId) {
         final Member profileOwner = getMemberWithThrow(memberId);
         if (me.equals(profileOwner)) {
-            return MemberProfileResponse.of(MemberStatusType.VIEW_OWN_PROFILE_SUCCESS, me);
+            final MemberProfileResponse result = MemberProfileResponse.from(me);
+            return API.of(MemberStatusType.VIEW_OWN_PROFILE_SUCCESS, result);
         }
 
-        return MemberProfileResponse.of(MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, profileOwner);
+        final MemberProfileResponse result = MemberProfileResponse.from(profileOwner);
+        return API.of(MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, result);
     }
 
     @Transactional(readOnly = true)
@@ -65,9 +69,9 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    public MemberProfileImageResponse profileImageUpload(final MultipartFile imageFile, final Long memberId) {
+    public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
         final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
-        return MemberProfileImageResponse.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, uploadUrl);
+        return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
     }
 
     private Member authenticateMember(final String email, final String password) {

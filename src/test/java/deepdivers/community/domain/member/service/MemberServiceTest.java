@@ -3,17 +3,14 @@ package deepdivers.community.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.MemberLoginResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileImageResponse;
+import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.response.MemberSignUpResponse;
-import deepdivers.community.domain.member.dto.response.result.MemberProfileResult;
-import deepdivers.community.domain.member.dto.response.result.MemberSignUpResult;
-import deepdivers.community.domain.member.dto.response.result.ProfileImageUploadResult;
-import deepdivers.community.domain.member.dto.response.result.type.MemberStatusType;
+import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.vo.MemberRole;
@@ -50,18 +47,14 @@ class MemberServiceTest {
         LocalDateTime testStartTime = LocalDateTime.now();
 
         // When
-        MemberSignUpResponse response = memberService.signUp(request);
+        NoContent response = memberService.signUp(request);
 
         // Then
         LocalDateTime testEndTime = LocalDateTime.now();
         StatusType statusType = MemberStatusType.MEMBER_SIGN_UP_SUCCESS;
-        MemberSignUpResult responseResult = response.result();
         assertThat(response).isNotNull();
         assertThat(response.status().code()).isEqualTo(statusType.getCode());
         assertThat(response.status().message()).isEqualTo(statusType.getMessage());
-        assertThat(responseResult.id()).isGreaterThan(lastAccountId);
-        assertThat(responseResult.nickname()).isEqualTo(request.nickname());
-        assertThat(responseResult.createdAt()).isBetween(testStartTime, testEndTime);
     }
 
     @Test
@@ -96,7 +89,7 @@ class MemberServiceTest {
         MemberLoginRequest loginRequest = new MemberLoginRequest("email2@test.com", "password2!");
 
         // When
-        MemberLoginResponse response = memberService.login(loginRequest);
+        API<TokenResponse> response = memberService.login(loginRequest);
 
         // Then, test.sql
         StatusType statusType = MemberStatusType.MEMBER_LOGIN_SUCCESS;
@@ -201,10 +194,10 @@ class MemberServiceTest {
         Member member = memberService.getMemberWithThrow(memberId);
 
         // When
-        MemberProfileResponse profile = memberService.getProfile(member, memberId);
+        API<MemberProfileResponse> profile = memberService.getProfile(member, memberId);
 
         // Then
-        MemberProfileResult result = profile.result();
+        MemberProfileResponse result = profile.result();
         assertThat(result.nickname()).isEqualTo(member.getNickname());
     }
 
@@ -218,10 +211,10 @@ class MemberServiceTest {
         Member other = memberService.getMemberWithThrow(otherMemberId);
 
         // When
-        MemberProfileResponse profile = memberService.getProfile(member, otherMemberId);
+        API<MemberProfileResponse> profile = memberService.getProfile(member, otherMemberId);
 
         // Then
-        MemberProfileResult result = profile.result();
+        MemberProfileResponse result = profile.result();
         assertThat(result.nickname()).isEqualTo(other.getNickname());
     }
 
@@ -235,10 +228,10 @@ class MemberServiceTest {
         );
 
         // When
-        MemberProfileImageResponse other = memberService.profileImageUpload(file, memberId);
+        API<ImageUploadResponse> other = memberService.profileImageUpload(file, memberId);
 
         // Then
-        ProfileImageUploadResult result = other.result();
+        ImageUploadResponse result = other.result();
         assertThat(result.imageUrl()).contains(memberId.toString());
     }
 
