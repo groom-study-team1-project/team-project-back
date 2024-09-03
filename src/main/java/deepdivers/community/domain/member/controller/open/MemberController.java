@@ -46,7 +46,7 @@ public class MemberController implements MemberControllerDocs {
 
     }
 
-    @GetMapping("/duplicate")
+    @GetMapping("/duplicate/email")
     public ResponseEntity<NoContent> validateEmail(@RequestParam final String email) {
         NoContent response = memberService.validateUniqueEmail(email);
         return ResponseEntity.ok(response);

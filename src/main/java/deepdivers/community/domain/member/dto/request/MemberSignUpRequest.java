@@ -8,7 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 public record MemberSignUpRequest(
         @Schema(description = "사용자 이메일", example = "test@mail.com")
         @NotBlank(message = "사용자 이메일 정보가 필요합니다.")
-        @Email(message = "이메일 형식으로 입력해주세요.")
         String email,
 
         @Schema(description = "사용자 비밀번호", example = "test1234!")
