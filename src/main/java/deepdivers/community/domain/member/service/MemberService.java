@@ -17,6 +17,8 @@ import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
 import deepdivers.community.utility.uploader.S3Uploader;
+import java.util.Locale;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,11 +105,12 @@ public class MemberService {
         }
     }
 
-    private void validateUniqueNickname(final String nickname) {
-        final Boolean isDuplicateNickname = memberRepository.existsMemberByNicknameValue(nickname);
-        if (isDuplicateNickname) {
-            throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
-        }
+    public void validateUniqueNickname(final String nickname) {
+        final String lowerCaseNickname = nickname.toLowerCase(Locale.ENGLISH);
+        memberRepository.findByNicknameLowerValue(lowerCaseNickname)
+            .ifPresent(it -> {
+                throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+            });
     }
 
 }

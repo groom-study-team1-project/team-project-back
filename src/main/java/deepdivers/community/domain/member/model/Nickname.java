@@ -26,6 +26,8 @@ public class Nickname {
 
     @Column(name = "nickname", nullable = false, length = 20)
     private String value;
+    @Column(name = "lowerNickname", nullable = false, length = 20)
+    private String lowerValue;
 
     private static void validate(final String nickname) {
         validateNicknameLength(nickname);
@@ -47,24 +49,9 @@ public class Nickname {
     public static Nickname from(final String nickname) {
         final String nicknameAfterTrimmed = nickname.trim();
         validate(nicknameAfterTrimmed);
-        return new Nickname(nicknameAfterTrimmed);
-    }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        final Nickname nickname = (Nickname) o;
-        return value.toLowerCase(Locale.ROOT).equals(nickname.value.toLowerCase(Locale.ROOT));
-    }
-
-    @Override
-    public int hashCode() {
-        return value.toLowerCase(Locale.ROOT).hashCode();
+        final String lowerNickname = nicknameAfterTrimmed.toLowerCase(Locale.ENGLISH);
+        return new Nickname(nicknameAfterTrimmed, lowerNickname);
     }
 
 }
