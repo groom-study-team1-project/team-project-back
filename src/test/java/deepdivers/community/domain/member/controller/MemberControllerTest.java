@@ -266,7 +266,7 @@ class MemberControllerTest extends ControllerTest {
         NoContent response = RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .queryParam("email", email)
-            .when().get("/members/duplicate/email")
+            .when().get("/members/validate/email")
             .then().log().all()
             .status(HttpStatus.OK)
             .extract()
@@ -297,7 +297,7 @@ class MemberControllerTest extends ControllerTest {
         // when, then
         RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
-            .when().get("/members/duplicate/email")
+            .when().get("/members/validate/email")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(203))
