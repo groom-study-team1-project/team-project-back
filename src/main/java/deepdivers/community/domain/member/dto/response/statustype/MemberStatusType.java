@@ -12,7 +12,8 @@ public enum MemberStatusType implements StatusType {
     MEMBER_LOGIN_SUCCESS(1001, "사용자 로그인에 성공하였습니다."),
     VIEW_OWN_PROFILE_SUCCESS(1002, "본인 프로필 조회에 성공하였습니다."),
     VIEW_OTHER_PROFILE_SUCCESS(1003, "다른 사용자의 프로필 조회에 성공하였습니다."),
-    UPLOAD_IMAGE_SUCCESS(1004, "사용자 프로필 이미지 업로드에 성공하였습니다.");
+    UPLOAD_IMAGE_SUCCESS(1004, "사용자 프로필 이미지 업로드에 성공하였습니다."),
+    NICKNAME_VALIDATE_SUCCESS(1005, "사용할 수 있는 닉네임입니다.");
 
     private final int code;
     private final String message;

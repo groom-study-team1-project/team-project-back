@@ -9,9 +9,11 @@ import deepdivers.community.domain.token.dto.TokenResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,6 +32,12 @@ public class MemberController implements MemberControllerDocs {
     @PostMapping("/login")
     public ResponseEntity<API<TokenResponse>> login(@RequestBody final MemberLoginRequest request) {
         final API<TokenResponse> response = memberService.login(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/duplicate")
+    public ResponseEntity<NoContent> validateNickname(@RequestParam final String nickname) {
+        final NoContent response = memberService.validateUniqueNickname(nickname);
         return ResponseEntity.ok(response);
     }
 

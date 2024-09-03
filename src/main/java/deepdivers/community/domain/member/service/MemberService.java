@@ -9,6 +9,7 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
@@ -105,12 +106,14 @@ public class MemberService {
         }
     }
 
-    public void validateUniqueNickname(final String nickname) {
-        final String lowerCaseNickname = nickname.toLowerCase(Locale.ENGLISH);
-        memberRepository.findByNicknameLowerValue(lowerCaseNickname)
+    public NoContent validateUniqueNickname(final String request) {
+        final Nickname nickname = Nickname.from(request);
+        memberRepository.findByNicknameLowerValue(nickname.getLowerValue())
             .ifPresent(it -> {
                 throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
             });
+
+        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
     }
 
 }
