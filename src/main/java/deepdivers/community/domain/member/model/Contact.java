@@ -19,7 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 @Setter(AccessLevel.PROTECTED)
 public class Contact {
 
-    private static final Pattern PATTERN = Pattern.compile("^01(?:0|1|[6-9])-(?!0000)\\d{4}-(?!0000)\\d{4}$");
+    private static final Pattern PATTERN =
+        Pattern.compile("^01(?:0|1|[6-9])-(?!0000)\\d{4}-(?!0000)\\d{4}$");
 
     @Column(nullable = false, length = 20)
     private String phoneNumber;
@@ -36,7 +37,6 @@ public class Contact {
         this.githubAddr = StringUtils.EMPTY;
         this.blogAddr = StringUtils.EMPTY;
     }
-
 
     private static void validatePhoneNumber(final String phoneNumber) {
         if (!PATTERN.matcher(phoneNumber).matches()) {

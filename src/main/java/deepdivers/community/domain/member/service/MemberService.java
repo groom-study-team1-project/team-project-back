@@ -8,6 +8,7 @@ import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
+import deepdivers.community.domain.member.model.Email;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.repository.MemberRepository;
@@ -98,8 +99,10 @@ public class MemberService {
         validateUniqueNickname(request.nickname());
     }
 
-    public NoContent validateUniqueEmail(final String request) {
-        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmail(request);
+    public NoContent validateUniqueEmail(final String email) {
+        Email.validator(email);
+
+        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmail(email);
         if (isDuplicateEmail) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }
