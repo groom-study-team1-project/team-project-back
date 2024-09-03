@@ -78,7 +78,7 @@ public class MemberService {
     }
 
     private Member authenticateMember(final String email, final String password) {
-        return memberRepository.findByEmail(email)
+        return memberRepository.findByEmailValue(email)
                 .filter(member -> encryptor.matches(password, member.getPassword()))
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
     }
@@ -102,7 +102,7 @@ public class MemberService {
     public NoContent validateUniqueEmail(final String email) {
         Email.validator(email);
 
-        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmail(email);
+        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmailValue(email);
         if (isDuplicateEmail) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }

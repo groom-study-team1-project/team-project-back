@@ -41,8 +41,8 @@ public class Member extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    private String email;
+    @Embedded
+    private Email email;
 
     @Column(nullable = false, length = 100)
     private Password password;
@@ -75,7 +75,7 @@ public class Member extends BaseEntity {
 
     @Builder
     public Member(final MemberSignUpRequest request, final Encryptor encryptor) {
-        this.email = request.email();
+        this.email = new Email(request.email());
         this.password = Password.of(encryptor, request.password());
         this.role = MemberRole.NORMAL;
         this.nickname = Nickname.from(request.nickname());
@@ -96,7 +96,11 @@ public class Member extends BaseEntity {
     }
 
     public String getNickname() {
-        return nickname.getValue();
+        return this.nickname.getValue();
+    }
+
+    public String getEmail() {
+        return this.email.getValue();
     }
 
 }
