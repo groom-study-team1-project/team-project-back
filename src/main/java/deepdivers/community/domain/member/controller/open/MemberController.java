@@ -24,18 +24,22 @@ public class MemberController implements MemberControllerDocs {
     private final MemberService memberService;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<NoContent> signUp(@Valid @RequestBody final MemberSignUpRequest request) {
+    public ResponseEntity<NoContent> signUp(
+        @Valid @RequestBody final MemberSignUpRequest request
+    ) {
         final NoContent response = memberService.signUp(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<API<TokenResponse>> login(@RequestBody final MemberLoginRequest request) {
+    public ResponseEntity<API<TokenResponse>> login(
+        @RequestBody final MemberLoginRequest request
+    ) {
         final API<TokenResponse> response = memberService.login(request);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/duplicate")
+    @GetMapping("/validate/nickname")
     public ResponseEntity<NoContent> validateNickname(@RequestParam final String nickname) {
         final NoContent response = memberService.validateUniqueNickname(nickname);
         return ResponseEntity.ok(response);

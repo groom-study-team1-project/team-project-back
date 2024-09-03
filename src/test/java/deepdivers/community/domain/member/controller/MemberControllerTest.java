@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
@@ -20,6 +21,7 @@ import deepdivers.community.domain.member.dto.response.statustype.MemberStatusTy
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -249,5 +251,41 @@ class MemberControllerTest extends ControllerTest {
                 .body("message", containsString("알 수 없는 서버 에러가 발생했습니다."));
     }
 
+    @Test
+    @DisplayName("닉네임 중복검사가 성공적으로 처리되면 200OK를 반환한다.")
+    void validateNicknameSuccessfullyReturns200OK() {
+        // given
+        String nickname = "안녕하세요";
+        NoContent mockResponse = NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
+        given(memberService.validateUniqueNickname(anyString())).willReturn(mockResponse);
+
+        // when
+        NoContent response = RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .queryParam("nickname", nickname)
+            .when().get("/members/validate/nickname")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>(){});
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+    }
+
+    @Test
+    @DisplayName("닉네임 정보가 없으면 400 Bad Request 를 반환한다.")
+    void nullEmailQueryReturns400BadRequest() {
+        // given
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .when().get("/members/validate/nickname")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(203))
+            .body("message", containsString("파라미터가 필요합니다."));
+    }
 
 }
