@@ -26,10 +26,8 @@ public class Nickname {
 
     @Column(name = "nickname", nullable = false, length = 20)
     private String value;
-    @Column(name = "lowerNickname", nullable = false, length = 20)
-    private String lowerValue;
 
-    private static void validate(final String nickname) {
+    public static void validator(final String nickname) {
         validateNicknameLength(nickname);
         validateNickNameFormat(nickname);
     }
@@ -47,11 +45,7 @@ public class Nickname {
     }
 
     public static Nickname from(final String nickname) {
-        final String nicknameAfterTrimmed = nickname.trim();
-        validate(nicknameAfterTrimmed);
-
-        final String lowerNickname = nicknameAfterTrimmed.toLowerCase(Locale.ENGLISH);
-        return new Nickname(nicknameAfterTrimmed, lowerNickname);
+        return new Nickname(nickname);
     }
 
 }

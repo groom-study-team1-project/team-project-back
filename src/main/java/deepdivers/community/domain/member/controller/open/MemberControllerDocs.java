@@ -57,7 +57,7 @@ public interface MemberControllerDocs {
     )
     ResponseEntity<API<TokenResponse>> login(MemberLoginRequest request);
 
-    @Operation(summary = "로그인", description = "로그인을 하는 기능")
+    @Operation(summary = "닉네임", description = "닉네임 중복 검사를 하는 기능")
     @ApiResponse(
         responseCode = "1005",
         description = """

@@ -19,7 +19,6 @@ import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
 import deepdivers.community.utility.uploader.S3Uploader;
 import java.util.Locale;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,9 +105,11 @@ public class MemberService {
         }
     }
 
-    public NoContent validateUniqueNickname(final String request) {
-        final Nickname nickname = Nickname.from(request);
-        memberRepository.findByNicknameLowerValue(nickname.getLowerValue())
+    public NoContent validateUniqueNickname(final String nickname) {
+        Nickname.validator(nickname);
+
+        final String lowerNickname = nickname.toLowerCase(Locale.ENGLISH);
+        memberRepository.findByLowerNickname(lowerNickname)
             .ifPresent(it -> {
                 throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
             });

@@ -15,6 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -59,6 +60,9 @@ public class Member extends BaseEntity {
     @Embedded
     private Nickname nickname;
 
+    @Column(name = "lowerNickname", nullable = false, length = 20)
+    private String lowerNickname;
+
     @Embedded
     private Contact contact;
 
@@ -75,6 +79,7 @@ public class Member extends BaseEntity {
         this.password = Password.of(encryptor, request.password());
         this.role = MemberRole.NORMAL;
         this.nickname = Nickname.from(request.nickname());
+        this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
         this.imageUrl = request.imageUrl();
         this.aboutMe = StringUtils.EMPTY;
         this.contact = Contact.from(request.phoneNumber());

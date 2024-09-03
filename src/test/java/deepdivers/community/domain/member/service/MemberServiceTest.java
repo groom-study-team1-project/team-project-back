@@ -15,6 +15,7 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
@@ -33,6 +34,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -159,6 +162,26 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "일", "스물하나스물하나스물하나스물하나스물하나스물하나스"})
+    @DisplayName("닉네임 길이에 대해 검증이 실패하는 경우 유효하지 닉네임 길이의 예외가 떨어지는 것을 확인한다.")
+    void fromWithInvalidNicknameLengthShouldThrowException(String invalidNickname) {
+        // given, when, then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_LENGTH);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"12", "공 백", "1숫자로시작"})
+    @DisplayName("닉네임 패턴에 대해 검증이 실패하는 경우 유효하지 않은 닉네임 형식의 예외가 떨어지는 것을 확인한다.")
+    void fromWithInvalidNicknamePatternShouldThrowException(String invalidNickname) {
+        // given, when, then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_FORMAT);
     }
 
     @Test
