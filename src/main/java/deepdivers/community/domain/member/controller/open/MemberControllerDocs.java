@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "사용자", description = "사용자 관련 API")
 public interface MemberControllerDocs {
@@ -74,4 +73,7 @@ public interface MemberControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<NoContent> validateNickname(String nickname);
+
+    ResponseEntity<NoContent> validateEmail(String email);
+
 }

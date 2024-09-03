@@ -43,6 +43,13 @@ public class MemberController implements MemberControllerDocs {
     public ResponseEntity<NoContent> validateNickname(@RequestParam final String nickname) {
         final NoContent response = memberService.validateUniqueNickname(nickname);
         return ResponseEntity.ok(response);
+
+    }
+
+    @GetMapping("/duplicate")
+    public ResponseEntity<NoContent> validateEmail(@RequestParam final String email) {
+        NoContent response = memberService.validateUniqueEmail(email);
+        return ResponseEntity.ok(response);
     }
 
 }
