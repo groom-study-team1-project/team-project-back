@@ -98,11 +98,13 @@ public class MemberService {
         validateUniqueNickname(request.nickname());
     }
 
-    private void validateUniqueEmail(final String email) {
-        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmail(email);
+    public NoContent validateUniqueEmail(final String request) {
+        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmail(request);
         if (isDuplicateEmail) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }
+
+        return NoContent.from(MemberStatusType.EMAIL_VALIDATE_SUCCESS);
     }
 
     public NoContent validateUniqueNickname(final String nickname) {
