@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "사용자", description = "사용자 관련 API")
 public interface MemberControllerDocs {
@@ -57,7 +56,7 @@ public interface MemberControllerDocs {
     )
     ResponseEntity<API<TokenResponse>> login(MemberLoginRequest request);
 
-    @Operation(summary = "닉네임", description = "닉네임 중복 검사를 하는 기능")
+    @Operation(summary = "닉네임", description = "닉네임 검사를 하는 기능")
     @ApiResponse(
         responseCode = "1005",
         description = """
@@ -74,4 +73,22 @@ public interface MemberControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<NoContent> validateNickname(String nickname);
+
+    @Operation(summary = "이메일", description = "이메일 검사를 하는 기능")
+    @ApiResponse(
+        responseCode = "1006",
+        description = """
+                    1. 사용할 수 있는 이메일입니다.
+                    """
+    )
+    @ApiResponse(
+        responseCode = "2003, 2010",
+        description = """
+                    1. 이미 가입된 사용자 이메일입니다.
+                    2. 이메일 형식을 맞춰주세요.
+                    """,
+        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    ResponseEntity<NoContent> validateEmail(String email);
+
 }

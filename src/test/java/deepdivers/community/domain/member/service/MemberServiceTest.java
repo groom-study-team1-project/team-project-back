@@ -78,7 +78,7 @@ class MemberServiceTest {
         memberService.signUp(request);
 
         // Then
-        Member member = memberRepository.findByEmail(email).get();
+        Member member = memberRepository.findByEmailValue(email).get();
         assertThat(member.getId()).isGreaterThan(lastAccountId);
         assertThat(member.getEmail()).isEqualTo(email);
         assertThat(encryptor.matches(password, member.getPassword())).isTrue();
@@ -366,6 +366,46 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
+    }
+
+    @Test
+    @DisplayName("중복된 이메일로 검증 시 예외가 발생한다.")
+    void DuplicateEmailValidationTest() {
+        // Given test.sql
+        String email = "email1@test.com";
+
+        // When & Then
+        assertThatThrownBy(() -> memberService.validateUniqueEmail(email))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_EMAIL);
+    }
+
+    @Test
+    @DisplayName("올바른 이메일로 검증할 경우를 테스트한다.")
+    void DuplicateEmailSuccessTest() {
+        // Given test.sql
+        String email = "email@test.com";
+
+        // When
+        NoContent result = memberService.validateUniqueEmail(email);
+
+        // then
+        MemberStatusType status = MemberStatusType.EMAIL_VALIDATE_SUCCESS;
+        assertThat(result.status().code()).isEqualTo(status.getCode());
+        assertThat(result.status().message()).isEqualTo(status.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        " firstspace@mail.com", "lastspace@mail.com ", " bothspace@mail.com ", "nomail",
+        "한글메일@mail.com", "korean@메일.com", "space @mail.com"
+    })
+    @DisplayName("유효하지 않은 이메일로 검증시 예외가 발생한다.")
+    void DuplicateEmailInvalidFormatTest(String email) {
+        // given & When & Then
+        assertThatThrownBy(() -> memberService.validateUniqueEmail(email))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_EMAIL_FORMAT);
     }
 
 }

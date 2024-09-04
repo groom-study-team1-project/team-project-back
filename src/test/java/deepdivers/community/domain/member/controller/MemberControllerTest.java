@@ -71,24 +71,6 @@ class MemberControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("회원가입 요청 시 이메일 형식이 올바르지 않다면 400 BadRequest 를 반환한다.")
-    void signUpWrongEmailFormatReturns400BadRequest() {
-        // given
-        MemberSignUpRequest request = new MemberSignUpRequest("test@ma .com", "test1234!", "테스트", "테스트", "010-1234-5678");
-
-        // when, then
-        RestAssuredMockMvc
-                .given().log().all()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
-                .when().post("/members/sign-up")
-                .then().log().all()
-                .status(HttpStatus.BAD_REQUEST)
-                .body("code", equalTo(101))
-                .body("message", containsString("이메일 형식으로 입력해주세요."));
-    }
-
-    @Test
     @DisplayName("회원가입 요청 시 이메일 정보가 존재하지 않는다면 400 BadRequest 를 반환한다.")
     void signUpNullEmailReturns400BadRequest() {
         // given
@@ -259,7 +241,6 @@ class MemberControllerTest extends ControllerTest {
         NoContent mockResponse = NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
         given(memberService.validateUniqueNickname(anyString())).willReturn(mockResponse);
 
-        // when
         NoContent response = RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .queryParam("nickname", nickname)
@@ -274,14 +255,49 @@ class MemberControllerTest extends ControllerTest {
         assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
     }
 
+    @DisplayName("이메일 중복검사가 성공적으로 처리되면 200OK를 반환한다.")
+    void validateEmailSuccessfullyReturns200OK() {
+        // given
+        String email = "email@mail.com";
+        NoContent mockResponse = NoContent.from(MemberStatusType.EMAIL_VALIDATE_SUCCESS);
+        given(memberService.validateUniqueEmail(anyString())).willReturn(mockResponse);
+
+        // when
+        NoContent response = RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .queryParam("email", email)
+            .when().get("/members/validate/email")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>(){});
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+    }
+
     @Test
     @DisplayName("닉네임 정보가 없으면 400 Bad Request 를 반환한다.")
-    void nullEmailQueryReturns400BadRequest() {
+    void nullNicknameQueryReturns400BadRequest() {
         // given
         // when, then
         RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .when().get("/members/validate/nickname")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(203))
+            .body("message", containsString("파라미터가 필요합니다."));
+    }
+
+    @DisplayName("이메일 정보가 없으면 400 Bad Request 를 반환한다.")
+    void nullEmailQueryReturns400BadRequest() {
+        // given
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .when().get("/members/validate/email")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(203))

@@ -8,6 +8,7 @@ import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
+import deepdivers.community.domain.member.model.Email;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.repository.MemberRepository;
@@ -77,7 +78,7 @@ public class MemberService {
     }
 
     private Member authenticateMember(final String email, final String password) {
-        return memberRepository.findByEmail(email)
+        return memberRepository.findByEmailValue(email)
                 .filter(member -> encryptor.matches(password, member.getPassword()))
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
     }
@@ -98,11 +99,15 @@ public class MemberService {
         validateUniqueNickname(request.nickname());
     }
 
-    private void validateUniqueEmail(final String email) {
-        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmail(email);
+    public NoContent validateUniqueEmail(final String email) {
+        Email.validator(email);
+
+        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmailValue(email);
         if (isDuplicateEmail) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }
+
+        return NoContent.from(MemberStatusType.EMAIL_VALIDATE_SUCCESS);
     }
 
     public NoContent validateUniqueNickname(final String nickname) {
