@@ -9,6 +9,7 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
@@ -17,6 +18,7 @@ import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
 import deepdivers.community.utility.uploader.S3Uploader;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,11 +105,16 @@ public class MemberService {
         }
     }
 
-    private void validateUniqueNickname(final String nickname) {
-        final Boolean isDuplicateNickname = memberRepository.existsMemberByNicknameValue(nickname);
-        if (isDuplicateNickname) {
-            throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
-        }
+    public NoContent validateUniqueNickname(final String nickname) {
+        Nickname.validator(nickname);
+
+        final String lowerNickname = nickname.toLowerCase(Locale.ENGLISH);
+        memberRepository.findByLowerNickname(lowerNickname)
+            .ifPresent(it -> {
+                throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+            });
+
+        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
     }
 
 }

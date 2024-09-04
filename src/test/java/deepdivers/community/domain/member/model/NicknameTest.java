@@ -28,7 +28,7 @@ class NicknameTest {
     @DisplayName("닉네임 길이에 대해 검증이 실패하는 경우 유효하지 닉네임 길이의 예외가 떨어지는 것을 확인한다.")
     void fromWithInvalidNicknameLengthShouldThrowException(String invalidNickname) {
         // given, when, then
-        assertThatThrownBy(() -> Nickname.from(invalidNickname))
+        assertThatThrownBy(() -> Nickname.validator(invalidNickname))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_LENGTH);
     }
@@ -38,22 +38,9 @@ class NicknameTest {
     @DisplayName("닉네임 패턴에 대해 검증이 실패하는 경우 유효하지 않은 닉네임 형식의 예외가 떨어지는 것을 확인한다.")
     void fromWithInvalidNicknamePatternShouldThrowException(String invalidNickname) {
         // given, when, then
-        assertThatThrownBy(() -> Nickname.from(invalidNickname))
+        assertThatThrownBy(() -> Nickname.validator(invalidNickname))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_FORMAT);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {" 맨앞에공백", "맨뒤에공백 ", " 양쪽에공백 "})
-    @DisplayName("닉네임 양쪽에 공백이 포함된 경우 제거된 결과를 반환하는지 확인한다.")
-    void fromWithIfBothEndsContainsSpacesShouldCreateTrimmedNickname(String spaceNickname) {
-        // given
-        String trimmedNickname = spaceNickname.trim();
-        // when
-        Nickname nickname = Nickname.from(spaceNickname);
-        // then
-        assertThat(nickname).isNotNull();
-        assertThat(nickname.getValue()).isEqualTo(trimmedNickname);
     }
 
     @Test
@@ -67,13 +54,13 @@ class NicknameTest {
     }
 
     @Test
-    @DisplayName("닉네임 객체의 대소문자 동등성을 확인한다.")
-    void nicknamesWithDifferentCasesShouldBeEqual() {
+    @DisplayName("닉네임 객체의 대소문자는 동등하지 않다.")
+    void nicknamesWithDifferentCasesShouldBeNotEqual() {
         // given, when
         Nickname baseNickname = Nickname.from("nickName");
         Nickname compareNickname = Nickname.from("nickname");
         // then
-        assertThat(baseNickname.equals(compareNickname)).isTrue();
+        assertThat(baseNickname.equals(compareNickname)).isFalse();
     }
 
 }

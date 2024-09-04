@@ -75,20 +75,4 @@ class MemberTest {
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PHONE_NUMBER_FORMAT);
     }
 
-    @Test
-    @DisplayName("잘못된 닉네임 정보를 포함한 사용자 정보 입력 시 닉네임 예외가 발생한다.")
-    void fromWithInvalidNicknameShouldThrowException() {
-        // given
-        MemberSignUpRequest request1 = new MemberSignUpRequest("email", "password1!", "", "이미지", "010-1234-5678");
-        MemberSignUpRequest request2 = new MemberSignUpRequest("email", "password1!", "1 숫자로 시작하고 공백", "이미지", "010-1234-5678");
-
-        // when, then
-        assertThatThrownBy(() -> Member.of(request1, encryptor))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_LENGTH);
-        assertThatThrownBy(() -> Member.of(request2, encryptor))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_FORMAT);
-    }
-
 }

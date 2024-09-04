@@ -1,7 +1,9 @@
 package deepdivers.community.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
@@ -13,30 +15,76 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.model.vo.MemberRole;
+import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
+import deepdivers.community.global.config.EncryptorConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
+import deepdivers.community.utility.encryptor.Encryptor;
+import deepdivers.community.utility.encryptor.EncryptorBean;
+import deepdivers.community.utility.encryptor.EncryptorTypes;
 import deepdivers.community.utility.uploader.S3Exception;
 import java.time.LocalDateTime;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
 @Transactional
+@DirtiesContext
 class MemberServiceTest {
 
     @Autowired
     private MemberService memberService;
     @Autowired
     private AuthHelper authHelper;
+    @Autowired
+    @EncryptorBean
+    private Encryptor encryptor;
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @Test
+    @DisplayName("회원 가입이 성공했을 경우 저장된 정보를 테스트한다.")
+    void signUpSuccessAfterFindMemberTest() {
+        // Given, test.sql
+        String email = "test@mail.com";
+        String password = "password1234!";
+        String nickname = "test";
+        String img = "test";
+        String tel = "010-1234-5678";
+        MemberSignUpRequest request = new MemberSignUpRequest(email, password, nickname, img, tel);
+        long lastAccountId = 10L;
+
+        // When
+        memberService.signUp(request);
+
+        // Then
+        Member member = memberRepository.findByEmail(email).get();
+        assertThat(member.getId()).isGreaterThan(lastAccountId);
+        assertThat(member.getEmail()).isEqualTo(email);
+        assertThat(encryptor.matches(password, member.getPassword())).isTrue();
+        assertThat(member.getNickname()).isEqualTo(nickname);
+        assertThat(member.getContact().getPhoneNumber()).isEqualTo(tel);
+    }
 
     @Test
     @DisplayName("회원 가입이 성공했을 경우를 테스트한다.")
@@ -77,10 +125,79 @@ class MemberServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
     }
 
+    @Test
+    @DisplayName("중복 닉네임은 예외가 발생한다.")
+    void duplicateNicknameCheckTest() {
+        // Given, Test.sql
+        String nickname = "User9";
+
+        // When & Then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+    }
+
+    @Test
+    @DisplayName("중복되지 않은 닉네임은 성공하는 경우를 테스트한다.")
+    void NicknameCheckSuccessTest() {
+        // given
+        String nickname = "안녕하세요";
+
+        // when
+        assertThatCode(() -> memberService.validateUniqueNickname(nickname))
+            .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("닉네임은 대소문자를 구분하지 않는다.")
+    void duplicateLowerCaseNicknameCheckTest() {
+        // Given, Test.sql
+        String nickname = "user9";
+
+        // When & Then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"", "일", "스물하나스물하나스물하나스물하나스물하나스물하나스"})
+    @DisplayName("닉네임 길이에 대해 검증이 실패하는 경우 유효하지 닉네임 길이의 예외가 떨어지는 것을 확인한다.")
+    void fromWithInvalidNicknameLengthShouldThrowException(String invalidNickname) {
+        // given, when, then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_LENGTH);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"12", "공 백", "1숫자로시작"})
+    @DisplayName("닉네임 패턴에 대해 검증이 실패하는 경우 유효하지 않은 닉네임 형식의 예외가 떨어지는 것을 확인한다.")
+    void fromWithInvalidNicknamePatternShouldThrowException(String invalidNickname) {
+        // given, when, then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_FORMAT);
+    }
+
+    @Test
+    @DisplayName("소문자 닉네임 정보가 저장되는지 확인한다.")
+    void validateSavedLowerCaseNickname() {
+        // Given, Test.sql
+        String nickname = "aA안1";
+        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", nickname, "test", "010-1234-5678");
+        memberService.signUp(request);
+        String expectedNickname = "aa안1";
+
+        // When & Then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(expectedNickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+    }
 
     @Test
     @DisplayName("로그인이 성공했을 경우를 테스트한다.")
