@@ -3,6 +3,7 @@ package deepdivers.community.domain.member.service;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
@@ -11,6 +12,7 @@ import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Email;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.Nickname;
+import deepdivers.community.domain.member.model.PhoneNumber;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
@@ -72,9 +74,26 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
+    public API<ImageUploadResponse> profileImageUpload(
+        final MultipartFile imageFile,
+        final Long memberId
+    ) {
         final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
         return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
+    }
+
+    public API<MemberProfileResponse> updateProfile(
+        final Long memberId,
+        final MemberProfileRequest request
+    ) {
+        profileValidate(request.nickname(), request.phoneNumber());
+
+        final Member member = getMemberWithThrow(memberId);
+        member.updateProfile(request);
+
+        final Member updatedMember = memberRepository.save(member);
+        final MemberProfileResponse result = MemberProfileResponse.from(updatedMember);
+        return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
     }
 
     private Member authenticateMember(final String email, final String password) {
@@ -84,6 +103,7 @@ public class MemberService {
     }
 
     private void validateMemberStatus(final Member member) {
+        // todo member 객체의 정보를 사용하므로 책임 분리하기
         switch (member.getStatus()) {
             case REGISTERED:
                 break;
@@ -94,9 +114,14 @@ public class MemberService {
         }
     }
 
+    private void profileValidate(final String nickname, final String phoneNumber) {
+        validateUniqueNickname(nickname);
+        PhoneNumber.validator(phoneNumber);
+    }
+
     private void signUpValidate(final MemberSignUpRequest request) {
         validateUniqueEmail(request.email());
-        validateUniqueNickname(request.nickname());
+        profileValidate(request.nickname(), request.phoneNumber());
     }
 
     public NoContent validateUniqueEmail(final String email) {

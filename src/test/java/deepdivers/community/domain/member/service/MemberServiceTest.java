@@ -15,35 +15,25 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.global.config.EncryptorConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
-import deepdivers.community.utility.encryptor.EncryptorTypes;
 import deepdivers.community.utility.uploader.S3Exception;
 import java.time.LocalDateTime;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,7 +73,7 @@ class MemberServiceTest {
         assertThat(member.getEmail()).isEqualTo(email);
         assertThat(encryptor.matches(password, member.getPassword())).isTrue();
         assertThat(member.getNickname()).isEqualTo(nickname);
-        assertThat(member.getContact().getPhoneNumber()).isEqualTo(tel);
+        assertThat(member.getPhoneNumber()).isEqualTo(tel);
     }
 
     @Test

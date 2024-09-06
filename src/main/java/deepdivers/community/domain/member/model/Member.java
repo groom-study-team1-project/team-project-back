@@ -1,6 +1,7 @@
 package deepdivers.community.domain.member.model;
 
 import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
@@ -34,7 +35,7 @@ import org.apache.commons.lang3.StringUtils;
                 columnNames = {"nickname"}
         )
 )
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
     @Id
@@ -64,7 +65,13 @@ public class Member extends BaseEntity {
     private String lowerNickname;
 
     @Embedded
-    private Contact contact;
+    private PhoneNumber phoneNumber;
+
+    @Column(nullable = false, length = 100)
+    private String githubAddr;
+
+    @Column(nullable = false, length = 200)
+    private String blogAddr;
 
     @Embedded
     private ActivityStats activityStats;
@@ -73,8 +80,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private MemberStatus status;
 
-    @Builder
-    public Member(final MemberSignUpRequest request, final Encryptor encryptor) {
+    @Builder(access = AccessLevel.PROTECTED)
+    private Member(final MemberSignUpRequest request, final Encryptor encryptor) {
         this.email = new Email(request.email());
         this.password = Password.of(encryptor, request.password());
         this.role = MemberRole.NORMAL;
@@ -82,7 +89,9 @@ public class Member extends BaseEntity {
         this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
         this.imageUrl = request.imageUrl();
         this.aboutMe = StringUtils.EMPTY;
-        this.contact = Contact.from(request.phoneNumber());
+        this.phoneNumber = new PhoneNumber(request.phoneNumber());
+        this.githubAddr = StringUtils.EMPTY;
+        this.blogAddr = StringUtils.EMPTY;
         this.activityStats = ActivityStats.createDefault();
         this.status = MemberStatus.REGISTERED;
     }
@@ -99,8 +108,46 @@ public class Member extends BaseEntity {
         return this.nickname.getValue();
     }
 
+    public String getPhoneNumber() {
+        return this.phoneNumber.getValue();
+    }
+
     public String getEmail() {
         return this.email.getValue();
+    }
+
+    public void updateProfile(final MemberProfileRequest request) {
+        this.nickname.update(request.nickname());
+        this.phoneNumber.update(request.phoneNumber());
+        this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
+        updateProfileImage(request.imageUrl());
+        updateAboutMe(request.aboutMe());
+        updateGithub(request.githubUrl());
+        updateBlog(request.blogUrl());
+    }
+
+    private void updateGithub(final String githubUrl) {
+        if (!(githubUrl == null || githubUrl.isEmpty())) {
+            this.githubAddr = githubUrl;
+        }
+    }
+
+    private void updateBlog(final String blogUrl) {
+        if (!(blogUrl == null || blogUrl.isEmpty())) {
+            this.blogAddr = blogUrl;
+        }
+    }
+
+    private void updateProfileImage(final String imageUrl) {
+        if (!(imageUrl == null || imageUrl.isEmpty())) {
+            this.imageUrl = imageUrl;
+        }
+    }
+
+    private void updateAboutMe(final String aboutMe) {
+        if (!(aboutMe == null || aboutMe.isEmpty())) {
+            this.aboutMe = aboutMe;
+        }
     }
 
 }
