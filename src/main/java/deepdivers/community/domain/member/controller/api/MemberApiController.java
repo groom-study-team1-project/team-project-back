@@ -1,6 +1,7 @@
 package deepdivers.community.domain.member.controller.api;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.model.Member;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,6 +41,15 @@ public class MemberApiController implements MemberApiControllerDocs {
             @RequestParam final MultipartFile imageFile
     ) {
         final API<ImageUploadResponse> response = memberService.profileImageUpload(imageFile, member.getId());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/profile")
+    public ResponseEntity<API<MemberProfileResponse>> updateProfile(
+        @Auth final Member member,
+        @RequestBody final MemberProfileRequest request
+    ) {
+        final API<MemberProfileResponse> response = memberService.updateProfile(member.getId(), request);
         return ResponseEntity.ok(response);
     }
 

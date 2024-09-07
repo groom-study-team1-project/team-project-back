@@ -74,22 +74,14 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    public API<ImageUploadResponse> profileImageUpload(
-        final MultipartFile imageFile,
-        final Long memberId
-    ) {
+    public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
         final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
         return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
     }
 
-    public API<MemberProfileResponse> updateProfile(
-        final Long memberId,
-        final MemberProfileRequest request
-    ) {
-        profileValidate(request.nickname(), request.phoneNumber());
-
+    public API<MemberProfileResponse> updateProfile(final Long memberId, final MemberProfileRequest request) {
         final Member member = getMemberWithThrow(memberId);
-        member.updateProfile(request);
+        updateAfterProfileValidation(member, request);
 
         final Member updatedMember = memberRepository.save(member);
         final MemberProfileResponse result = MemberProfileResponse.from(updatedMember);
@@ -114,19 +106,24 @@ public class MemberService {
         }
     }
 
-    private void profileValidate(final String nickname, final String phoneNumber) {
-        validateUniqueNickname(nickname);
-        PhoneNumber.validator(phoneNumber);
+    private void updateAfterProfileValidation(final Member member, final MemberProfileRequest request) {
+        if (!member.getNickname().equals(request.nickname())) {
+            validateUniqueNickname(request.nickname());
+        }
+        Nickname.validator(request.nickname());
+        PhoneNumber.validator(request.phoneNumber());
+        member.updateProfile(request);
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {
         validateUniqueEmail(request.email());
-        profileValidate(request.nickname(), request.phoneNumber());
+        validateUniqueNickname(request.nickname());
+        Email.validator(request.email());
+        Nickname.validator(request.nickname());
+        PhoneNumber.validator(request.phoneNumber());
     }
 
     public NoContent validateUniqueEmail(final String email) {
-        Email.validator(email);
-
         final Boolean isDuplicateEmail = memberRepository.existsAccountByEmailValue(email);
         if (isDuplicateEmail) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
@@ -136,8 +133,6 @@ public class MemberService {
     }
 
     public NoContent validateUniqueNickname(final String nickname) {
-        Nickname.validator(nickname);
-
         final String lowerNickname = nickname.toLowerCase(Locale.ENGLISH);
         memberRepository.findByLowerNickname(lowerNickname)
             .ifPresent(it -> {
