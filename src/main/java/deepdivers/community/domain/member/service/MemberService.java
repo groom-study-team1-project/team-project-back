@@ -135,9 +135,7 @@ public class MemberService {
     public NoContent validateUniqueNickname(final String nickname) {
         final String lowerNickname = nickname.toLowerCase(Locale.ENGLISH);
         memberRepository.findByLowerNickname(lowerNickname)
-            .ifPresent(it -> {
-                throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
-            });
+            .ifPresent(it -> {throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);});
 
         return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
     }

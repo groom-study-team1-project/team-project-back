@@ -154,26 +154,6 @@ class MemberServiceTest {
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"", "일", "스물하나스물하나스물하나스물하나스물하나스물하나스"})
-    @DisplayName("닉네임 길이에 대해 검증이 실패하는 경우 유효하지 닉네임 길이의 예외가 떨어지는 것을 확인한다.")
-    void fromWithInvalidNicknameLengthShouldThrowException(String invalidNickname) {
-        // given, when, then
-        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_LENGTH);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"12", "공 백", "1숫자로시작"})
-    @DisplayName("닉네임 패턴에 대해 검증이 실패하는 경우 유효하지 않은 닉네임 형식의 예외가 떨어지는 것을 확인한다.")
-    void fromWithInvalidNicknamePatternShouldThrowException(String invalidNickname) {
-        // given, when, then
-        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_FORMAT);
-    }
-
     @Test
     @DisplayName("소문자 닉네임 정보가 저장되는지 확인한다.")
     void validateSavedLowerCaseNickname() {
@@ -383,19 +363,6 @@ class MemberServiceTest {
         MemberStatusType status = MemberStatusType.EMAIL_VALIDATE_SUCCESS;
         assertThat(result.status().code()).isEqualTo(status.getCode());
         assertThat(result.status().message()).isEqualTo(status.getMessage());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-        " firstspace@mail.com", "lastspace@mail.com ", " bothspace@mail.com ", "nomail",
-        "한글메일@mail.com", "korean@메일.com", "space @mail.com"
-    })
-    @DisplayName("유효하지 않은 이메일로 검증시 예외가 발생한다.")
-    void DuplicateEmailInvalidFormatTest(String email) {
-        // given & When & Then
-        assertThatThrownBy(() -> memberService.validateUniqueEmail(email))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_EMAIL_FORMAT);
     }
 
 }

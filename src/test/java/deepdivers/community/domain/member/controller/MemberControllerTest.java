@@ -255,6 +255,7 @@ class MemberControllerTest extends ControllerTest {
         assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
     }
 
+    @Test
     @DisplayName("이메일 중복검사가 성공적으로 처리되면 200OK를 반환한다.")
     void validateEmailSuccessfullyReturns200OK() {
         // given
@@ -291,6 +292,7 @@ class MemberControllerTest extends ControllerTest {
             .body("message", containsString("파라미터가 필요합니다."));
     }
 
+    @Test
     @DisplayName("이메일 정보가 없으면 400 Bad Request 를 반환한다.")
     void nullEmailQueryReturns400BadRequest() {
         // given
