@@ -7,8 +7,10 @@ import static org.mockito.Mockito.verify;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.StatusResponse;
 import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
@@ -363,6 +365,27 @@ class MemberServiceTest {
         MemberStatusType status = MemberStatusType.EMAIL_VALIDATE_SUCCESS;
         assertThat(result.status().code()).isEqualTo(status.getCode());
         assertThat(result.status().message()).isEqualTo(status.getMessage());
+    }
+
+    @Test
+    @DisplayName("프로필 수정이 성공할 경우를 테스트한다.")
+    void profileUpdateSuccessTest() {
+        // Given test.sql
+        Long memberId = 1L;
+        MemberProfileRequest request = new MemberProfileRequest("test","test","","010-1234-5678","","");
+
+        // When
+        API<MemberProfileResponse> memberProfileResponseAPI = memberService.updateProfile(memberId, request);
+
+        // then
+        StatusResponse responseStatus = memberProfileResponseAPI.status();
+        MemberProfileResponse responseResult = memberProfileResponseAPI.result();
+        MemberStatusType status = MemberStatusType.UPDATE_PROFILE_SUCCESS;
+        assertThat(responseStatus.code()).isEqualTo(status.getCode());
+        assertThat(responseStatus.message()).isEqualTo(status.getMessage());
+        assertThat(responseResult.nickname()).isEqualTo(request.nickname());
+        assertThat(responseResult.imageUrl()).isEqualTo(request.imageUrl());
+        assertThat(responseResult.phoneNumber()).isEqualTo(request.phoneNumber());
     }
 
 }
