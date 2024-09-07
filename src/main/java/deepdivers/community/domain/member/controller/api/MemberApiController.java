@@ -7,6 +7,7 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.global.security.jwt.Auth;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class MemberApiController implements MemberApiControllerDocs {
     @PutMapping("/profile")
     public ResponseEntity<API<MemberProfileResponse>> updateProfile(
         @Auth final Member member,
-        @RequestBody final MemberProfileRequest request
+        @Valid @RequestBody final MemberProfileRequest request
     ) {
         final API<MemberProfileResponse> response = memberService.updateProfile(member.getId(), request);
         return ResponseEntity.ok(response);

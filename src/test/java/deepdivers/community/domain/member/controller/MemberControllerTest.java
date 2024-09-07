@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
@@ -14,6 +15,7 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.api.MemberApiController;
 import deepdivers.community.domain.member.controller.open.MemberController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
@@ -304,6 +306,83 @@ class MemberControllerTest extends ControllerTest {
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(203))
             .body("message", containsString("파라미터가 필요합니다."));
+    }
+
+    @Test
+    @DisplayName("올바른 프로필 정보 수정시 200 OK가 떨어진다.")
+    void updateProfileReturns200OK() {
+        // given
+        MemberProfileRequest request = new MemberProfileRequest("test","test","","010-1234-5678","","");
+        MemberSignUpRequest signUpRequest = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678");
+        Member member = Member.of(signUpRequest, encryptor);
+        MemberProfileResponse memberProfileResponse = MemberProfileResponse.from(member);
+        API<MemberProfileResponse> mockResponse = API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, memberProfileResponse);
+        given(memberService.updateProfile(1L, request)).willReturn(mockResponse);
+
+        // when
+        API<MemberProfileResponse> response = RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().put("/api/members/profile")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>(){});
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+    }
+
+    @Test
+    @DisplayName("프로필 정보 수정시 닉네임 정보가 없다면 400 BadRequest 가 떨어진다.")
+    void profileUpdateNullNicknameReturns400BadRequest() {
+        // given
+        MemberProfileRequest request = new MemberProfileRequest("","test","","010-1234-5678","","");
+
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().put("/api/members/profile")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(101))
+            .body("message", containsString("사용자 닉네임 정보가 필요합니다."));
+    }
+
+    @Test
+    @DisplayName("프로필 정보 수정시 이미지 정보가 없다면 400 BadRequest 가 떨어진다.")
+    void profileUpdateNullImageUrlReturns400BadRequest() {
+        // given
+        MemberProfileRequest request = new MemberProfileRequest("test","","","010-1234-5678","","");
+
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().put("/api/members/profile")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(101))
+            .body("message", containsString("사용자 이미지 정보가 필요합니다."));
+    }
+
+    @Test
+    @DisplayName("프로필 정보 수정시 전화번호 정보가 없다면 400 BadRequest 가 떨어진다.")
+    void profileUpdateNullPhoneNumberReturns400BadRequest() {
+        // given
+        MemberProfileRequest request = new MemberProfileRequest("test","test","","","","");
+
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().put("/api/members/profile")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(101))
+            .body("message", containsString("사용자 전화번호 정보가 필요합니다."));
     }
 
 }
