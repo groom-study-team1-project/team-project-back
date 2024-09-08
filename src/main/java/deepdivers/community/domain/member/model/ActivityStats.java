@@ -19,7 +19,7 @@ public class ActivityStats {
     @Column(nullable = false)
     private Integer commentCount;
 
-    public static ActivityStats createDefault() {
+    protected static ActivityStats createDefault() {
         return new ActivityStats(0, 0);
     }
 

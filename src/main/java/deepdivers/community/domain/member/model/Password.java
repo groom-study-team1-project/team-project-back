@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Password {
 
     private static final Pattern PATTERN =
@@ -24,7 +24,7 @@ public class Password {
     @Getter
     private String value;
 
-    public static Password of(final Encryptor encryptor, final String password) {
+    protected static Password of(final Encryptor encryptor, final String password) {
         final String passwordAfterTrimmed = password.trim();
         if (!PATTERN.matcher(passwordAfterTrimmed).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD_FORMAT);

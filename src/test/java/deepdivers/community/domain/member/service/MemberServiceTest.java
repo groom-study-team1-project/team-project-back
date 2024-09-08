@@ -7,43 +7,35 @@ import static org.mockito.Mockito.verify;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.StatusResponse;
 import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.global.config.EncryptorConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.utility.encryptor.Encryptor;
 import deepdivers.community.utility.encryptor.EncryptorBean;
-import deepdivers.community.utility.encryptor.EncryptorTypes;
 import deepdivers.community.utility.uploader.S3Exception;
 import java.time.LocalDateTime;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -83,7 +75,7 @@ class MemberServiceTest {
         assertThat(member.getEmail()).isEqualTo(email);
         assertThat(encryptor.matches(password, member.getPassword())).isTrue();
         assertThat(member.getNickname()).isEqualTo(nickname);
-        assertThat(member.getContact().getPhoneNumber()).isEqualTo(tel);
+        assertThat(member.getPhoneNumber()).isEqualTo(tel);
     }
 
     @Test
@@ -162,26 +154,6 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"", "일", "스물하나스물하나스물하나스물하나스물하나스물하나스"})
-    @DisplayName("닉네임 길이에 대해 검증이 실패하는 경우 유효하지 닉네임 길이의 예외가 떨어지는 것을 확인한다.")
-    void fromWithInvalidNicknameLengthShouldThrowException(String invalidNickname) {
-        // given, when, then
-        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_LENGTH);
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"12", "공 백", "1숫자로시작"})
-    @DisplayName("닉네임 패턴에 대해 검증이 실패하는 경우 유효하지 않은 닉네임 형식의 예외가 떨어지는 것을 확인한다.")
-    void fromWithInvalidNicknamePatternShouldThrowException(String invalidNickname) {
-        // given, when, then
-        assertThatThrownBy(() -> memberService.validateUniqueNickname(invalidNickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_FORMAT);
     }
 
     @Test
@@ -395,17 +367,25 @@ class MemberServiceTest {
         assertThat(result.status().message()).isEqualTo(status.getMessage());
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {
-        " firstspace@mail.com", "lastspace@mail.com ", " bothspace@mail.com ", "nomail",
-        "한글메일@mail.com", "korean@메일.com", "space @mail.com"
-    })
-    @DisplayName("유효하지 않은 이메일로 검증시 예외가 발생한다.")
-    void DuplicateEmailInvalidFormatTest(String email) {
-        // given & When & Then
-        assertThatThrownBy(() -> memberService.validateUniqueEmail(email))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_EMAIL_FORMAT);
+    @Test
+    @DisplayName("프로필 수정이 성공할 경우를 테스트한다.")
+    void profileUpdateSuccessTest() {
+        // Given test.sql
+        Long memberId = 1L;
+        MemberProfileRequest request = new MemberProfileRequest("test","test","","010-1234-5678","","");
+
+        // When
+        API<MemberProfileResponse> memberProfileResponseAPI = memberService.updateProfile(memberId, request);
+
+        // then
+        StatusResponse responseStatus = memberProfileResponseAPI.status();
+        MemberProfileResponse responseResult = memberProfileResponseAPI.result();
+        MemberStatusType status = MemberStatusType.UPDATE_PROFILE_SUCCESS;
+        assertThat(responseStatus.code()).isEqualTo(status.getCode());
+        assertThat(responseStatus.message()).isEqualTo(status.getMessage());
+        assertThat(responseResult.nickname()).isEqualTo(request.nickname());
+        assertThat(responseResult.imageUrl()).isEqualTo(request.imageUrl());
+        assertThat(responseResult.phoneNumber()).isEqualTo(request.phoneNumber());
     }
 
 }

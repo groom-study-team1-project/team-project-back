@@ -44,8 +44,12 @@ public class Nickname {
         }
     }
 
-    public static Nickname from(final String nickname) {
+    protected static Nickname from(final String nickname) {
         return new Nickname(nickname);
+    }
+
+    public void update(final String nickname) {
+        this.value = nickname;
     }
 
 }
