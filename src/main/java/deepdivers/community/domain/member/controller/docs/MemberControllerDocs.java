@@ -1,4 +1,4 @@
-package deepdivers.community.domain.member.controller.open;
+package deepdivers.community.domain.member.controller.docs;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;

@@ -2,6 +2,7 @@ package deepdivers.community.domain.member.controller.open;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.member.controller.docs.MemberControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.service.MemberService;

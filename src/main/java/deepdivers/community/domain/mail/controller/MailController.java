@@ -1,8 +1,8 @@
-package deepdivers.community.domain.email.controller;
+package deepdivers.community.domain.mail.controller;
 
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.email.EmailService;
-import deepdivers.community.domain.email.dto.VerifyEmailRequest;
+import deepdivers.community.domain.mail.MailService;
+import deepdivers.community.domain.mail.dto.AuthenticateEmailRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/mails")
 @RequiredArgsConstructor
-public class EmailController {
+public class MailController {
 
-    private final EmailService emailService;
+    private final MailService mailService;
 
-    @PostMapping("/verify")
-    public ResponseEntity<NoContent> sendEmail(@RequestBody @Valid final VerifyEmailRequest request) {
-        final NoContent response = emailService.sendAuthenticatedEmail(request);
+    @PostMapping("/authenticate/emails")
+    public ResponseEntity<NoContent> sendEmail(@RequestBody @Valid final AuthenticateEmailRequest request) {
+        final NoContent response = mailService.sendAuthenticatedEmail(request);
         return ResponseEntity.ok(response);
     }
 

@@ -1,9 +1,8 @@
-package deepdivers.community.domain.email.dto.statustype;
+package deepdivers.community.domain.mail.dto.statustype;
 
 import deepdivers.community.domain.common.StatusType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
