@@ -45,7 +45,13 @@ spring:
           starttls:
             enable: true
   thymeleaf:
-    cache: false
+    cache
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter : method
+    doc-expansion : none
 
 goorm:
   community:

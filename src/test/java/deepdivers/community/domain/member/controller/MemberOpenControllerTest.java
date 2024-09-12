@@ -7,13 +7,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.api.MemberApiController;
-import deepdivers.community.domain.member.controller.open.MemberController;
+import deepdivers.community.domain.member.controller.open.MemberOpenOpenController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
@@ -35,10 +34,10 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = {
-        MemberController.class,
+        MemberOpenOpenController.class,
         MemberApiController.class
 })
-class MemberControllerTest extends ControllerTest {
+class MemberOpenControllerTest extends ControllerTest {
 
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext) throws Exception {

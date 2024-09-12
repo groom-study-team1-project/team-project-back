@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-@Tag(name = "토큰", description = "토큰 관련 API")
+@Tag(name = "4. 토큰", description = "토큰 관련 API")
 public interface TokenControllerDocs {
 
     @Operation(

@@ -1,6 +1,7 @@
 package deepdivers.community.domain.member.controller.open;
 
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.member.controller.docs.AccountOpenControllerDocs;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.service.AccountService;
 import jakarta.validation.Valid;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
-public class AccountController {
+public class AccountOpenController implements AccountOpenControllerDocs {
 
     private final AccountService accountService;
 
