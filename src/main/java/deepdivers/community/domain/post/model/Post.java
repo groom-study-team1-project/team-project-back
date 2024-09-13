@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.model;
 
 import deepdivers.community.domain.common.BaseEntity;
-import deepdivers.community.domain.hashtag.model.PostHashtag;
+import deepdivers.community.domain.post.model.hashtag.HashtagRelation;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import jakarta.persistence.*;
@@ -55,7 +55,7 @@ public class Post extends BaseEntity {
 
     @ColumnDefault("0")
     @Column(nullable = false)
-    private Integer recommendCount;
+    private Integer likeCount;
 
     @ColumnDefault("0")
     @Column(nullable = false)
@@ -66,6 +66,6 @@ public class Post extends BaseEntity {
     private PostStatus status;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PostHashtag> postHashtags = new HashSet<>();
+    private Set<HashtagRelation> hashtagRelations = new HashSet<>();
 
 }

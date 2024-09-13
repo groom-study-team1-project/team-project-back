@@ -77,7 +77,7 @@ public class Member extends BaseEntity {
     private ActivityStats activityStats;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private MemberStatus status;
 
     @Builder(access = AccessLevel.PROTECTED)

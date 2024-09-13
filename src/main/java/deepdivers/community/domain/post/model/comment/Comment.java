@@ -1,6 +1,6 @@
-package deepdivers.community.domain.comment.model;
+package deepdivers.community.domain.post.model.comment;
 
-import deepdivers.community.domain.comment.model.vo.CommentStatus;
+import deepdivers.community.domain.post.model.vo.CommentStatus;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.model.Post;

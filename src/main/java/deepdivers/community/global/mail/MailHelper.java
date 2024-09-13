@@ -1,25 +1,21 @@
-package deepdivers.community.domain.mail;
+package deepdivers.community.global.mail;
 
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.mail.dto.AuthenticateEmailRequest;
-import deepdivers.community.domain.mail.dto.statustype.EmailStatus;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import java.time.Duration;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class MailService {
+public class MailHelper {
 
     private static final String EMAIL_AUTH_SUBJECT = "[구름커뮤니티] 이메일 인증 메일입니다.";
     private static final Duration CODE_EXPIRATION_TIME = Duration.ofMinutes(5);
@@ -28,14 +24,12 @@ public class MailService {
     private final SpringTemplateEngine templateEngine;
     private final RedisTemplate<String, String> redisTemplate;
 
-    public NoContent sendAuthenticatedEmail(final AuthenticateEmailRequest request) {
+    public void sendAuthenticatedEmail(final String email) {
         final String authCode = generateAuthCode();
-        sendEmail(request.email(), authCode);
+        sendEmail(email, EMAIL_AUTH_SUBJECT, authCode);
 
         final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        valueOperations.set(request.email(), authCode, CODE_EXPIRATION_TIME);
-
-        return NoContent.from(EmailStatus.SUCCESS);
+        valueOperations.set(email, authCode, CODE_EXPIRATION_TIME);
     }
 
     private String generateAuthCode() {
@@ -44,12 +38,12 @@ public class MailService {
         return String.format("%06d", random.nextInt(maxRange));
     }
 
-    private void sendEmail(String to, String authCode) {
+    private void sendEmail(final String to, final String subject, final String authCode) {
         try {
             final MimeMessage message = mailSender.createMimeMessage();
             final MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
             helper.setTo(to);
-            helper.setSubject(EMAIL_AUTH_SUBJECT);
+            helper.setSubject(subject);
             helper.setText(getEmailContent(authCode), true);
             mailSender.send(message);
         } catch (final MessagingException e) {

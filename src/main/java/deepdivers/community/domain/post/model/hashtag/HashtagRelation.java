@@ -1,6 +1,6 @@
-package deepdivers.community.domain.recommend.model;
+package deepdivers.community.domain.post.model.hashtag;
 
-import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.post.model.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -13,23 +13,23 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_recommend_member_post",
-                columnNames = {"memberId", "postId"}
-        )
+        indexes = {
+                @Index(name = "idx_post_hashtag_post_id", columnList = "postId"),
+                @Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtagId")
+        }
 )
-public class Recommend {
+public class HashtagRelation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    @JoinColumn(name = "hashtag_id")
+    private Hashtag hashtag;
 
 }

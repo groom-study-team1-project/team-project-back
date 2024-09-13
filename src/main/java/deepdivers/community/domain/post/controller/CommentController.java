@@ -1,5 +1,6 @@
-package deepdivers.community.domain.comment.controller;
+package deepdivers.community.domain.post.controller;
 
+import deepdivers.community.domain.post.controller.docs.CommentControllerDocs;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

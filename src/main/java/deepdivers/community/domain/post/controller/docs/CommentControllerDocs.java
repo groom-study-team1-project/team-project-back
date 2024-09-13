@@ -1,4 +1,4 @@
-package deepdivers.community.domain.comment.controller;
+package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;

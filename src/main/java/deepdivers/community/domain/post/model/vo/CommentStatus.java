@@ -1,4 +1,4 @@
-package deepdivers.community.domain.comment.model.vo;
+package deepdivers.community.domain.post.model.vo;
 
 import lombok.AllArgsConstructor;
 

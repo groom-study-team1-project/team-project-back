@@ -1,6 +1,7 @@
 package deepdivers.community.domain.member.controller.open;
 
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.controller.docs.AccountOpenControllerDocs;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.service.AccountService;
@@ -22,6 +23,12 @@ public class AccountOpenController implements AccountOpenControllerDocs {
     @PostMapping("/verify/emails")
     public ResponseEntity<NoContent> verifyEmail(@RequestBody @Valid final VerifyEmailRequest request) {
         final NoContent response = accountService.verifyEmail(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/authenticate/emails")
+    public ResponseEntity<NoContent> sendEmail(@RequestBody @Valid final AuthenticateEmailRequest request) {
+        final NoContent response = accountService.sendAuthenticatedEmail(request);
         return ResponseEntity.ok(response);
     }
 

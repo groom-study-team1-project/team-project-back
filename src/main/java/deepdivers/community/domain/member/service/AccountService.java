@@ -1,11 +1,11 @@
 package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.global.mail.MailHelper;
+import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountService {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final MailHelper mailHelper;
 
     public NoContent verifyEmail(final VerifyEmailRequest request) {
         final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
@@ -35,6 +36,11 @@ public class AccountService {
         if (!verifyCode.equals(clientInputCode)) {
             throw new IllegalArgumentException("잘못된 인증 코드");
         }
+    }
+
+    public NoContent sendAuthenticatedEmail(final AuthenticateEmailRequest request) {
+        mailHelper.sendAuthenticatedEmail(request.email());
+        return NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
     }
 
 }

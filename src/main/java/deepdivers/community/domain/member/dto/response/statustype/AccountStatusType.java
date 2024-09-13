@@ -8,7 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum AccountStatusType implements StatusType {
 
-    VERIFY_EMAIL_SUCCESS(1100, "사용자 이메일 인증이 성공하였습니다.");
+    SEND_VERIFY_CODE_SUCCESS(1100, "이메일로 인증코드가 전송되었습니다."),
+    VERIFY_EMAIL_SUCCESS(1101, "사용자 이메일 인증이 성공하였습니다.");
 
     private final int code;
     private final String message;

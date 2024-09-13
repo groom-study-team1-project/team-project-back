@@ -1,4 +1,4 @@
-package deepdivers.community.domain.mail.dto;
+package deepdivers.community.domain.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
