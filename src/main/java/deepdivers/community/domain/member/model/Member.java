@@ -3,8 +3,10 @@ package deepdivers.community.domain.member.model;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
+import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.utility.encryptor.Encryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -147,6 +149,13 @@ public class Member extends BaseEntity {
     private void updateAboutMe(final String aboutMe) {
         if (!(aboutMe == null || aboutMe.isEmpty())) {
             this.aboutMe = aboutMe;
+        }
+    }
+
+    public void validateStatus() {
+        switch (this.status) {
+            case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+            case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
         }
     }
 

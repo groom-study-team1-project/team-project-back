@@ -1,10 +1,10 @@
 package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.global.mail.MailHelper;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
+import deepdivers.community.global.mail.MailHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;

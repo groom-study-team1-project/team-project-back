@@ -50,7 +50,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public API<TokenResponse> login(final MemberLoginRequest request) {
         final Member member = authenticateMember(request.email(), request.password());
-        validateMemberStatus(member);
+        member.validateStatus();
 
         final TokenResponse tokenResponse = tokenService.tokenGenerator(member);
         return API.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
@@ -94,18 +94,6 @@ public class MemberService {
                 .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
     }
 
-    private void validateMemberStatus(final Member member) {
-        // todo member 객체의 정보를 사용하므로 책임 분리하기
-        switch (member.getStatus()) {
-            case REGISTERED:
-                break;
-            case DORMANCY:
-                throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
-            case UNREGISTERED:
-                throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
-        }
-    }
-
     private void updateAfterProfileValidation(final Member member, final MemberProfileRequest request) {
         if (!member.getNickname().equals(request.nickname())) {
             validateUniqueNickname(request.nickname());
@@ -124,7 +112,7 @@ public class MemberService {
     }
 
     public NoContent validateUniqueEmail(final String email) {
-        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmailValue(email);
+        final Boolean isDuplicateEmail = memberRepository.existsByEmailValue(email);
         if (isDuplicateEmail) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }
