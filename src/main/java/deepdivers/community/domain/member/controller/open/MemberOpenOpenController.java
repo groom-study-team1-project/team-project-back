@@ -40,10 +40,4 @@ public class MemberOpenOpenController implements MemberOpenControllerDocs {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/verify/nicknames")
-    public ResponseEntity<NoContent> verifyNickname(@RequestParam final String nickname) {
-        final NoContent response = memberService.verifyNickname(nickname);
-        return ResponseEntity.ok(response);
-    }
-
 }

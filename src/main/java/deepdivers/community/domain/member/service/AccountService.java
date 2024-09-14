@@ -4,6 +4,7 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
+import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.global.mail.MailHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,11 @@ public class AccountService {
 
     private final MailHelper mailHelper;
     private final MemberService memberService;
+
+    public NoContent verifyNickname(final String nickname) {
+        memberService.validateUniqueNickname(nickname);
+        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
+    }
 
     public NoContent verifyEmail(final VerifyEmailRequest request) {
         mailHelper.verifyEmail(request.email(), request.verifyCode());

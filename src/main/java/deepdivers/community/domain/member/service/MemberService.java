@@ -87,11 +87,6 @@ public class MemberService {
         return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
     }
 
-    public NoContent verifyNickname(final String nickname) {
-        validateUniqueNickname(nickname);
-        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
-    }
-
     private Member authenticateMember(final String email, final String password) {
         return memberRepository.findByEmailValue(email)
                 .filter(member -> encryptor.matches(password, member.getPassword()))
