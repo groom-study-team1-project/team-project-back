@@ -22,7 +22,7 @@ import java.util.Set;
         indexes = {
                 @Index(name = "idx_post_title", columnList = "title"),
                 @Index(name = "idx_post_view_count_id", columnList = "viewCount, id"),
-                @Index(name = "idx_post_recommend_count_id", columnList = "recommendCount, id"),
+                @Index(name = "idx_post_like_count_id", columnList = "likeCount, id"),
                 @Index(name = "idx_post_category_id_id", columnList = "categoryId, id"),
                 @Index(name = "idx_post_created_at", columnList = "createdAt"),
                 @Index(name = "idx_post_member_id_id", columnList = "memberId, id"),

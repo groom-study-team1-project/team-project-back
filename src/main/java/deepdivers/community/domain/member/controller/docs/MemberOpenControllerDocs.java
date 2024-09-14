@@ -72,6 +72,6 @@ public interface MemberOpenControllerDocs {
                     """,
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<NoContent> validateNickname(String nickname);
+    ResponseEntity<NoContent> verifyNickname(String nickname);
 
 }

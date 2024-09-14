@@ -88,6 +88,11 @@ public class MemberService {
         return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
     }
 
+    public NoContent verifyNickname(final String nickname) {
+        validateUniqueNickname(nickname);
+        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
+    }
+
     private Member authenticateMember(final String email, final String password) {
         return memberRepository.findByEmailValue(email)
                 .filter(member -> encryptor.matches(password, member.getPassword()))
@@ -118,12 +123,13 @@ public class MemberService {
         }
     }
 
-    public NoContent validateUniqueNickname(final String nickname) {
+    protected void validateUniqueNickname(final String nickname) {
         final String lowerNickname = nickname.toLowerCase(Locale.ENGLISH);
-        memberRepository.findByLowerNickname(lowerNickname)
-            .ifPresent(it -> {throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);});
+        final boolean isDuplicateNickname = memberRepository.existsByLowerNickname(lowerNickname);
 
-        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
+        if (isDuplicateNickname) {
+            throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+        }
     }
 
 }
