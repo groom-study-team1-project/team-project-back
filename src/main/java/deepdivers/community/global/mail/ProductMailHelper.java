@@ -26,12 +26,21 @@ public class ProductMailHelper implements MailHelper {
     private final SpringTemplateEngine templateEngine;
     private final RedisTemplate<String, String> redisTemplate;
 
+    @Override
     public void sendAuthenticatedEmail(final String email) {
         final String authCode = generateAuthCode();
         sendEmail(email, EMAIL_AUTH_SUBJECT, authCode);
 
         final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         valueOperations.set(email, authCode, CODE_EXPIRATION_TIME);
+    }
+
+    @Override
+    public void verifyEmail(String email, String code) {
+        final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+        final String verifyCode = valueOperations.get(email);
+        validateVerifyCode(verifyCode, code);
+        valueOperations.getAndDelete(email);
     }
 
     private String generateAuthCode() {
