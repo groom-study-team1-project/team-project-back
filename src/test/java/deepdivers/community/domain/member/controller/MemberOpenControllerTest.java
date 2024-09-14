@@ -240,12 +240,12 @@ class MemberOpenControllerTest extends ControllerTest {
         // given
         String nickname = "안녕하세요";
         NoContent mockResponse = NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
-        given(memberService.validateUniqueNickname(anyString())).willReturn(mockResponse);
+        given(memberService.verifyNickname(anyString())).willReturn(mockResponse);
 
         NoContent response = RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .queryParam("nickname", nickname)
-            .when().get("/members/validate/nickname")
+            .when().get("/members/verify/nicknames")
             .then().log().all()
             .status(HttpStatus.OK)
             .extract()
@@ -263,7 +263,7 @@ class MemberOpenControllerTest extends ControllerTest {
         // when, then
         RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
-            .when().get("/members/validate/nickname")
+            .when().get("/members/verify/nicknames")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(203))
