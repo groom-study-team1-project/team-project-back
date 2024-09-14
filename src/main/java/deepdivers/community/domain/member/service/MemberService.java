@@ -9,7 +9,6 @@ import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.domain.member.model.Email;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.model.PhoneNumber;
@@ -103,17 +102,12 @@ public class MemberService {
         if (!member.getNickname().equals(request.nickname())) {
             validateUniqueNickname(request.nickname());
         }
-        Nickname.validator(request.nickname());
-        PhoneNumber.validator(request.phoneNumber());
         member.updateProfile(request);
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {
         validateUniqueEmail(request.email());
         validateUniqueNickname(request.nickname());
-        Email.validator(request.email());
-        Nickname.validator(request.nickname());
-        PhoneNumber.validator(request.phoneNumber());
     }
 
     protected void validateUniqueEmail(final String email) {

@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class Password {
 
     private static final Pattern PATTERN =
@@ -24,16 +23,11 @@ public class Password {
     @Getter
     private String value;
 
-    protected static Password of(final Encryptor encryptor, final String password) {
-        final String passwordAfterTrimmed = password.trim();
-        if (!PATTERN.matcher(passwordAfterTrimmed).matches()) {
+    protected Password(final Encryptor encryptor, final String password) {
+        if (!PATTERN.matcher(password).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD_FORMAT);
         }
-        return new Password(encryptor.encrypt(passwordAfterTrimmed));
-    }
-
-    public boolean matches(final Encryptor encryptor,final String password) {
-        return encryptor.matches(password, this.value);
+        this.value = encryptor.encrypt(password);
     }
 
 }

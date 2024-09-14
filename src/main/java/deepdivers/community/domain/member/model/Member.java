@@ -82,19 +82,18 @@ public class Member extends BaseEntity {
     @Column(nullable = false, columnDefinition = "varchar(50)")
     private MemberStatus status;
 
-    @Builder(access = AccessLevel.PROTECTED)
     private Member(final MemberSignUpRequest request, final Encryptor encryptor) {
         this.email = new Email(request.email());
-        this.password = Password.of(encryptor, request.password());
-        this.role = MemberRole.NORMAL;
-        this.nickname = Nickname.from(request.nickname());
+        this.password = new Password(encryptor, request.password());
+        this.nickname = new Nickname(request.nickname());
+        this.phoneNumber = new PhoneNumber(request.phoneNumber());
         this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
         this.imageUrl = request.imageUrl();
+        this.activityStats = ActivityStats.createDefault();
         this.aboutMe = StringUtils.EMPTY;
-        this.phoneNumber = new PhoneNumber(request.phoneNumber());
         this.githubAddr = StringUtils.EMPTY;
         this.blogAddr = StringUtils.EMPTY;
-        this.activityStats = ActivityStats.createDefault();
+        this.role = MemberRole.NORMAL;
         this.status = MemberStatus.REGISTERED;
     }
 

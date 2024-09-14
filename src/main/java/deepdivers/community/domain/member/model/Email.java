@@ -4,16 +4,13 @@ import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter(AccessLevel.PROTECTED)
 public class Email {
 
@@ -24,10 +21,14 @@ public class Email {
     @Column(name = "email", nullable = false, length = 100)
     private String value;
 
-    public static void validator(final String email) {
+    private void validateEmail(final String email) {
         if (!PATTERN.matcher(email).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_EMAIL_FORMAT);
         }
     }
 
+    protected Email(final String value) {
+        validateEmail(value);
+        this.value = value;
+    }
 }
