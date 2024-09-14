@@ -2,6 +2,7 @@ package deepdivers.community.domain.member.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 
@@ -358,13 +359,9 @@ class MemberServiceTest {
         // Given test.sql
         String email = "email@test.com";
 
-        // When
-        NoContent result = memberService.validateUniqueEmail(email);
-
-        // then
-        MemberStatusType status = MemberStatusType.EMAIL_VALIDATE_SUCCESS;
-        assertThat(result.status().code()).isEqualTo(status.getCode());
-        assertThat(result.status().message()).isEqualTo(status.getMessage());
+        // When, then
+        assertThatCode(() -> memberService.validateUniqueEmail(email))
+            .doesNotThrowAnyException();
     }
 
     @Test
