@@ -111,13 +111,11 @@ public class MemberService {
         PhoneNumber.validator(request.phoneNumber());
     }
 
-    public NoContent validateUniqueEmail(final String email) {
+    protected void validateUniqueEmail(final String email) {
         final Boolean isDuplicateEmail = memberRepository.existsByEmailValue(email);
         if (isDuplicateEmail) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }
-
-        return NoContent.from(MemberStatusType.EMAIL_VALIDATE_SUCCESS);
     }
 
     public NoContent validateUniqueNickname(final String nickname) {

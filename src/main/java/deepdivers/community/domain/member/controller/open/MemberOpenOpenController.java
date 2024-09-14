@@ -47,10 +47,4 @@ public class MemberOpenOpenController implements MemberOpenControllerDocs {
 
     }
 
-    @GetMapping("/validate/email")
-    public ResponseEntity<NoContent> validateEmail(@RequestParam final String email) {
-        NoContent response = memberService.validateUniqueEmail(email);
-        return ResponseEntity.ok(response);
-    }
-
 }

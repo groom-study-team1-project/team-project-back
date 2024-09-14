@@ -18,14 +18,14 @@ public class AccountService {
 
     private final RedisTemplate<String, String> redisTemplate;
     private final MailHelper mailHelper;
+    private final MemberService memberService;
 
     public NoContent verifyEmail(final VerifyEmailRequest request) {
         final ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
         final String verifyCode = valueOperations.get(request.email());
-
         validateVerifyCode(verifyCode, request.verifyCode());
-
         valueOperations.getAndDelete(request.email());
+
         return NoContent.from(AccountStatusType.VERIFY_EMAIL_SUCCESS);
     }
 
@@ -39,6 +39,7 @@ public class AccountService {
     }
 
     public NoContent sendAuthenticatedEmail(final AuthenticateEmailRequest request) {
+        memberService.validateUniqueEmail(request.email());
         mailHelper.sendAuthenticatedEmail(request.email());
         return NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
     }

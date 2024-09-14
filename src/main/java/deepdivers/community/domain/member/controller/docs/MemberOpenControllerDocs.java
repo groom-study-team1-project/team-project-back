@@ -74,21 +74,4 @@ public interface MemberOpenControllerDocs {
     )
     ResponseEntity<NoContent> validateNickname(String nickname);
 
-    @Operation(summary = "이메일", description = "이메일 검사를 하는 기능")
-    @ApiResponse(
-        responseCode = "1006",
-        description = """
-                    1. 사용할 수 있는 이메일입니다.
-                    """
-    )
-    @ApiResponse(
-        responseCode = "2003, 2010",
-        description = """
-                    1. 이미 가입된 사용자 이메일입니다.
-                    2. 이메일 형식을 맞춰주세요.
-                    """,
-        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-    )
-    ResponseEntity<NoContent> validateEmail(String email);
-
 }
