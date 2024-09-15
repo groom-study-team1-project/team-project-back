@@ -1,8 +1,8 @@
 package deepdivers.community.domain.member.controller.open;
 
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.controller.docs.AccountOpenControllerDocs;
+import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.service.AccountService;
 import jakarta.validation.Valid;

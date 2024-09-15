@@ -55,6 +55,10 @@ class MemberServiceTest {
     @Autowired
     private MemberRepository memberRepository;
 
+    /*
+    * 회원 가입 관련 테스트
+    * 성공, 예외
+    * */
     @Test
     @DisplayName("회원 가입이 성공했을 경우 저장된 정보를 테스트한다.")
     void signUpSuccessAfterFindMemberTest() {
@@ -84,14 +88,11 @@ class MemberServiceTest {
     void signUpSuccessTest() {
         // Given, test.sql
         MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", "test", "test", "010-1234-5678");
-        long lastAccountId = 10L;
-        LocalDateTime testStartTime = LocalDateTime.now();
 
         // When
         NoContent response = memberService.signUp(request);
 
         // Then
-        LocalDateTime testEndTime = LocalDateTime.now();
         StatusType statusType = MemberStatusType.MEMBER_SIGN_UP_SUCCESS;
         assertThat(response).isNotNull();
         assertThat(response.status().code()).isEqualTo(statusType.getCode());
@@ -120,6 +121,175 @@ class MemberServiceTest {
         assertThatThrownBy(() -> memberService.signUp(request))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+    }
+
+    /*
+    * 로그인 관련 테스트
+    * */
+    @Test
+    @DisplayName("로그인이 성공했을 경우를 테스트한다.")
+    void loginSuccessTest() {
+        // Given, test.sql
+        MemberLoginRequest loginRequest = new MemberLoginRequest("email2@test.com", "password2!");
+
+        // When
+        API<TokenResponse> response = memberService.login(loginRequest);
+
+        // Then, test.sql
+        StatusType statusType = MemberStatusType.MEMBER_LOGIN_SUCCESS;
+        TokenResponse responseResult = response.result();
+
+        assertThat(response).isNotNull();
+        assertThat(response.status().code()).isEqualTo(statusType.getCode());
+        assertThat(response.status().message()).isEqualTo(statusType.getMessage());
+
+        assertThat(responseResult.accessToken()).isNotNull().isNotEmpty();
+        assertThat(responseResult.accessToken()).matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$");
+
+        assertThat(responseResult.refreshToken()).isNotNull().isNotEmpty();
+        assertThat(responseResult.refreshToken()).matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$");
+
+        AuthPayload authPayload = authHelper.parseToken(responseResult.accessToken());
+        assertThat(authPayload.memberId()).isEqualTo(2L);
+        assertThat(authPayload.memberNickname()).isEqualTo("User2");
+        assertThat(authPayload.memberRole()).isEqualTo(MemberRole.NORMAL.toString());
+    }
+
+    @Test
+    @DisplayName("가입되지 않은 계정인 경우를 테스트한다.")
+    void loginNotFoundEmailTest() {
+        // Given, test.sql
+        MemberLoginRequest loginRequest = new MemberLoginRequest("email11@test.com", "password2!");
+
+        // When
+        assertThatThrownBy(() -> memberService.login(loginRequest))
+            .isInstanceOf(NotFoundException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
+    }
+
+    @Test
+    @DisplayName("비밀번호가 틀린 경우를 테스트한다.")
+    void loginInvalidPasswordTest() {
+        // Given, test.sql
+        MemberLoginRequest loginRequest = new MemberLoginRequest("email2@test.com", "password22!");
+
+        // When
+        assertThatThrownBy(() -> memberService.login(loginRequest))
+            .isInstanceOf(NotFoundException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
+    }
+
+    @Test
+    @DisplayName("휴면 계정인 경우를 테스트한다.")
+    void loginDormancyAccountTest() {
+        // Given, test.sql
+        MemberLoginRequest loginRequest = new MemberLoginRequest("email9@test.com", "password9!");
+
+        // When
+        assertThatThrownBy(() -> memberService.login(loginRequest))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+    }
+
+    @Test
+    @DisplayName("탈퇴처리 중인 계정인 경우를 테스트한다.")
+    void loginUnRegisterAccountTest() {
+        // Given, test.sql
+        MemberLoginRequest loginRequest = new MemberLoginRequest("email8@test.com", "password8!");
+
+        // When, Then
+        assertThatThrownBy(() -> memberService.login(loginRequest))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+    }
+
+    /*
+    * 사용자 정보 찾기 관련 테스트
+    * */
+    @Test
+    @DisplayName("사용자 정보 찾기에 성공한 경우를 테스트 한다.")
+    void findMemberSuccessTest() {
+        // Given, test.sql
+        Long memberId = 1L;
+
+        // When, Then
+        Member member = memberService.getMemberWithThrow(memberId);
+
+        // Then
+        assertThat(member.getId()).isEqualTo(1L);
+        assertThat(member.getNickname()).isEqualTo("User1");
+        assertThat(member.getEmail()).isEqualTo("email1@test.com");
+    }
+
+    @Test
+    @DisplayName("사용자 정보를 찾을 수 없는 경우를 테스트 한다.")
+    void notFoundMemberTest() {
+        // Given, test.sql
+        Long memberId = 11L;
+
+        // When, Then
+        assertThatThrownBy(() -> memberService.getMemberWithThrow(memberId))
+            .isInstanceOf(NotFoundException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
+    }
+
+    /*
+    * 프로필 조회 관련 테스트
+    * */
+    @Test
+    @DisplayName("내 프로필 조회에 성공한 경우를 테스트한다.")
+    void findMyProfileSuccessTest() {
+        // Given, test.sql
+        Long memberId = 1L;
+        Member member = memberService.getMemberWithThrow(memberId);
+
+        // When
+        API<MemberProfileResponse> profile = memberService.getProfile(member, memberId);
+
+        // Then
+        MemberProfileResponse result = profile.result();
+        assertThat(result.nickname()).isEqualTo(member.getNickname());
+    }
+
+    @Test
+    @DisplayName("다른 사용자 프로필 조회에 성공한 경우를 테스트한다.")
+    void findOtherProfileSuccessTest() {
+        // Given, test.sql
+        Long memberId = 1L;
+        Member member = memberService.getMemberWithThrow(memberId);
+        Long otherMemberId = 2L;
+        Member other = memberService.getMemberWithThrow(otherMemberId);
+
+        // When
+        API<MemberProfileResponse> profile = memberService.getProfile(member, otherMemberId);
+
+        // Then
+        MemberProfileResponse result = profile.result();
+        assertThat(result.nickname()).isEqualTo(other.getNickname());
+    }
+
+    /*
+    * 프로필 수정 관련 테스트
+    * */
+    @Test
+    @DisplayName("프로필 수정이 성공할 경우를 테스트한다.")
+    void profileUpdateSuccessTest() {
+        // Given test.sql
+        Member member = memberService.getMemberWithThrow(1L);
+        MemberProfileRequest request = new MemberProfileRequest("test","test","","010-1234-5678","","");
+
+        // When
+        API<MemberProfileResponse> memberProfileResponseAPI = memberService.updateProfile(member, request);
+
+        // then
+        StatusResponse responseStatus = memberProfileResponseAPI.status();
+        MemberProfileResponse responseResult = memberProfileResponseAPI.result();
+        MemberStatusType status = MemberStatusType.UPDATE_PROFILE_SUCCESS;
+        assertThat(responseStatus.code()).isEqualTo(status.getCode());
+        assertThat(responseStatus.message()).isEqualTo(status.getMessage());
+        assertThat(responseResult.nickname()).isEqualTo(request.nickname());
+        assertThat(responseResult.imageUrl()).isEqualTo(request.imageUrl());
+        assertThat(responseResult.phoneNumber()).isEqualTo(request.phoneNumber());
     }
 
     @Test
@@ -173,143 +343,7 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("로그인이 성공했을 경우를 테스트한다.")
-    void loginSuccessTest() {
-        // Given, test.sql
-        MemberLoginRequest loginRequest = new MemberLoginRequest("email2@test.com", "password2!");
-
-        // When
-        API<TokenResponse> response = memberService.login(loginRequest);
-
-        // Then, test.sql
-        StatusType statusType = MemberStatusType.MEMBER_LOGIN_SUCCESS;
-        TokenResponse responseResult = response.result();
-
-        assertThat(response).isNotNull();
-        assertThat(response.status().code()).isEqualTo(statusType.getCode());
-        assertThat(response.status().message()).isEqualTo(statusType.getMessage());
-
-        assertThat(responseResult.accessToken()).isNotNull().isNotEmpty();
-        assertThat(responseResult.accessToken()).matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$");
-
-        assertThat(responseResult.refreshToken()).isNotNull().isNotEmpty();
-        assertThat(responseResult.refreshToken()).matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$");
-
-        AuthPayload authPayload = authHelper.parseToken(responseResult.accessToken());
-        assertThat(authPayload.memberId()).isEqualTo(2L);
-        assertThat(authPayload.memberNickname()).isEqualTo("User2");
-        assertThat(authPayload.memberRole()).isEqualTo(MemberRole.NORMAL.toString());
-    }
-
-    @Test
-    @DisplayName("가입되지 않은 계정인 경우를 테스트한다.")
-    void loginNotFoundEmailTest() {
-        // Given, test.sql
-        MemberLoginRequest loginRequest = new MemberLoginRequest("email11@test.com", "password2!");
-
-        // When
-        assertThatThrownBy(() -> memberService.login(loginRequest))
-                .isInstanceOf(NotFoundException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
-    }
-
-    @Test
-    @DisplayName("비밀번호가 틀린 경우를 테스트한다.")
-    void loginInvalidPasswordTest() {
-        // Given, test.sql
-        MemberLoginRequest loginRequest = new MemberLoginRequest("email2@test.com", "password22!");
-
-        // When
-        assertThatThrownBy(() -> memberService.login(loginRequest))
-                .isInstanceOf(NotFoundException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
-    }
-
-    @Test
-    @DisplayName("휴면 계정인 경우를 테스트한다.")
-    void loginDormancyAccountTest() {
-        // Given, test.sql
-        MemberLoginRequest loginRequest = new MemberLoginRequest("email9@test.com", "password9!");
-
-        // When
-        assertThatThrownBy(() -> memberService.login(loginRequest))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_DORMANCY);
-    }
-
-    @Test
-    @DisplayName("탈퇴처리 중인 계정인 경우를 테스트한다.")
-    void loginUnRegisterAccountTest() {
-        // Given, test.sql
-        MemberLoginRequest loginRequest = new MemberLoginRequest("email8@test.com", "password8!");
-
-        // When, Then
-        assertThatThrownBy(() -> memberService.login(loginRequest))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
-    }
-
-    @Test
-    @DisplayName("사용자 정보 찾기에 성공한 경우를 테스트 한다.")
-    void findMemberSuccessTest() {
-        // Given, test.sql
-        Long memberId = 1L;
-
-        // When, Then
-        Member member = memberService.getMemberWithThrow(memberId);
-
-        // Then
-        assertThat(member.getId()).isEqualTo(1L);
-        assertThat(member.getNickname()).isEqualTo("User1");
-        assertThat(member.getEmail()).isEqualTo("email1@test.com");
-    }
-
-    @Test
-    @DisplayName("사용자 정보를 찾을 수 없는 경우를 테스트 한다.")
-    void notFoundMemberTest() {
-        // Given, test.sql
-        Long memberId = 11L;
-
-        // When, Then
-        assertThatThrownBy(() -> memberService.getMemberWithThrow(memberId))
-                .isInstanceOf(NotFoundException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
-    }
-
-    @Test
-    @DisplayName("내 프로필 조회에 성공한 경우를 테스트한다.")
-    void findMyProfileSuccessTest() {
-        // Given, test.sql
-        Long memberId = 1L;
-        Member member = memberService.getMemberWithThrow(memberId);
-
-        // When
-        API<MemberProfileResponse> profile = memberService.getProfile(member, memberId);
-
-        // Then
-        MemberProfileResponse result = profile.result();
-        assertThat(result.nickname()).isEqualTo(member.getNickname());
-    }
-
-    @Test
-    @DisplayName("다른 사용자 프로필 조회에 성공한 경우를 테스트한다.")
-    void findOtherProfileSuccessTest() {
-        // Given, test.sql
-        Long memberId = 1L;
-        Member member = memberService.getMemberWithThrow(memberId);
-        Long otherMemberId = 2L;
-        Member other = memberService.getMemberWithThrow(otherMemberId);
-
-        // When
-        API<MemberProfileResponse> profile = memberService.getProfile(member, otherMemberId);
-
-        // Then
-        MemberProfileResponse result = profile.result();
-        assertThat(result.nickname()).isEqualTo(other.getNickname());
-    }
-
-    @Test
-    @DisplayName("다른 사용자 프로필 조회에 성공한 경우를 테스트한다.")
+    @DisplayName("프로필 이미지 업로드에 성공한 경우를 테스트한다.")
     void imageUploadSuccessTest() {
         // Given
         Long memberId = 1L;
@@ -327,7 +361,7 @@ class MemberServiceTest {
 
 
     @Test
-    @DisplayName("S3 이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
+    @DisplayName("이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
     void InvalidImageUploadShouldBadRequestException() {
         // Given
         MockMultipartFile file = new MockMultipartFile(
@@ -362,27 +396,6 @@ class MemberServiceTest {
         // When, then
         assertThatCode(() -> memberService.validateUniqueEmail(email))
             .doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("프로필 수정이 성공할 경우를 테스트한다.")
-    void profileUpdateSuccessTest() {
-        // Given test.sql
-        Long memberId = 1L;
-        MemberProfileRequest request = new MemberProfileRequest("test","test","","010-1234-5678","","");
-
-        // When
-        API<MemberProfileResponse> memberProfileResponseAPI = memberService.updateProfile(memberId, request);
-
-        // then
-        StatusResponse responseStatus = memberProfileResponseAPI.status();
-        MemberProfileResponse responseResult = memberProfileResponseAPI.result();
-        MemberStatusType status = MemberStatusType.UPDATE_PROFILE_SUCCESS;
-        assertThat(responseStatus.code()).isEqualTo(status.getCode());
-        assertThat(responseStatus.message()).isEqualTo(status.getMessage());
-        assertThat(responseResult.nickname()).isEqualTo(request.nickname());
-        assertThat(responseResult.imageUrl()).isEqualTo(request.imageUrl());
-        assertThat(responseResult.phoneNumber()).isEqualTo(request.phoneNumber());
     }
 
 }

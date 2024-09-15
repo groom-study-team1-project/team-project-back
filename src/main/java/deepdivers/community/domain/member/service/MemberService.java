@@ -78,8 +78,7 @@ public class MemberService {
         return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
     }
 
-    public API<MemberProfileResponse> updateProfile(final Long memberId, final MemberProfileRequest request) {
-        final Member member = getMemberWithThrow(memberId);
+    public API<MemberProfileResponse> updateProfile(final Member member, final MemberProfileRequest request) {
         updateAfterProfileValidation(member, request);
 
         final Member updatedMember = memberRepository.save(member);
