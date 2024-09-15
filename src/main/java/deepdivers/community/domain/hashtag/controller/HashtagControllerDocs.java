@@ -1,4 +1,4 @@
-package deepdivers.community.domain.hashtag.model.controller;
+package deepdivers.community.domain.hashtag.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 

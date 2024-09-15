@@ -2,8 +2,17 @@ package deepdivers.community.domain.hashtag.model;
 
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.post.model.Post;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +22,10 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
-        indexes = {
-                @Index(name = "idx_post_hashtag_post_id", columnList = "postId"),
-                @Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtagId")
-        }
+    indexes = {
+        @Index(name = "idx_post_hashtag_post_id", columnList = "post_id"),
+        @Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtag_id")
+    }
 )
 public class PostHashtag extends BaseEntity {
 
@@ -32,4 +41,9 @@ public class PostHashtag extends BaseEntity {
     @JoinColumn(name = "hashtag_id")
     private Hashtag hashtag;
 
+    @Builder
+    public PostHashtag(Post post, Hashtag hashtag) {
+        this.post = post;
+        this.hashtag = hashtag;
+    }
 }
