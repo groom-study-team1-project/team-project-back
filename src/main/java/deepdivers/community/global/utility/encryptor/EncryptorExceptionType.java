@@ -1,4 +1,4 @@
-package deepdivers.community.utility.encryptor;
+package deepdivers.community.global.utility.encryptor;
 
 import deepdivers.community.global.exception.model.ExceptionType;
 import lombok.AllArgsConstructor;

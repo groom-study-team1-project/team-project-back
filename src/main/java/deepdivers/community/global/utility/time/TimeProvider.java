@@ -1,4 +1,4 @@
-package deepdivers.community.utility.time;
+package deepdivers.community.global.utility.time;
 
 import java.time.Clock;
 import java.time.Instant;

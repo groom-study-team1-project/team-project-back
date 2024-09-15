@@ -2,13 +2,11 @@ package deepdivers.community.domain.member.model;
 
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.Encryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

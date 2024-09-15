@@ -3,6 +3,9 @@ package deepdivers.community.utility.encryptor;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import deepdivers.community.global.config.EncryptorConfig;
+import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.global.utility.encryptor.EncryptorTypes;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

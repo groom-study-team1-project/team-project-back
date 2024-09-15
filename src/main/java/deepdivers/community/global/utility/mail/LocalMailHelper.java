@@ -1,4 +1,4 @@
-package deepdivers.community.global.mail;
+package deepdivers.community.global.utility.mail;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

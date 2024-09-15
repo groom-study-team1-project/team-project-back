@@ -1,4 +1,4 @@
-package deepdivers.community.utility.encryptor;
+package deepdivers.community.global.utility.encryptor;
 
 import org.mindrot.jbcrypt.BCrypt;
 

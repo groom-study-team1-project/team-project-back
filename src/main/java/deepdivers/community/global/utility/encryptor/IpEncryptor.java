@@ -1,11 +1,10 @@
-package deepdivers.community.utility.encryptor;
+package deepdivers.community.global.utility.encryptor;
 
 import deepdivers.community.global.exception.model.NotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import org.springframework.web.ErrorResponseException;
 
 public class IpEncryptor implements Encryptor {
 

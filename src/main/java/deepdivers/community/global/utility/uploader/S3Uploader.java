@@ -1,4 +1,4 @@
-package deepdivers.community.utility.uploader;
+package deepdivers.community.global.utility.uploader;
 
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;

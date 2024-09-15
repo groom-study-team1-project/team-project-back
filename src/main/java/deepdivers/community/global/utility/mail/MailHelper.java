@@ -1,4 +1,4 @@
-package deepdivers.community.global.mail;
+package deepdivers.community.global.utility.mail;
 
 import deepdivers.community.global.exception.model.BadRequestException;
 
