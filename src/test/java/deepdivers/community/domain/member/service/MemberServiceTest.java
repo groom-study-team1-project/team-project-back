@@ -84,6 +84,21 @@ class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("소문자 닉네임 정보가 저장되는지 확인한다.")
+    void validateSavedLowerCaseNickname() {
+        // Given, Test.sql
+        String nickname = "aA안1";
+        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", nickname, "test", "010-1234-5678");
+        memberService.signUp(request);
+        String expectedNickname = "aa안1";
+
+        // When & Then
+        assertThatThrownBy(() -> memberService.validateUniqueNickname(expectedNickname))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+    }
+
+    @Test
     @DisplayName("회원 가입이 성공했을 경우를 테스트한다.")
     void signUpSuccessTest() {
         // Given, test.sql
@@ -272,6 +287,38 @@ class MemberServiceTest {
     * 프로필 수정 관련 테스트
     * */
     @Test
+    @DisplayName("프로필 이미지 업로드에 성공한 경우를 테스트한다.")
+    void imageUploadSuccessTest() {
+        // Given
+        Long memberId = 1L;
+        MultipartFile file = new MockMultipartFile(
+            "file", "test.jpg", "image/jpeg", "test image content".getBytes()
+        );
+
+        // When
+        API<ImageUploadResponse> other = memberService.profileImageUpload(file, memberId);
+
+        // Then
+        ImageUploadResponse result = other.result();
+        assertThat(result.imageUrl()).contains(memberId.toString());
+    }
+
+    @Test
+    @DisplayName("이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
+    void InvalidImageUploadShouldBadRequestException() {
+        // Given
+        MockMultipartFile file = new MockMultipartFile(
+            "file", "test.jpg", "text/plain", "test image content".getBytes()
+        );
+        Long memberId = 1L;
+
+        // When, Then
+        assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
+    }
+
+    @Test
     @DisplayName("프로필 수정이 성공할 경우를 테스트한다.")
     void profileUpdateSuccessTest() {
         // Given test.sql
@@ -292,6 +339,9 @@ class MemberServiceTest {
         assertThat(responseResult.phoneNumber()).isEqualTo(request.phoneNumber());
     }
 
+    /*
+    * 부가 서비스
+    * */
     @Test
     @DisplayName("중복 닉네임은 예외가 발생한다.")
     void duplicateNicknameCheckTest() {
@@ -316,7 +366,7 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("닉네임은 대소문자를 구분하지 않는다.")
+    @DisplayName("닉네임 확인은 대소문자를 구분하지 않는다.")
     void duplicateLowerCaseNicknameCheckTest() {
         // Given, Test.sql
         String nickname = "user9";
@@ -327,53 +377,6 @@ class MemberServiceTest {
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
     }
 
-    @Test
-    @DisplayName("소문자 닉네임 정보가 저장되는지 확인한다.")
-    void validateSavedLowerCaseNickname() {
-        // Given, Test.sql
-        String nickname = "aA안1";
-        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", nickname, "test", "010-1234-5678");
-        memberService.signUp(request);
-        String expectedNickname = "aa안1";
-
-        // When & Then
-        assertThatThrownBy(() -> memberService.validateUniqueNickname(expectedNickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
-    }
-
-    @Test
-    @DisplayName("프로필 이미지 업로드에 성공한 경우를 테스트한다.")
-    void imageUploadSuccessTest() {
-        // Given
-        Long memberId = 1L;
-        MultipartFile file = new MockMultipartFile(
-                "file", "test.jpg", "image/jpeg", "test image content".getBytes()
-        );
-
-        // When
-        API<ImageUploadResponse> other = memberService.profileImageUpload(file, memberId);
-
-        // Then
-        ImageUploadResponse result = other.result();
-        assertThat(result.imageUrl()).contains(memberId.toString());
-    }
-
-
-    @Test
-    @DisplayName("이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
-    void InvalidImageUploadShouldBadRequestException() {
-        // Given
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test.jpg", "text/plain", "test image content".getBytes()
-        );
-        Long memberId = 1L;
-
-        // When, Then
-        assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
-    }
 
     @Test
     @DisplayName("중복된 이메일로 검증 시 예외가 발생한다.")

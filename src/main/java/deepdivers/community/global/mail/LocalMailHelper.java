@@ -44,14 +44,10 @@ public class LocalMailHelper implements MailHelper {
 
     private String getVerifyCode(final String email) {
         final Data data = db.get(email);
-        if (data == null) {
-            return null;
+        if (data != null && LocalDateTime.now().isBefore(data.time.plus(CODE_EXPIRATION_TIME))) {
+            return data.verifyCode;
         }
-        if (LocalDateTime.now().isAfter(data.time.plus(CODE_EXPIRATION_TIME))) {
-            db.remove(email);
-            return null;
-        }
-        return data.verifyCode;
+        return null;
     }
 
 }
