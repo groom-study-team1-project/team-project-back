@@ -50,7 +50,7 @@ class TokenControllerTest extends ControllerTest {
                 .given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .header("Refresh-Token", refreshToken)
-                .when().patch("/token/re-issue")
+                .when().patch("/tokens/re-issue")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()

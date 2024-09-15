@@ -22,19 +22,19 @@ public class AccountOpenController implements AccountOpenControllerDocs {
 
     private final AccountService accountService;
 
-    @GetMapping("/verify/nicknames")
+    @GetMapping("/verify/nickname")
     public ResponseEntity<NoContent> verifyNickname(@RequestParam final String nickname) {
         final NoContent response = accountService.verifyNickname(nickname);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/verify/emails")
+    @PostMapping("/verify/email")
     public ResponseEntity<NoContent> verifyEmail(@RequestBody @Valid final VerifyEmailRequest request) {
         final NoContent response = accountService.verifyEmail(request);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/authenticate/emails")
+    @PostMapping("/authenticate/email")
     public ResponseEntity<NoContent> sendEmail(@RequestBody @Valid final AuthenticateEmailRequest request) {
         final NoContent response = accountService.sendAuthenticatedEmail(request);
         return ResponseEntity.ok(response);
