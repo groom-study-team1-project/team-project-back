@@ -58,7 +58,6 @@ public class ProductMailHelper implements MailHelper {
             helper.setText(getEmailContent(authCode), true);
             mailSender.send(message);
         } catch (final MessagingException e) {
-            // todo exception
             throw new IllegalStateException("email sender error: {}", e);
         }
     }
