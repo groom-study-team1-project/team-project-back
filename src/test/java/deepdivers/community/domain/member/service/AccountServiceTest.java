@@ -24,6 +24,25 @@ class AccountServiceTest {
     private AccountService accountService;
 
     /*
+     * 닉네임 검증 테스트
+     * */
+    @Test
+    @DisplayName("올바른 닉네임으로 검사할 경우를 테스트한다.")
+    void verifyNicknameSuccessTest() {
+        // Given test.sql
+        String nickname = "noDuplicate";
+
+        // When
+        NoContent noContent = accountService.verifyNickname(nickname);
+
+        // then
+        StatusResponse expectedStatus = StatusResponse.from(AccountStatusType.NICKNAME_VALIDATE_SUCCESS);
+        StatusResponse resultStatus = noContent.status();
+        assertThat(resultStatus.code()).isEqualTo(expectedStatus.code());
+        assertThat(resultStatus.message()).isEqualTo(expectedStatus.message());
+    }
+
+    /*
      * 이메일 인증코드 전송 테스트
      * */
     @Test

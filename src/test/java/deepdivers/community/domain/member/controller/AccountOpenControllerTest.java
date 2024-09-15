@@ -45,7 +45,7 @@ class AccountOpenControllerTest extends ControllerTest {
     void validateNicknameSuccessfullyReturns200OK() {
         // given
         String nickname = "안녕하세요";
-        NoContent mockResponse = NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(AccountStatusType.NICKNAME_VALIDATE_SUCCESS);
         given(accountService.verifyNickname(anyString())).willReturn(mockResponse);
 
         NoContent response = RestAssuredMockMvc.given().log().all()

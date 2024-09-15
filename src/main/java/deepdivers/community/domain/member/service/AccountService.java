@@ -20,7 +20,7 @@ public class AccountService {
 
     public NoContent verifyNickname(final String nickname) {
         memberService.validateUniqueNickname(nickname);
-        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
+        return NoContent.from(AccountStatusType.NICKNAME_VALIDATE_SUCCESS);
     }
 
     public NoContent verifyEmail(final VerifyEmailRequest request) {
