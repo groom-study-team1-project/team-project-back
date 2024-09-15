@@ -29,8 +29,8 @@ public class PostService {
 
 	private final PostRepository postRepository;
 	private final CategoryRepository categoryRepository;
-	private final HashtagRepository hashtagRepository; // 해시태그 저장소 추가
-	private final PostHashtagRepository postHashtagRepository; // 게시글-해시태그 관계 저장소 추가
+	private final HashtagRepository hashtagRepository;
+	private final PostHashtagRepository postHashtagRepository;
 
 	public API<PostCreateResponse> createPost(PostRequest request, Member member) {
 		// 카테고리 조회
@@ -59,31 +59,28 @@ public class PostService {
 		if (hashtags == null || hashtags.length == 0) {
 			return; // 해시태그가 없으면 바로 반환
 		}
-
 		for (String hashtagStr : hashtags) {
 			if (hashtagStr == null || hashtagStr.isBlank() || !isValidHashtag(hashtagStr)) {
+				// 유효하지 않은 해시태그 형식일 경우 예외 발생
 				throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
 			}
 
 			Hashtag hashtag = hashtagRepository.findByHashtag(hashtagStr)
-				.orElseGet(() -> hashtagRepository.save(new Hashtag(hashtagStr))); // 해시태그가 없으면 새로 저장
+				.orElseGet(() -> hashtagRepository.save(new Hashtag(hashtagStr)));
 
 			PostHashtag postHashtag = PostHashtag.builder()
 				.post(post)
 				.hashtag(hashtag)
 				.build();
 
-			postHashtagRepository.save(postHashtag); // 게시글-해시태그 관계 저장
+			postHashtagRepository.save(postHashtag);
 		}
 	}
 
-	// 해시태그 유효성을 검사하는 메서드
 	private boolean isValidHashtag(String hashtag) {
-		// 해시태그는 '#'으로 시작하고, 1자 이상 10자 이하의 문자가 뒤에 붙어야 함
-		return hashtag.matches("^#[\\w]{1,10}$");
+		// 해시태그는 '#'으로 시작하고, 1자 이상 10자 이하의 알파벳, 숫자 또는 유니코드 문자(한국어 포함)로 구성되어야 함
+		return hashtag.matches("^#[\\p{L}\\p{N}]{1,10}$");
 	}
-
-
 
 	private Category getCategoryById(Long categoryId) {
 		return categoryRepository.findById(categoryId)
