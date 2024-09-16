@@ -86,11 +86,10 @@ public class MemberService {
         return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
     }
 
-    public API<MemberProfileResponse> updatePassword(final Member member, final UpdatePasswordRequest request) {
+    public NoContent updatePassword(final Member member, final UpdatePasswordRequest request) {
         member.updatePassword(encryptor, request);
-        final Member updatedMember = memberRepository.save(member);
-        final MemberProfileResponse result = MemberProfileResponse.from(updatedMember);
-        return API.of(MemberStatusType.UPDATE_PASSWORD_SUCCESS, result);
+        memberRepository.save(member);
+        return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
     }
 
     private Member authenticateMember(final String email, final String password) {

@@ -32,9 +32,9 @@ public class Password {
         this.value = encryptor.encrypt(password);
     }
 
-    protected void updatePassword(final String password) {
+    protected void updatePassword(final Encryptor encryptor, final String password) {
         validatePassword(password);
-        this.value = password;
+        this.value = encryptor.encrypt(password);
     }
 
 }

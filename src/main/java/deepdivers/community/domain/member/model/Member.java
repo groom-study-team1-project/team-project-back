@@ -4,7 +4,6 @@ import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.exception.AccountException;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
@@ -163,12 +162,13 @@ public class Member extends BaseEntity {
 
     public void updatePassword(final Encryptor encryptor, final UpdatePasswordRequest request) {
         if (!encryptor.matches(request.currentPassword(), this.getPassword())) {
-            throw new BadRequestException(AccountException.INVALID_PASSWORD);
+            throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD);
+        }
+        if (encryptor.matches(request.newPassword(), this.getPassword())) {
+            throw new BadRequestException(MemberExceptionType.ALREADY_USING_PASSWORD);
         }
 
-        final String newPassword = request.newPassword();
-        final String encryptedNewPassword = encryptor.encrypt(newPassword);
-        this.password.updatePassword(encryptedNewPassword);
+        this.password.updatePassword(encryptor, request.newPassword());
     }
 
 }

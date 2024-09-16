@@ -60,11 +60,11 @@ public class MemberApiController implements MemberApiControllerDocs {
     }
 
     @PatchMapping("/me/password")
-    public ResponseEntity<API<MemberProfileResponse>> updatePassword(
+    public ResponseEntity<NoContent> updatePassword(
         @Auth final Member member,
-        @RequestBody final UpdatePasswordRequest request
+        @RequestBody @Valid final UpdatePasswordRequest request
     ) {
-        final API<MemberProfileResponse> response = memberService.updatePassword(member, request);
+        final NoContent response = memberService.updatePassword(member, request);
         return ResponseEntity.ok(response);
     }
 
