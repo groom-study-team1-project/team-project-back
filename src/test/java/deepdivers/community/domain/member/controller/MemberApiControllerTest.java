@@ -9,9 +9,11 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.api.MemberApiController;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
@@ -190,6 +192,68 @@ class MemberApiControllerTest extends ControllerTest {
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
             .body("message", containsString("사용자 전화번호 정보가 필요합니다."));
+    }
+
+    /*
+     * 비밀번호 수정 컨트롤러 테스트
+     * */
+    @Test
+    @DisplayName("올바른 프로필 정보 수정시 200 OK가 떨어진다.")
+    void updatePasswordReturns200OK() {
+        // given
+        UpdatePasswordRequest request = new UpdatePasswordRequest("test", "test");
+        Member member = memberService.getMemberWithThrow(1L);
+        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
+        given(memberService.updatePassword(member, request)).willReturn(mockResponse);
+
+        // when
+        NoContent response = RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().patch("/api/members/me/password")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>() {
+            });
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+    }
+
+    @Test
+    @DisplayName("비밀번호 수정시 현재 비밀번호 정보가 없다면 400 BadRequest 가 떨어진다.")
+    void passwordUpdateNullCurrentPasswordReturns400BadRequest() {
+        // given
+        UpdatePasswordRequest request = new UpdatePasswordRequest(null, "test");
+
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().patch("/api/members/me/password")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(101))
+            .body("message", containsString("현재 비밀번호 정보가 필요합니다."));
+    }
+
+    @Test
+    @DisplayName("비밀번호 수정시 새로운 비밀번호 정보가 없다면 400 BadRequest 가 떨어진다.")
+    void passwordUpdateNullNewPasswordReturns400BadRequest() {
+        // given
+        UpdatePasswordRequest request = new UpdatePasswordRequest("test", null);
+
+        // when, then
+        RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .body(request)
+            .when().patch("/api/members/me/password")
+            .then().log().all()
+            .status(HttpStatus.BAD_REQUEST)
+            .body("code", equalTo(101))
+            .body("message", containsString("새로운 비밀번호 정보가 필요합니다."));
     }
 
 }

@@ -3,6 +3,7 @@ package deepdivers.community.domain.member.model;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
@@ -25,6 +26,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
@@ -37,6 +39,7 @@ import org.apache.commons.lang3.StringUtils;
         )
 )
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Member extends BaseEntity {
 
     @Id
@@ -155,6 +158,17 @@ public class Member extends BaseEntity {
             case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
             case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
         }
+    }
+
+    public void updatePassword(final Encryptor encryptor, final UpdatePasswordRequest request) {
+        if (!encryptor.matches(request.currentPassword(), this.getPassword())) {
+            throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD);
+        }
+        if (encryptor.matches(request.newPassword(), this.getPassword())) {
+            throw new BadRequestException(MemberExceptionType.ALREADY_USING_PASSWORD);
+        }
+
+        this.password.updatePassword(encryptor, request.newPassword());
     }
 
 }

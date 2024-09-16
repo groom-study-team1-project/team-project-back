@@ -2,9 +2,13 @@ package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
+import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
+import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.EncryptorBean;
 import deepdivers.community.global.utility.mail.MailHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

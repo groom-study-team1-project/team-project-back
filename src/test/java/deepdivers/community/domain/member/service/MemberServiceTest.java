@@ -12,6 +12,7 @@ import deepdivers.community.domain.common.StatusType;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
@@ -333,6 +334,52 @@ class MemberServiceTest {
         assertThat(responseResult.nickname()).isEqualTo(request.nickname());
         assertThat(responseResult.imageUrl()).isEqualTo(request.imageUrl());
         assertThat(responseResult.phoneNumber()).isEqualTo(request.phoneNumber());
+    }
+
+    /*
+    * 비밀번호 변경 서비스
+    * */
+    @Test
+    @DisplayName("비밀번호 수정이 성공할 경우를 테스트한다.")
+    void passwordUpdateSuccessTest() {
+        // Given test.sql
+        Member member = memberService.getMemberWithThrow(1L);
+        UpdatePasswordRequest request = new UpdatePasswordRequest("password1!", "password2!");
+
+        // When
+        NoContent response = memberService.updatePassword(member, request);
+
+        // then
+        StatusResponse responseStatus = response.status();
+        MemberStatusType status = MemberStatusType.UPDATE_PASSWORD_SUCCESS;
+        assertThat(responseStatus.code()).isEqualTo(status.getCode());
+        assertThat(responseStatus.message()).isEqualTo(status.getMessage());
+    }
+
+    @Test
+    @DisplayName("동일한 비밀번호로 수정할 경우 예외가 발생한다.")
+    void samePasswordUpdateErrorTest() {
+        // Given test.sql
+        Member member = memberService.getMemberWithThrow(2L);
+        UpdatePasswordRequest request = new UpdatePasswordRequest("password2!", "password2!");
+
+        // When, then
+        assertThatThrownBy(() -> memberService.updatePassword(member, request))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_USING_PASSWORD);
+    }
+
+    @Test
+    @DisplayName("틀린 비밀번호로 수정할 경우 예외가 발생한다.")
+    void wrongPasswordUpdateErrorTest() {
+        // Given test.sql
+        Member member = memberService.getMemberWithThrow(2L);
+        UpdatePasswordRequest request = new UpdatePasswordRequest("password3!", "password2!");
+
+        // When, then
+        assertThatThrownBy(() -> memberService.updatePassword(member, request))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD);
     }
 
     /*

@@ -5,6 +5,7 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
@@ -82,6 +83,12 @@ public class MemberService {
         final Member updatedMember = memberRepository.save(member);
         final MemberProfileResponse result = MemberProfileResponse.from(updatedMember);
         return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
+    }
+
+    public NoContent updatePassword(final Member member, final UpdatePasswordRequest request) {
+        member.updatePassword(encryptor, request);
+        memberRepository.save(member);
+        return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
     }
 
     private Member authenticateMember(final String email, final String password) {
