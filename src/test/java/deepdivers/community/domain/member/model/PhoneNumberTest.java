@@ -32,7 +32,7 @@ class PhoneNumberTest {
     @DisplayName("올바르지 않은 전화번호 입력 시 유효하지 않은 전화번호 형식 예외가 떨어지는지 확인한다.")
     void fromWithInvalidPhoneNumberShouldThrowException(String invalidPhoneNumber) {
         // given, when, then
-        assertThatThrownBy(() -> PhoneNumber.validator(invalidPhoneNumber))
+        assertThatThrownBy(() -> new PhoneNumber(invalidPhoneNumber))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PHONE_NUMBER_FORMAT);
     }

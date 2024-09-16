@@ -1,19 +1,17 @@
 package deepdivers.community.global.config;
 
 import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.security.SecurityScheme.In;
 import io.swagger.v3.oas.models.security.SecurityScheme.Type;
+import io.swagger.v3.oas.models.servers.Server;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 public class OpenApiConfig {
@@ -31,20 +29,22 @@ public class OpenApiConfig {
 
 	@Bean
 	public OpenAPI openAPI() {
-		final Server server = generateServer();
-		final Info info = generateInfo();
+        return new OpenAPI().info(generateInfo())
+			.servers(List.of(generateServer()))
+			.components(generateComponents())
+			.security(List.of(generateSecurityRequirement()));
+	}
+
+	private Components generateComponents() {
 		final SecurityScheme accessTokenScheme = generateAccessTokenScheme();
 		final SecurityScheme refreshTokenScheme = generateRefreshTokenScheme();
-		final SecurityRequirement securityRequirement = new SecurityRequirement().addList("bearerAuth").addList("refreshAuth");
+		return new Components().addSecuritySchemes("bearerAuth", accessTokenScheme)
+			.addSecuritySchemes("refreshAuth", refreshTokenScheme);
+	}
 
-		return new OpenAPI()
-			.info(info)
-			.servers(List.of(server))
-			.components(new Components()
-					.addSecuritySchemes("bearerAuth", accessTokenScheme)
-					.addSecuritySchemes("refreshAuth", refreshTokenScheme)
-			)
-			.security(List.of(securityRequirement));
+	private SecurityRequirement generateSecurityRequirement() {
+		return new SecurityRequirement().addList("bearerAuth")
+			.addList("refreshAuth");
 	}
 
 	private Server generateServer() {

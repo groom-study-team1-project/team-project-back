@@ -3,9 +3,11 @@ package deepdivers.community.domain.member.model;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
-import deepdivers.community.utility.encryptor.Encryptor;
+import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.utility.encryptor.Encryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -19,7 +21,6 @@ import jakarta.persistence.UniqueConstraint;
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -77,22 +78,21 @@ public class Member extends BaseEntity {
     private ActivityStats activityStats;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private MemberStatus status;
 
-    @Builder(access = AccessLevel.PROTECTED)
     private Member(final MemberSignUpRequest request, final Encryptor encryptor) {
         this.email = new Email(request.email());
-        this.password = Password.of(encryptor, request.password());
-        this.role = MemberRole.NORMAL;
-        this.nickname = Nickname.from(request.nickname());
+        this.password = new Password(encryptor, request.password());
+        this.nickname = new Nickname(request.nickname());
+        this.phoneNumber = new PhoneNumber(request.phoneNumber());
         this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
         this.imageUrl = request.imageUrl();
+        this.activityStats = ActivityStats.createDefault();
         this.aboutMe = StringUtils.EMPTY;
-        this.phoneNumber = new PhoneNumber(request.phoneNumber());
         this.githubAddr = StringUtils.EMPTY;
         this.blogAddr = StringUtils.EMPTY;
-        this.activityStats = ActivityStats.createDefault();
+        this.role = MemberRole.NORMAL;
         this.status = MemberStatus.REGISTERED;
     }
 
@@ -147,6 +147,13 @@ public class Member extends BaseEntity {
     private void updateAboutMe(final String aboutMe) {
         if (!(aboutMe == null || aboutMe.isEmpty())) {
             this.aboutMe = aboutMe;
+        }
+    }
+
+    public void validateStatus() {
+        switch (this.status) {
+            case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+            case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
         }
     }
 

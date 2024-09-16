@@ -36,7 +36,7 @@ class TokenControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("회원가입 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+    @DisplayName("토큰 재발급 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
     void reIssueSuccessfullyReturns200OK() {
         // given
         String accessToken = "Bearer accessToken";
@@ -50,7 +50,7 @@ class TokenControllerTest extends ControllerTest {
                 .given().log().all()
                 .header(HttpHeaders.AUTHORIZATION, accessToken)
                 .header("Refresh-Token", refreshToken)
-                .when().patch("/token/re-issue")
+                .when().patch("/tokens/re-issue")
                 .then().log().all()
                 .status(HttpStatus.OK)
                 .extract()

@@ -4,18 +4,14 @@ import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.util.Locale;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "value")
 public class Nickname {
@@ -27,25 +23,26 @@ public class Nickname {
     @Column(name = "nickname", nullable = false, length = 20)
     private String value;
 
-    public static void validator(final String nickname) {
+    public void validateNickname(final String nickname) {
         validateNicknameLength(nickname);
         validateNickNameFormat(nickname);
     }
 
-    private static void validateNicknameLength(final String nickname) {
+    private void validateNicknameLength(final String nickname) {
         if (nickname.length() < MIN_LENGTH || nickname.length() > MAX_LENGTH) {
             throw new BadRequestException(MemberExceptionType.INVALID_NICKNAME_LENGTH);
         }
     }
 
-    private static void validateNickNameFormat(final String nickname) {
+    private void validateNickNameFormat(final String nickname) {
         if (!PATTERN.matcher(nickname).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_NICKNAME_FORMAT);
         }
     }
 
-    protected static Nickname from(final String nickname) {
-        return new Nickname(nickname);
+    protected Nickname(final String nickname) {
+        validateNickname(nickname);
+        this.value = nickname;
     }
 
     public void update(final String nickname) {

@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.model;
 
 import deepdivers.community.domain.common.BaseEntity;
-import deepdivers.community.domain.hashtag.model.PostHashtag;
+import deepdivers.community.domain.post.model.hashtag.HashtagRelation;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ import java.util.Set;
         indexes = {
                 @Index(name = "idx_post_title", columnList = "title"),
                 @Index(name = "idx_post_view_count_id", columnList = "viewCount, id"),
-                @Index(name = "idx_post_recommend_count_id", columnList = "recommendCount, id"),
+                @Index(name = "idx_post_like_count_id", columnList = "likeCount, id"),
                 @Index(name = "idx_post_category_id_id", columnList = "categoryId, id"),
                 @Index(name = "idx_post_created_at", columnList = "createdAt"),
                 @Index(name = "idx_post_member_id_id", columnList = "memberId, id"),
@@ -55,7 +55,7 @@ public class Post extends BaseEntity {
 
     @ColumnDefault("0")
     @Column(nullable = false)
-    private Integer recommendCount;
+    private Integer likeCount;
 
     @ColumnDefault("0")
     @Column(nullable = false)
@@ -66,6 +66,6 @@ public class Post extends BaseEntity {
     private PostStatus status;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<PostHashtag> postHashtags = new HashSet<>();
+    private Set<HashtagRelation> hashtagRelations = new HashSet<>();
 
 }

@@ -14,7 +14,6 @@ import lombok.Setter;
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
 public class PhoneNumber {
 
@@ -24,13 +23,19 @@ public class PhoneNumber {
     @Column(name = "phoneNumber", nullable = false, length = 20)
     private String value;
 
-    public static void validator(final String phoneNumber) {
+    private void validatePhoneNumber(final String phoneNumber) {
         if (!PATTERN.matcher(phoneNumber).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_PHONE_NUMBER_FORMAT);
         }
     }
 
     protected void update(final String phoneNumber) {
+        validatePhoneNumber(phoneNumber);
+        this.value = phoneNumber;
+    }
+
+    protected PhoneNumber(final String phoneNumber) {
+        validatePhoneNumber(phoneNumber);
         this.value = phoneNumber;
     }
 

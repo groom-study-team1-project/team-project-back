@@ -1,6 +1,7 @@
 package deepdivers.community.domain.member.controller.api;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.member.controller.docs.MemberApiControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
@@ -12,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,7 +29,7 @@ public class MemberApiController implements MemberApiControllerDocs {
 
     private final MemberService memberService;
 
-    @GetMapping("/{memberId}/me")
+    @GetMapping("/me/{memberId}")
     public ResponseEntity<API<MemberProfileResponse>> me(
             @Auth final Member member,
             @PathVariable final Long memberId
@@ -38,7 +38,7 @@ public class MemberApiController implements MemberApiControllerDocs {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping(value = "/profile-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @PostMapping(value = "/me/profile-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
     public ResponseEntity<API<ImageUploadResponse>> profileImageUpload(
             @Auth final Member member,
             @RequestParam final MultipartFile imageFile
@@ -47,12 +47,12 @@ public class MemberApiController implements MemberApiControllerDocs {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/profile")
+    @PutMapping("/me")
     public ResponseEntity<API<MemberProfileResponse>> updateProfile(
         @Auth final Member member,
         @Valid @RequestBody final MemberProfileRequest request
     ) {
-        final API<MemberProfileResponse> response = memberService.updateProfile(member.getId(), request);
+        final API<MemberProfileResponse> response = memberService.updateProfile(member, request);
         return ResponseEntity.ok(response);
     }
 
