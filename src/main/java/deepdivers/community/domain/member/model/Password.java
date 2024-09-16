@@ -21,11 +21,20 @@ public class Password {
     @Getter
     private String value;
 
-    protected Password(final Encryptor encryptor, final String password) {
+    private void validatePassword(final String password) {
         if (!PATTERN.matcher(password).matches()) {
             throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD_FORMAT);
         }
+    }
+
+    protected Password(final Encryptor encryptor, final String password) {
+        validatePassword(password);
         this.value = encryptor.encrypt(password);
+    }
+
+    protected void updatePassword(final String password) {
+        validatePassword(password);
+        this.value = password;
     }
 
 }
