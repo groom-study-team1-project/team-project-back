@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "title")
 public class PostTitle {
 
-	private static final int MIN_LENGTH = 5;
+	private static final int MIN_LENGTH = 2;
 	private static final int MAX_LENGTH = 50;
 
 	@Column(name = "post_title", nullable = false, length = 50)
