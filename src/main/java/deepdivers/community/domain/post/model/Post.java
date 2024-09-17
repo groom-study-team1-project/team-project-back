@@ -1,15 +1,33 @@
 package deepdivers.community.domain.post.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.hibernate.annotations.ColumnDefault;
+
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.model.vo.PostStatus;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
-
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @EqualsAndHashCode(callSuper = false, of = {"id"})
@@ -25,15 +43,15 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @Embedded
+    private PostTitle title;
+
+    @Embedded
+    private PostContent content;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
-    private Category category;
-
-    @Column(nullable = false, length = 50)
-    private String title;
-
-    @Column(nullable = false)
-    private String content;
+    private PostCategory category;
 
     @Column(nullable = false)
     @ColumnDefault("0")
@@ -55,7 +73,7 @@ public class Post extends BaseEntity {
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
     @Builder
-    public Post(String title, String content, Category category, Member member, PostStatus status) {
+    public Post(PostTitle title, PostContent content, PostCategory category, Member member, PostStatus status) {
         this.title = title;
         this.content = content;
         this.category = category;
@@ -66,17 +84,24 @@ public class Post extends BaseEntity {
         this.status = status != null ? status : PostStatus.ACTIVE;
     }
 
-    // 게시글이 활성 상태인지 확인하는 메서드
+    public static Post of(final PostCreateRequest request, final PostCategory category, final Member member) {
+        return new Post(
+            PostTitle.of(request.title()),
+            PostContent.of(request.content()),
+            category,
+            member,
+            PostStatus.ACTIVE
+        );
+    }
+
     public boolean isActive() {
         return this.status == PostStatus.ACTIVE;
     }
 
-    // 게시글이 삭제 상태인지 확인하는 메서드
     public boolean isDeleted() {
         return this.status == PostStatus.DELETED;
     }
 
-    // 게시글 삭제 처리
     public void delete() {
         this.status = PostStatus.DELETED;
     }

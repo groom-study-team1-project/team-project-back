@@ -10,13 +10,15 @@ import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.hashtag.repository.HashtagRepository;
 import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostRequest;
+import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
-import deepdivers.community.domain.post.model.Category;
 import deepdivers.community.domain.post.model.Post;
+import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.model.PostContent;
 import deepdivers.community.domain.post.model.vo.PostStatus;
+import deepdivers.community.domain.post.model.PostTitle;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
@@ -32,15 +34,15 @@ public class PostService {
 	private final HashtagRepository hashtagRepository;
 	private final PostHashtagRepository postHashtagRepository;
 
-	public API<PostCreateResponse> createPost(PostRequest request, Member member) {
+	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
 		// 카테고리 조회
-		Category category = getCategoryById(request.categoryId());
+		PostCategory postCategory = getCategoryById(request.categoryId());
 
 		// Post 엔티티 생성
 		Post post = Post.builder()
-			.title(request.title())
-			.content(request.content())
-			.category(category)
+			.title(PostTitle.of(request.title()))
+			.content(PostContent.of(request.content()))
+			.category(postCategory)
 			.member(member)
 			.status(PostStatus.ACTIVE)
 			.build();
@@ -82,7 +84,7 @@ public class PostService {
 		return hashtag.matches("^#[\\p{L}\\p{N}]{1,10}$");
 	}
 
-	private Category getCategoryById(Long categoryId) {
+	private PostCategory getCategoryById(Long categoryId) {
 		return categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new BadRequestException(CategoryExceptionType.CATEGORY_NOT_FOUND));
 	}

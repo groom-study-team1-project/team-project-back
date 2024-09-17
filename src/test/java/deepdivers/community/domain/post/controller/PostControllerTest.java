@@ -19,7 +19,7 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.api.PostApiController;
-import deepdivers.community.domain.post.dto.request.PostRequest;
+import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.service.PostService;
@@ -44,11 +44,11 @@ class PostControllerTest extends ControllerTest {
 	void createPostSuccessfullyReturns200OK() {
 		// given
 		String[] hashtags = {"#Spring", "#Boot", "#해시태그"};
-		PostRequest request = new PostRequest("게시글 테스트 제목", "게시글 테스트 내용", 1L, hashtags); // 10자 이상의 내용 입력
+		PostCreateRequest request = new PostCreateRequest("게시글 테스트 제목", "게시글 테스트 내용", 1L, hashtags); // 10자 이상의 내용 입력
 		PostCreateResponse createResponse = new PostCreateResponse(1L);
 		API<PostCreateResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, createResponse);
 
-		given(postService.createPost(any(PostRequest.class), any(Member.class))).willReturn(mockResponse);
+		given(postService.createPost(any(PostCreateRequest.class), any(Member.class))).willReturn(mockResponse);
 
 		// when
 		API<PostCreateResponse> response = RestAssuredMockMvc
@@ -72,7 +72,7 @@ class PostControllerTest extends ControllerTest {
 	void createPostWithoutTitleReturns400BadRequest() {
 		// given
 		String[] hashtags = {"#Spring", "#Boot"};
-		PostRequest request = new PostRequest(null, "게시글 내용", 1L, hashtags);
+		PostCreateRequest request = new PostCreateRequest(null, "게시글 내용", 1L, hashtags);
 
 		// when, then
 		RestAssuredMockMvc
@@ -91,7 +91,7 @@ class PostControllerTest extends ControllerTest {
 	void createPostWithoutContentReturns400BadRequest() {
 		// given
 		String[] hashtags = {"#Spring", "#Boot"};
-		PostRequest request = new PostRequest("게시글 제목", null, 1L, hashtags);
+		PostCreateRequest request = new PostCreateRequest("게시글 제목", null, 1L, hashtags);
 
 		// when, then
 		RestAssuredMockMvc
@@ -110,7 +110,7 @@ class PostControllerTest extends ControllerTest {
 	void createPostWithoutCategoryReturns400BadRequest() {
 		// given
 		String[] hashtags = {"#Spring", "#Boot"};
-		PostRequest request = new PostRequest("게시글 제목", "게시글 내용입니다", null, hashtags); // categoryId가null
+		PostCreateRequest request = new PostCreateRequest("게시글 제목", "게시글 내용입니다", null, hashtags); // categoryId가null
 
 		// when, then
 		RestAssuredMockMvc
@@ -130,12 +130,12 @@ class PostControllerTest extends ControllerTest {
 	void createPostWithoutHashtagsReturns200OK() {
 		// given
 		String[] emptyHashtags = {}; // 빈 배열로 설정
-		PostRequest request = new PostRequest("게시글 제목", "게시글 내용입니다.", 1L, emptyHashtags); // 빈 해시태그 배열로 요청
+		PostCreateRequest request = new PostCreateRequest("게시글 제목", "게시글 내용입니다.", 1L, emptyHashtags); // 빈 해시태그 배열로 요청
 
 		PostCreateResponse createResponse = new PostCreateResponse(1L);
 		API<PostCreateResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, createResponse);
 
-		given(postService.createPost(any(PostRequest.class), any(Member.class))).willReturn(mockResponse);
+		given(postService.createPost(any(PostCreateRequest.class), any(Member.class))).willReturn(mockResponse);
 
 		// when
 		API<PostCreateResponse> response = RestAssuredMockMvc
@@ -158,10 +158,10 @@ class PostControllerTest extends ControllerTest {
 	void createPostWithInvalidHashtagsReturns400BadRequest() {
 		// given
 		String[] invalidHashtags = {"Spring", "#Invalid!", "#TooLongTag123"};
-		PostRequest request = new PostRequest("게시글 제목", "게시글 내용입니다", 1L, invalidHashtags);
+		PostCreateRequest request = new PostCreateRequest("게시글 제목", "게시글 내용입니다", 1L, invalidHashtags);
 
 		// Mock 설정: 잘못된 해시태그가 입력되면 예외 발생
-		given(postService.createPost(any(PostRequest.class), any(Member.class)))
+		given(postService.createPost(any(PostCreateRequest.class), any(Member.class)))
 			.willThrow(new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT));
 
 		// when, then

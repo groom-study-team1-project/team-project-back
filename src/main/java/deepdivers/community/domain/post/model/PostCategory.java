@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
     name = "category",
     uniqueConstraints = @UniqueConstraint(columnNames = "title")
 )
-public class Category {
+public class PostCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,10 +41,9 @@ public class Category {
     private CategoryStatus status = CategoryStatus.ACTIVE;
 
     @Builder
-    public Category(String title, String description, CategoryStatus status) {
+    public PostCategory(String title, String description, CategoryStatus status) {
         this.title = title;
         this.description = description;
-        // null이 아닌 경우에만 status를 설정, 그렇지 않으면 기본값 유지
         this.status = (status != null) ? status : CategoryStatus.ACTIVE;
     }
 
@@ -52,7 +51,6 @@ public class Category {
         this.status = CategoryStatus.INACTIVE;
     }
 
-    // title을 반환하도록 수정
     public String getName() {
         return this.title;
     }

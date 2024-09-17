@@ -12,7 +12,7 @@ INSERT INTO member (email, password, about_me, comment_count, post_count, blog_a
 
 
 -- Post 테이블 기본 카테고리 INSERT 쿼리
-INSERT INTO category (id, title, description, status) VALUES (1, '자유게시판', 'General discussions', 'ACTIVE');
-INSERT INTO category (id, title, description, status) VALUES (2, '커뮤니티게시판', 'All about technology', 'ACTIVE');
-INSERT INTO category (id, title, description, status) VALUES (3, '프로젝트게시판', 'Lifestyle and health topics', 'ACTIVE');
+INSERT INTO postCategory (id, title, description, status) VALUES (1, '자유게시판', 'General discussions', 'ACTIVE');
+INSERT INTO postCategory (id, title, description, status) VALUES (2, '커뮤니티게시판', 'All about technology', 'ACTIVE');
+INSERT INTO postCategory (id, title, description, status) VALUES (3, '프로젝트게시판', 'Lifestyle and health topics', 'ACTIVE');
 

@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostRequest;
+import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,5 +34,5 @@ public interface PostApiControllerDocs {
                     """,
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<PostCreateResponse>> createPost(Member member, PostRequest request);
+	ResponseEntity<API<PostCreateResponse>> createPost(Member member, PostCreateRequest request);
 }

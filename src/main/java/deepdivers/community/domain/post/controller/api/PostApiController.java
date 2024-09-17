@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostRequest;
+import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.security.jwt.Auth;
@@ -26,7 +26,7 @@ public class PostApiController implements PostApiControllerDocs {
 	@PostMapping("/upload")
 	public ResponseEntity<API<PostCreateResponse>> createPost(
 		@Auth final Member member,
-		@Valid @RequestBody final PostRequest request
+		@Valid @RequestBody final PostCreateRequest request
 	) {
 		final API<PostCreateResponse> response = postService.createPost(request, member);
 		return ResponseEntity.ok(response);

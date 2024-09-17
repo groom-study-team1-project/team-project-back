@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Schema(description = "게시글 생성 요청")
-public record PostRequest(
+public record PostCreateRequest(
 	@Schema(description = "게시글 제목", example = "여기에 게시글 제목을 입력하세요.")
 	@NotBlank(message = "게시글 제목은 필수입니다.")
 	@Size(min = 2, max = 50, message = "게시글 제목은 최소 2자 이상, 최대 50자 이하이어야 합니다.")
