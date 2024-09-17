@@ -24,7 +24,7 @@ class PostContentTest {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"", "12345"})
+	@ValueSource(strings = {"", "1234"})
 	@DisplayName("내용 길이에 대해 검증이 실패하는 경우 유효하지 않은 내용 길이의 예외가 떨어지는 것을 확인한다.")
 	void ofWithInvalidContentLengthShouldThrowException(String invalidContent) {
 		// given, when, then

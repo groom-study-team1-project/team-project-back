@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(of = "content")
 public class PostContent {
 
-	private static final int MIN_LENGTH = 10;
+	private static final int MIN_LENGTH = 5;
 
 	@Column(name = "post_content", nullable = false)
 	private String content;  // 필드 이름을 "content"로 변경하여 구체화
