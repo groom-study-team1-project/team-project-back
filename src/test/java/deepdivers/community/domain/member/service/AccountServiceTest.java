@@ -52,7 +52,7 @@ class AccountServiceTest {
         AuthenticateEmailRequest request = new AuthenticateEmailRequest("email@test.com");
 
         // When
-        NoContent noContent = accountService.sendAuthenticatedEmail(request);
+        NoContent noContent = accountService.emailAuthentication(request);
 
         // then
         StatusResponse expectedStatus = StatusResponse.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
@@ -68,7 +68,7 @@ class AccountServiceTest {
     @DisplayName("올바른 이메일과 인증 코드로 검증할 경우 성공한다.")
     void verifyEmailWithAuthenticateSuccessTest() {
         // Given, test.sql
-        accountService.sendAuthenticatedEmail(new AuthenticateEmailRequest("email@test.com"));
+        accountService.emailAuthentication(new AuthenticateEmailRequest("email@test.com"));
         VerifyEmailRequest request = new VerifyEmailRequest("email@test.com", "123456");
 
         // When
@@ -90,28 +90,28 @@ class AccountServiceTest {
         // when, then
         assertThatThrownBy(() -> accountService.verifyEmail(request))
             .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MailException.NOT_SENT_VERIFY_CODE);
+            .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
     }
 
     @Test
     @DisplayName("검증이 성공한 코드로 재검증 시 예외가 발생한다.")
     void twiceVerifyEmailWithAuthenticateCodeShouldBeError() {
         // Given, test.sql
-        accountService.sendAuthenticatedEmail(new AuthenticateEmailRequest("email@test.com"));
+        accountService.emailAuthentication(new AuthenticateEmailRequest("email@test.com"));
         VerifyEmailRequest request = new VerifyEmailRequest("email@test.com", "123456");
         accountService.verifyEmail(request);
 
         // when, then
         assertThatThrownBy(() -> accountService.verifyEmail(request))
             .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MailException.NOT_SENT_VERIFY_CODE);
+            .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
     }
 
     @Test
     @DisplayName("틀린 코드로 검증 시 예외가 발생한다.")
     void verifyEmailWithInvalidAuthenticateCodeShouldBeError() {
         // Given, test.sql
-        accountService.sendAuthenticatedEmail(new AuthenticateEmailRequest("email@test.com"));
+        accountService.emailAuthentication(new AuthenticateEmailRequest("email@test.com"));
         VerifyEmailRequest request = new VerifyEmailRequest("email@test.com", "111111");
 
         // when, then

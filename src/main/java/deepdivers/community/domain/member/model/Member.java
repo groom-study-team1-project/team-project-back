@@ -160,15 +160,20 @@ public class Member extends BaseEntity {
         }
     }
 
-    public void updatePassword(final Encryptor encryptor, final UpdatePasswordRequest request) {
+    public void resetPassword(final Encryptor encryptor, final String password) {
+        // todo test
+        this.password.reset(encryptor, password);
+    }
+
+    public void changePassword(final Encryptor encryptor, final UpdatePasswordRequest request) {
+        // todo test
         if (!encryptor.matches(request.currentPassword(), this.getPassword())) {
             throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD);
         }
         if (encryptor.matches(request.newPassword(), this.getPassword())) {
             throw new BadRequestException(MemberExceptionType.ALREADY_USING_PASSWORD);
         }
-
-        this.password.updatePassword(encryptor, request.newPassword());
+        resetPassword(encryptor, request.newPassword());
     }
 
 }

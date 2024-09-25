@@ -199,12 +199,12 @@ class MemberApiControllerTest extends ControllerTest {
      * */
     @Test
     @DisplayName("올바른 프로필 정보 수정시 200 OK가 떨어진다.")
-    void updatePasswordReturns200OK() {
+    void changePasswordReturns200OK() {
         // given
         UpdatePasswordRequest request = new UpdatePasswordRequest("test", "test");
         Member member = memberService.getMemberWithThrow(1L);
         NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
-        given(memberService.updatePassword(member, request)).willReturn(mockResponse);
+        given(memberService.changePassword(member, request)).willReturn(mockResponse);
 
         // when
         NoContent response = RestAssuredMockMvc.given().log().all()

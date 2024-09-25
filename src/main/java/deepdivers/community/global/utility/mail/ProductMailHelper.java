@@ -19,7 +19,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 @RequiredArgsConstructor
 public class ProductMailHelper implements MailHelper {
 
-    private static final String EMAIL_AUTH_SUBJECT = "[구름커뮤니티] 이메일 인증 메일입니다.";
+    private static final String EMAIL_AUTH_SUBJECT = "[구름커뮤니티] 인증 관련 메일입니다.";
     private static final Duration CODE_EXPIRATION_TIME = Duration.ofMinutes(5);
 
     private final JavaMailSender mailSender;
