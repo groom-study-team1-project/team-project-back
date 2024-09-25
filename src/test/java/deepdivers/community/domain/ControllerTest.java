@@ -26,7 +26,7 @@ public class ControllerTest {
     protected Encryptor encryptor;
 
     protected void mockingAuthArgumentResolver() {
-        AuthPayload tokenPayload = new AuthPayload(1L, "1", "1", 1L, 1L);
+        AuthPayload tokenPayload = new AuthPayload(1L, "1", "1", "", 1L, 1L);
         given(authHelper.resolveToken(any())).willReturn("token");
         given(authHelper.parseToken(anyString())).willReturn(tokenPayload);
         given(encryptor.matches(anyString(), anyString())).willReturn(true);

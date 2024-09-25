@@ -125,7 +125,7 @@ class AuthHelperTest {
     void parseToken_ShouldReturnAuthPayload() throws JsonProcessingException {
         // Given
         String token = "header.eyJtZW1iZXJJZCI6MX0.signature";
-        AuthPayload expectedPayload = new AuthPayload(1L, "testUser", "USER", accessTokenExpirationTime, refreshTokenExpirationTime);
+        AuthPayload expectedPayload = new AuthPayload(1L, "testUser", "USER", "",  accessTokenExpirationTime, refreshTokenExpirationTime);
         when(objectMapper.readValue("{\"memberId\":1}", AuthPayload.class)).thenReturn(expectedPayload);
 
         // When

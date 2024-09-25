@@ -1,13 +1,15 @@
 package deepdivers.community.domain.post.model.vo;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
 public enum PostStatus {
+    ACTIVE,    // 활성 상태
+    DELETED,   // 삭제 상태
+    INACTIVE;  // 비활성화 상태
 
-    REGISTERED("등록"),
-    UNREGISTERED("해지");
+    public boolean isActive() {
+        return this == ACTIVE;
+    }
 
-    private final String description;
-
+    public boolean isDeleted() {
+        return this == DELETED;
+    }
 }

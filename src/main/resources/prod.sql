@@ -10,7 +10,30 @@ INSERT INTO member (email, password, about_me, comment_count, post_count, blog_a
 INSERT INTO member (email, password, about_me, comment_count, post_count, blog_addr, github_addr, phone_number, created_at, image_url, nickname, lower_nickname, role, status, updated_at) VALUES ('email9@test.com', '$2a$10$7sCWluVvMiLkqk7BrrYiFObdBZs4FzEZZielXNUH.FS3sjDEIOzVS', 'About me 9', 0, 0, 'http://blog9.com', 'http://github.com/user9', '010-1234-0009', CURRENT_TIMESTAMP, 'http://example.com/image9.jpg', 'User9', 'user9', 'NORMAL', 'DORMANCY', CURRENT_TIMESTAMP);
 INSERT INTO member (email, password, about_me, comment_count, post_count, blog_addr, github_addr, phone_number, created_at, image_url, nickname, lower_nickname, role, status, updated_at) VALUES ('email10@test.com', '$2a$10$kL5QsZWD23lNIY8pBa1UQep.WaRgv9/cMSODJmDLt6DS/sL4jagxu', 'About me 10', 0, 0, 'http://blog10.com', 'http://github.com/user10', '010-1234-0010', CURRENT_TIMESTAMP, 'http://example.com/image10.jpg', 'User10', 'user10', 'NORMAL', 'REGISTERED', CURRENT_TIMESTAMP);
 
-INSERT INTO category (title) values ('테스트');
+-- Post 테이블 기본 카테고리 INSERT 쿼리
+INSERT INTO category (id, title, description, status) VALUES (1, '자유게시판', '자유게시판 입니다.', 'ACTIVE');
+INSERT INTO category (id, title, description, status) VALUES (2, '프로젝트 자랑 게시판', '프로젝트 자랑 게시판 입니다.', 'ACTIVE');
+INSERT INTO category (id, title, description, status) VALUES (3, '질문 게시판', '질문 게시판 입니다.', 'ACTIVE');
+INSERT INTO category (id, title, description, status) VALUES (4, '공지사항 게시판', '공지사항 게시판 입니다.', 'ACTIVE');
 
-INSERT INTO post (category_id, member_id, title, content, comment_count, like_count, view_count, status, created_at, updated_at)
-VALUES (1, 1, '첫 번째 게시글', '이것은 첫 번째 게시글의 내용입니다.', 0, 0, 0, 'REGISTERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- Post 테이블 INSERT 쿼리
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (1, '첫 번째 게시글', '첫 번째 게시글의 내용입니다.', 0, 0, 10, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (2, '두 번째 게시글', '두 번째 게시글의 내용입니다.', 0, 0, 20, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 2);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (3, '세 번째 게시글', '세 번째 게시글의 내용입니다.', 0, 0, 30, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3, 3);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (4, '네 번째 게시글', '네 번째 게시글의 내용입니다.', 0, 0, 40, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4, 1);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (5, '다섯 번째 게시글', '다섯 번째 게시글의 내용입니다.', 0, 0, 50, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 5, 2);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (6, '여섯 번째 게시글', '여섯 번째 게시글의 내용입니다.', 0, 0, 60, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 6, 3);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (7, '일곱 번째 게시글', '일곱 번째 게시글의 내용입니다.', 0, 0, 70, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 7, 4);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (8, '여덟 번째 게시글', '여덟 번째 게시글의 내용입니다.', 0, 0, 80, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 8, 1);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니다.', 0, 0, 90, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9, 2);
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
+VALUES (10, '열 번째 게시글', '열 번째 게시글의 내용입니다.', 0, 0, 100, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 3);
