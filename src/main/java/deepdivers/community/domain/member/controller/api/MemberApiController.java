@@ -64,7 +64,7 @@ public class MemberApiController implements MemberApiControllerDocs {
         @Auth final Member member,
         @RequestBody @Valid final UpdatePasswordRequest request
     ) {
-        final NoContent response = memberService.updatePassword(member, request);
+        final NoContent response = memberService.changePassword(member, request);
         return ResponseEntity.ok(response);
     }
 

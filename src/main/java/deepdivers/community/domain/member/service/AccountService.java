@@ -2,9 +2,11 @@ package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
+import deepdivers.community.domain.member.dto.request.ResetPasswordRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
+import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.utility.mail.MailHelper;
 import lombok.RequiredArgsConstructor;
@@ -48,4 +50,8 @@ public class AccountService {
         return NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
     }
 
+    public NoContent resetPassword(final ResetPasswordRequest request) {
+        final Member member = memberService.getMemberWithThrow(request.email());
+        return memberService.resetPassword(member, request);
+    }
 }

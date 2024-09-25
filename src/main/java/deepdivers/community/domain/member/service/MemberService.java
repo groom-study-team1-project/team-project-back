@@ -5,6 +5,7 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.request.ResetPasswordRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
@@ -72,6 +73,12 @@ public class MemberService {
             .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
+    @Transactional(readOnly = true)
+    public Member getMemberWithThrow(final String email) {
+        return memberRepository.findByEmailValue(email)
+            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    }
+
     public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
         final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
         return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
@@ -85,8 +92,15 @@ public class MemberService {
         return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
     }
 
-    public NoContent updatePassword(final Member member, final UpdatePasswordRequest request) {
-        member.updatePassword(encryptor, request);
+    public NoContent changePassword(final Member member, final UpdatePasswordRequest request) {
+        member.changePassword(encryptor, request);
+        memberRepository.save(member);
+        return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
+    }
+
+    protected NoContent resetPassword(final Member member, final ResetPasswordRequest request) {
+        // todo test
+        member.resetPassword(encryptor, request.password());
         memberRepository.save(member);
         return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
     }

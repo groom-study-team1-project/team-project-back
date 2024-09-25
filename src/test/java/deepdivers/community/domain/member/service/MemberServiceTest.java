@@ -347,7 +347,7 @@ class MemberServiceTest {
         UpdatePasswordRequest request = new UpdatePasswordRequest("password1!", "password2!");
 
         // When
-        NoContent response = memberService.updatePassword(member, request);
+        NoContent response = memberService.changePassword(member, request);
 
         // then
         StatusResponse responseStatus = response.status();
@@ -364,7 +364,7 @@ class MemberServiceTest {
         UpdatePasswordRequest request = new UpdatePasswordRequest("password2!", "password2!");
 
         // When, then
-        assertThatThrownBy(() -> memberService.updatePassword(member, request))
+        assertThatThrownBy(() -> memberService.changePassword(member, request))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_USING_PASSWORD);
     }
@@ -377,7 +377,7 @@ class MemberServiceTest {
         UpdatePasswordRequest request = new UpdatePasswordRequest("password3!", "password2!");
 
         // When, then
-        assertThatThrownBy(() -> memberService.updatePassword(member, request))
+        assertThatThrownBy(() -> memberService.changePassword(member, request))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD);
     }
