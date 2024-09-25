@@ -11,6 +11,8 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 
 @Entity
 @Getter
@@ -32,7 +34,15 @@ public class Hashtag {
 	private String hashtag;
 
 	public Hashtag(String hashtag) {
+		validate(hashtag); // 생성 시 검증
 		this.hashtag = hashtag;
+	}
+
+	public static String validate(String hashtag) {
+		if (hashtag == null || hashtag.isBlank()) {
+			throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
+		}
+		return hashtag;
 	}
 
 	public String getName() {

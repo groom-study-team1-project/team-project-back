@@ -1,92 +1,107 @@
 package deepdivers.community.domain.post.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
-import deepdivers.community.domain.hashtag.repository.HashtagRepository;
-import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
+import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
+import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import deepdivers.community.utility.encryptor.Encryptor;
 
-import java.util.Optional;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@Transactional
 class PostServiceTest {
 
-	@InjectMocks
-	private PostService postService;
+	@Autowired
+	private deepdivers.community.domain.post.service.PostService postService;
 
-	@Mock
+	@Autowired
 	private PostRepository postRepository;
 
-	@Mock
+	@Autowired
 	private CategoryRepository categoryRepository;
 
-	@Mock
-	private HashtagRepository hashtagRepository;
+	@Autowired
+	private MemberRepository memberRepository;
 
-	@Mock // PostHashtagRepository 모킹 추가
-	private PostHashtagRepository postHashtagRepository;
+	private PostCategory category;
+
+	@Mock
+	private Encryptor encryptor;
 
 	private Member member;
-	private PostCategory category;
 
 	@BeforeEach
 	void setUp() {
-		// Member 객체 모킹
-		member = mock(Member.class); // 필요시 추가 설정 가능
-		// PostCategory 객체 초기화
-		category = PostCategory.builder().title("Sample Category").build(); // Mock PostCategory
+		encryptor = mock(Encryptor.class);
+
+		when(encryptor.encrypt(anyString())).thenReturn("encryptedPassword");
+
+		MemberSignUpRequest request = new MemberSignUpRequest(
+			"test@mail.com",    // email
+			"password123*",     // password (평문)
+			"nickname",         // nickname
+			"http://image.url", // image URL
+			"010-1234-5678"     // phone number
+		);
+
+		member = Member.of(request, encryptor);
+
+		memberRepository.save(member);  // memberRepository를 사용해 member를 저장
+
+		category = PostCategory.createCategory("테스트 카테고리", "테스트 설명", CategoryStatus.ACTIVE);
+
+		categoryRepository.save(category);
 	}
 
-	@Test
-	@DisplayName("게시물 생성이 성공적으로 이루어지는 경우를 테스트한다.")
-	void createPostSuccessTest() {
-		// Given
-		PostCreateRequest request = new PostCreateRequest("유효한 제목", "유효한 내용입니다.", 1L, new String[]{"#hashtag"});
 
-		// Mocking category repository to return the category
-		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
-		when(hashtagRepository.findByHashtag("#hashtag")).thenReturn(Optional.empty()); // Mocking hashtag repository
+
+	@Test
+	@DisplayName("게시물 생성 성공 통합 테스트")
+	void createPostSuccessIntegrationTest() {
+		// Given
+		PostCreateRequest request = new PostCreateRequest("통합 테스트 제목", "통합 테스트 내용", category.getId(), new String[]{"hashtag"});
 
 		// When
 		API<PostCreateResponse> response = postService.createPost(request, member);
 
 		// Then
 		assertThat(response).isNotNull();
-		assertThat(response.status().code()).isEqualTo(PostStatusType.POST_CREATE_SUCCESS.getCode());
-		assertThat(response.result()).isNotNull();
+		PostCreateResponse result = response.result();
+		assertThat(result.postId()).isNotNull();  // postId 검증
+
+		// DB에 저장된 게시물 검증
+		Post savedPost = postRepository.findById(result.postId()).orElse(null);
+		assertThat(savedPost).isNotNull();
+		assertThat(savedPost.getTitle().getTitle()).isEqualTo("통합 테스트 제목");
+		assertThat(savedPost.getContent().getContent()).isEqualTo("통합 테스트 내용");
 	}
 
-	@Test
-	@DisplayName("존재하지 않는 카테고리 ID로 게시물 생성 시 예외가 발생하는지 테스트한다.")
-	void createPostWithInvalidCategoryTest() {
-		// Given
-		PostCreateRequest request = new PostCreateRequest("유효한 제목", "유효한 내용", 999L, new String[]{"#hashtag"});
 
-		// Mocking category repository to return empty
-		when(categoryRepository.findById(999L)).thenReturn(Optional.empty());
+	@Test
+	@DisplayName("존재하지 않는 카테고리로 게시물 생성 시 예외 발생 통합 테스트")
+	void createPostWithInvalidCategoryIntegrationTest() {
+		// Given
+		PostCreateRequest request = new PostCreateRequest("유효한 제목", "유효한 내용", 999L, new String[]{"hashtag"});
 
 		// When & Then
 		assertThatThrownBy(() -> postService.createPost(request, member))
@@ -95,13 +110,10 @@ class PostServiceTest {
 	}
 
 	@Test
-	@DisplayName("유효하지 않은 해시태그로 게시물 생성 시 예외가 발생하는지 테스트한다.")
-	void createPostWithInvalidHashtagTest() {
+	@DisplayName("유효하지 않은 해시태그로 게시물 생성 시 예외 발생 통합 테스트")
+	void createPostWithInvalidHashtagIntegrationTest() {
 		// Given
-		PostCreateRequest request = new PostCreateRequest("유효한 제목", "유효한 내용입니다.", 1L, new String[]{"#invalid#hashtag"}); // 내용 길이 수정
-
-		// Mocking category repository to return the category
-		when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+		PostCreateRequest request = new PostCreateRequest("유효한 제목", "유효한 내용", category.getId(), new String[]{"invalid#hashtag"});
 
 		// When & Then
 		assertThatThrownBy(() -> postService.createPost(request, member))

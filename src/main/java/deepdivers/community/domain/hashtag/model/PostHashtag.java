@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@EqualsAndHashCode(callSuper = false, of = {"id"})
+@EqualsAndHashCode(callSuper = false, of = {"post", "hashtag"}) // 중복 방지를 위해 equals와 hashCode 수정
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
     indexes = {
@@ -47,3 +47,4 @@ public class PostHashtag extends BaseEntity {
         this.hashtag = hashtag;
     }
 }
+

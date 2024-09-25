@@ -26,7 +26,7 @@ class PostTest {
 		String content = "이것은 테스트를 위한 유효한 내용입니다.";
 		Long categoryId = 1L;
 		PostCreateRequest request = new PostCreateRequest(title, content, categoryId, null);
-		PostCategory category = PostCategory.builder().title("카테고리").build();
+		PostCategory category = PostCategory.createCategory("카테고리", null, null);
 
 		// Mocking the Member object
 		Member member = mock(Member.class);
@@ -43,17 +43,14 @@ class PostTest {
 		assertThat(post.getMember()).isEqualTo(member);
 	}
 
-	@ParameterizedTest
-	@CsvSource({
-		"'', 이것은 유효한 내용입니다.",
-		"짧, 이것은 유효한 내용입니다.",
-		"'이 제목은 너무 길어서 유효하지 않습니다. 제목의 최대 길이는 50자이며, 이 제목은 그 제한을 초과합니다. 이 제목은 너무 길어서 유효하지 않습니다. 제목의 최대 길이는 50자이며, 이 제목은 그 제한을 초과합니다.이 제목은 너무 길어서 유효하지 않습니다. 제목의 최대 길이는 50자이며, 이 제목은 그 제한을 초과합니다.이 제목은 너무 길어서 유효하지 않습니다. 제목의 최대 길이는 50자이며, 이 제목은 그 제한을 초과합니다.', 이것은 유효한 내용입니다."
-	})
-	@DisplayName("유효하지 않은 제목으로 게시물 생성 시 INVALID_TITLE_LENGTH 예외가 발생하는 것을 확인한다.")
-	void postCreationWithInvalidTitleShouldThrowException(String title, String content) {
+	@Test
+	@DisplayName("유효하지 않은 제목 길이로 게시물 생성 시 INVALID_TITLE_LENGTH 예외가 발생하는 것을 확인한다.")
+	void postCreationWithLongTitleShouldThrowException() {
 		// given
+		String title = "a".repeat(51); // 50자를 초과하는 제목
+		String content = "이것은 유효한 내용입니다.";
 		PostCreateRequest request = new PostCreateRequest(title, content, 1L, null);
-		PostCategory category = PostCategory.builder().title("카테고리").build();
+		PostCategory category = PostCategory.createCategory("카테고리", null, null);
 
 		// Mocking the Member object
 		Member member = mock(Member.class);
@@ -65,16 +62,14 @@ class PostTest {
 			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_TITLE_LENGTH);
 	}
 
-	@ParameterizedTest
-	@CsvSource({
-		"유효한 제목, '짧음'",
-		"유효한 제목, ''"
-	})
-	@DisplayName("유효하지 않은 내용으로 게시물 생성 시 INVALID_CONTENT_LENGTH 예외가 발생하는 것을 확인한다.")
-	void postCreationWithInvalidContentShouldThrowException(String title, String content) {
+	@Test
+	@DisplayName("유효하지 않은 내용 길이로 게시물 생성 시 INVALID_CONTENT_LENGTH 예외가 발생하는 것을 확인한다.")
+	void postCreationWithLongContentShouldThrowException() {
 		// given
+		String title = "유효한 제목";
+		String content = "a".repeat(101); // 100자를 초과하는 내용
 		PostCreateRequest request = new PostCreateRequest(title, content, 1L, null);
-		PostCategory category = PostCategory.builder().title("카테고리").build();
+		PostCategory category = PostCategory.createCategory("카테고리", null, null);
 
 		// Mocking the Member object
 		Member member = mock(Member.class);

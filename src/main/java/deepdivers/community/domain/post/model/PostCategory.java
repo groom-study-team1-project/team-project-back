@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,11 +39,18 @@ public class PostCategory {
     @Column(nullable = false)
     private CategoryStatus status = CategoryStatus.ACTIVE;
 
-    @Builder
-    public PostCategory(String title, String description, CategoryStatus status) {
+    private PostCategory(String title, String description, CategoryStatus status) {
         this.title = title;
         this.description = description;
-        this.status = (status != null) ? status : CategoryStatus.ACTIVE;
+        if (status != null) {
+            this.status = status;
+        } else {
+            this.status = CategoryStatus.ACTIVE;
+        }
+    }
+
+    public static PostCategory createCategory(String title, String description, CategoryStatus status) {
+        return new PostCategory(title, description, status);
     }
 
     public void deactivate() {

@@ -18,6 +18,7 @@ import lombok.NoArgsConstructor;
 public class PostContent {
 
 	private static final int MIN_LENGTH = 5;
+	private static final int MAX_LENGTH = 100;  // 최대 길이 추가
 
 	@Column(name = "post_content", nullable = false)
 	private String content;  // 필드 이름을 "content"로 변경하여 구체화
@@ -27,7 +28,7 @@ public class PostContent {
 	}
 
 	private static void validateContentLength(final String content) {
-		if (content.length() < MIN_LENGTH) {
+		if (content.length() < MIN_LENGTH || content.length() > MAX_LENGTH) {
 			throw new BadRequestException(PostExceptionType.INVALID_CONTENT_LENGTH);
 		}
 	}

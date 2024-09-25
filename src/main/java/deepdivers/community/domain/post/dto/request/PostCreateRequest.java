@@ -21,6 +21,6 @@ public record PostCreateRequest(
 	@NotNull(message = "카테고리 선택은 필수입니다.")
 	Long categoryId,
 
-	@Schema(description = "해시태그 목록", example = "[\"#Spring\", \"#Boot\"]")
+	@Schema(description = "해시태그 목록", example = "[\"Spring\", \"Boot\"]")
 	String[] hashtags
 ) {}

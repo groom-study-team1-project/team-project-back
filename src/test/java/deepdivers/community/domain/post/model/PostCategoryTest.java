@@ -17,11 +17,7 @@ class PostCategoryTest {
 		CategoryStatus status = CategoryStatus.ACTIVE;
 
 		// when
-		PostCategory postCategory = PostCategory.builder()
-			.title(title)
-			.description(description)
-			.status(status)
-			.build();
+		PostCategory postCategory = PostCategory.createCategory(title, description, status);
 
 		// then
 		assertThat(postCategory).isNotNull();
