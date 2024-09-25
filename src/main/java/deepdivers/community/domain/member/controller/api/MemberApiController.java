@@ -5,12 +5,16 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.docs.MemberApiControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
+import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
+import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
+import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberApiController implements MemberApiControllerDocs {
 
     private final MemberService memberService;
+    private final PostQueryRepository postQueryRepository;
 
     @GetMapping("/me/{memberId}")
     public ResponseEntity<API<MemberProfileResponse>> me(
@@ -66,6 +71,17 @@ public class MemberApiController implements MemberApiControllerDocs {
     ) {
         final NoContent response = memberService.changePassword(member, request);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me/posts")
+    public ResponseEntity<API<List<AllMyPostsResponse>>> allWrittenPosts(
+        @Auth final Member member,
+        @RequestParam final Long categoryId,
+        @RequestParam final Long lastPostId
+    ) {
+        final Long memberId = member.getId();
+        final List<AllMyPostsResponse> response = postQueryRepository.findAllMyPosts(memberId, lastPostId, categoryId);
+        return ResponseEntity.ok(API.of(MemberStatusType.UPDATE_PASSWORD_SUCCESS, response));
     }
 
 }

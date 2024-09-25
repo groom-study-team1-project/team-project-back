@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.model.like;
 
-import deepdivers.community.domain.post.model.vo.LiekTarget;
+import deepdivers.community.domain.post.model.vo.LikeTarget;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class LikeRelationId {
+public class LikeId {
 
     @Column(nullable = false)
     private Long targetId;
@@ -22,6 +22,6 @@ public class LikeRelationId {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, columnDefinition = "varchar(50)")
-    private LiekTarget targetType;
+    private LikeTarget targetType;
 
 }

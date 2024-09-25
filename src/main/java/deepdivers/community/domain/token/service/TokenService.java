@@ -24,6 +24,7 @@ public class TokenService {
     private static final String KEY_MEMBER_ID = "memberId";
     private static final String KEY_MEMBER_NICKNAME = "memberNickname";
     private static final String KEY_MEMBER_ROLE = "memberRole";
+    private static final String KEY_MEMBER_IMAGE = "memberImageUrl";
 
     public TokenResponse tokenGenerator(final Member member) {
         return getTokenResponse(
@@ -75,6 +76,7 @@ public class TokenService {
         data.put(KEY_MEMBER_ID, member.getId());
         data.put(KEY_MEMBER_NICKNAME, member.getNickname());
         data.put(KEY_MEMBER_ROLE, member.getRole());
+        data.put(KEY_MEMBER_IMAGE, member.getImageUrl());
         return data;
     }
 
@@ -89,6 +91,7 @@ public class TokenService {
         data.put(KEY_MEMBER_ID, payload.memberId());
         data.put(KEY_MEMBER_NICKNAME, payload.memberNickname());
         data.put(KEY_MEMBER_ROLE, payload.memberRole());
+        data.put(KEY_MEMBER_IMAGE, payload.memberImageUrl());
         return data;
     }
 

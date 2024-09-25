@@ -11,9 +11,10 @@ import lombok.NoArgsConstructor;
 @Getter
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LikeRelation extends BaseEntity {
+@Table(name = "c_like")
+public class Like extends BaseEntity {
 
     @EmbeddedId
-    private LikeRelationId id;
+    private LikeId id;
 
 }
