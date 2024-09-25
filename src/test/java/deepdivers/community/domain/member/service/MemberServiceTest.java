@@ -422,26 +422,29 @@ class MemberServiceTest {
 
 
     @Test
-    @DisplayName("중복된 이메일로 검증 시 예외가 발생한다.")
-    void DuplicateEmailValidationTest() {
+    @DisplayName("존재하는 이메일일 경우 True를 반환한다.")
+    void givenSignedEmailWhenVerificationThenTrue() {
         // Given test.sql
         String email = "email1@test.com";
 
-        // When & Then
-        assertThatThrownBy(() -> memberService.validateUniqueEmail(email))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_EMAIL);
+        // when
+        boolean hasEmail = memberService.hasEmailVerification(email);
+
+        // then
+        assertThat(hasEmail).isTrue();
     }
 
     @Test
-    @DisplayName("올바른 이메일로 검증할 경우를 테스트한다.")
-    void DuplicateEmailSuccessTest() {
+    @DisplayName("존재하지 않는 이메일일 경우 False를 반환한다.")
+    void givenNotSignedEmailWhenVerificationThenTrue() {
         // Given test.sql
-        String email = "email@test.com";
+        String email = "email1@test.com";
 
-        // When, then
-        assertThatCode(() -> memberService.validateUniqueEmail(email))
-            .doesNotThrowAnyException();
+        // when
+        boolean hasEmail = memberService.hasEmailVerification(email);
+
+        // then
+        assertThat(hasEmail).isTrue();
     }
 
 }

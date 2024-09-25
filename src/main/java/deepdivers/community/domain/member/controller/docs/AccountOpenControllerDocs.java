@@ -38,10 +38,9 @@ public interface AccountOpenControllerDocs {
                     """
     )
     @ApiResponse(
-        responseCode = "9200, 9201",
+        responseCode = "9200",
         description = """
                     1. 유효하지 않은 인증코드입니다.
-                    2. 인증 코드가 전송되지 않은 이메일입니다.
                     """,
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
@@ -61,6 +60,6 @@ public interface AccountOpenControllerDocs {
                     """,
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<NoContent> sendEmail(AuthenticateEmailRequest request);
+    ResponseEntity<NoContent> sendEmailMail(AuthenticateEmailRequest request);
 
 }

@@ -35,8 +35,15 @@ public class AccountOpenController implements AccountOpenControllerDocs {
     }
 
     @PostMapping("/authenticate/email")
-    public ResponseEntity<NoContent> sendEmail(@RequestBody @Valid final AuthenticateEmailRequest request) {
-        final NoContent response = accountService.sendAuthenticatedEmail(request);
+    public ResponseEntity<NoContent> sendEmailMail(@RequestBody @Valid final AuthenticateEmailRequest request) {
+        final NoContent response = accountService.emailAuthentication(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/authenticate/password")
+    public ResponseEntity<NoContent> sendPasswordMail(@RequestBody @Valid final AuthenticateEmailRequest request) {
+        // todo test
+        NoContent response = accountService.passwordAuthentication(request);
         return ResponseEntity.ok(response);
     }
 

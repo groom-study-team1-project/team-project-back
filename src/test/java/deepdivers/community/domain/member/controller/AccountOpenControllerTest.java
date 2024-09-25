@@ -12,7 +12,6 @@ import deepdivers.community.domain.member.controller.open.AccountOpenController;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
-import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.service.AccountService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -86,7 +85,7 @@ class AccountOpenControllerTest extends ControllerTest {
         // given
         AuthenticateEmailRequest request = new AuthenticateEmailRequest("email@test.com");
         NoContent mockResponse = NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
-        given(accountService.sendAuthenticatedEmail(request)).willReturn(mockResponse);
+        given(accountService.emailAuthentication(request)).willReturn(mockResponse);
 
         // when
         NoContent response = RestAssuredMockMvc.given().log().all()

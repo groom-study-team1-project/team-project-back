@@ -69,7 +69,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member getMemberWithThrow(final Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
@@ -93,8 +93,8 @@ public class MemberService {
 
     private Member authenticateMember(final String email, final String password) {
         return memberRepository.findByEmailValue(email)
-                .filter(member -> encryptor.matches(password, member.getPassword()))
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
+            .filter(member -> encryptor.matches(password, member.getPassword()))
+            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
     }
 
     private void updateAfterProfileValidation(final Member member, final MemberProfileRequest request) {
@@ -109,11 +109,14 @@ public class MemberService {
         validateUniqueNickname(request.nickname());
     }
 
-    protected void validateUniqueEmail(final String email) {
-        final Boolean isDuplicateEmail = memberRepository.existsByEmailValue(email);
-        if (isDuplicateEmail) {
+    private void validateUniqueEmail(final String email) {
+        if (hasEmailVerification(email)) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }
+    }
+
+    protected boolean hasEmailVerification(final String email) {
+        return memberRepository.existsByEmailValue(email);
     }
 
     protected void validateUniqueNickname(final String nickname) {
