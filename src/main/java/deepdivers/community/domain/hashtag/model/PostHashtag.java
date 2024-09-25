@@ -22,29 +22,29 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false, of = {"post", "hashtag"}) // 중복 방지를 위해 equals와 hashCode 수정
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
-    indexes = {
-        @Index(name = "idx_post_hashtag_post_id", columnList = "post_id"),
-        @Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtag_id")
-    }
+	indexes = {
+		@Index(name = "idx_post_hashtag_post_id", columnList = "post_id"),
+		@Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtag_id")
+	}
 )
 public class PostHashtag extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    private Post post;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "post_id")
+	private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "hashtag_id")
-    private Hashtag hashtag;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "hashtag_id")
+	private Hashtag hashtag;
 
-    @Builder
-    public PostHashtag(Post post, Hashtag hashtag) {
-        this.post = post;
-        this.hashtag = hashtag;
-    }
+	@Builder
+	public PostHashtag(Post post, Hashtag hashtag) {
+		this.post = post;
+		this.hashtag = hashtag;
+	}
 }
 

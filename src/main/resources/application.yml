@@ -33,6 +33,25 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 35MB
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: groomcommunity@gmail.com
+    password: ${mail.password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  thymeleaf:
+    cache
+
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter : method
+    doc-expansion : none
 
 goorm:
   community:

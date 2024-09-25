@@ -59,7 +59,7 @@ public class Post extends BaseEntity {
 
     @ColumnDefault("0")
     @Column(nullable = false)
-    private Integer recommendCount = 0;
+    private Integer likeCount = 0;
 
     @ColumnDefault("0")
     @Column(nullable = false)
@@ -79,7 +79,7 @@ public class Post extends BaseEntity {
         this.category = category;
         this.member = member;
         this.commentCount = 0;
-        this.recommendCount = 0;
+        this.likeCount = 0;
         this.viewCount = 0;
         this.status = status != null ? status : PostStatus.ACTIVE;
     }

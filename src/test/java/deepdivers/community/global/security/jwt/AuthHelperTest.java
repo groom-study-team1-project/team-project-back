@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.utility.time.TimeProvider;
+import deepdivers.community.global.utility.time.TimeProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -125,7 +125,7 @@ class AuthHelperTest {
     void parseToken_ShouldReturnAuthPayload() throws JsonProcessingException {
         // Given
         String token = "header.eyJtZW1iZXJJZCI6MX0.signature";
-        AuthPayload expectedPayload = new AuthPayload(1L, "testUser", "USER", accessTokenExpirationTime, refreshTokenExpirationTime);
+        AuthPayload expectedPayload = new AuthPayload(1L, "testUser", "USER", "",  accessTokenExpirationTime, refreshTokenExpirationTime);
         when(objectMapper.readValue("{\"memberId\":1}", AuthPayload.class)).thenReturn(expectedPayload);
 
         // When

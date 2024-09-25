@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.Encryptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +28,7 @@ class PasswordTest {
         String passwordValue = "testPassword1!";
 
         // when
-        Password encryptedPassword = Password.of(encryptor, passwordValue);
+        Password encryptedPassword = new Password(encryptor, passwordValue);
 
         // then
         assertThat(encryptedPassword).isNotNull();
@@ -43,7 +43,7 @@ class PasswordTest {
         when(encryptor.encrypt(passwordValue)).thenReturn(encryptedPasswordValue);
 
         // when
-        Password encryptedPassword = Password.of(encryptor, passwordValue);
+        Password encryptedPassword = new Password(encryptor, passwordValue);
 
         // then
         assertThat(encryptedPassword.getValue()).isEqualTo(encryptedPasswordValue);
@@ -54,23 +54,20 @@ class PasswordTest {
     @DisplayName("패스워드 생성 중 유효성 검증에 통과하지 못할 시 예외 발생을 확인한다.")
     void fromWithInvalidPasswordShouldThrowException(String invalidPassword) {
         // given, when, then
-        assertThatThrownBy(() -> Password.of(encryptor, invalidPassword))
+        assertThatThrownBy(() -> new Password(encryptor, invalidPassword))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD_FORMAT);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {" password1!", "password1! ", " password1! "})
-    @DisplayName("Password 정보 양쪽에 공백이 포함된 경우 공백을 제거 후 암호화된 결과를 반환하는지 확인한다.")
+    @DisplayName("Password 정보 양쪽에 공백이 포함된 경우 예외를 반환하는지 확인한다.")
     void fromWithIfBothEndsContainsSpacesShouldCreateTrimmedPassword(String passwordWithSpace) {
         // given
-        String trimmedPassword = passwordWithSpace.trim();
-        when(encryptor.encrypt(trimmedPassword)).thenReturn("trim");
-        // when
-        Password password = Password.of(encryptor, passwordWithSpace);
-        // then
-        assertThat(password).isNotNull();
-        assertThat(password.getValue()).isEqualTo("trim");
+        // when, then
+        assertThatThrownBy(() -> new Password(encryptor, passwordWithSpace))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD_FORMAT);
     }
 
 }

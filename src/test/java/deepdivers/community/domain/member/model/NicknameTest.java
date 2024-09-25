@@ -17,7 +17,7 @@ class NicknameTest {
     @DisplayName("올바른 닉네임 입력 시 NickName 객체를 성공적으로 생성하는 것을 확인한다.")
     void fromWithValidNicknameShouldCreateNickname(String validNickname) {
         // given, when
-        Nickname nickname = Nickname.from(validNickname);
+        Nickname nickname = new Nickname(validNickname);
         // then
         assertThat(nickname).isNotNull();
         assertThat(nickname.getValue()).isEqualTo(validNickname);
@@ -28,7 +28,7 @@ class NicknameTest {
     @DisplayName("닉네임 길이에 대해 검증이 실패하는 경우 유효하지 닉네임 길이의 예외가 떨어지는 것을 확인한다.")
     void fromWithInvalidNicknameLengthShouldThrowException(String invalidNickname) {
         // given, when, then
-        assertThatThrownBy(() -> Nickname.validator(invalidNickname))
+        assertThatThrownBy(() -> new Nickname(invalidNickname))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_LENGTH);
     }
@@ -38,7 +38,7 @@ class NicknameTest {
     @DisplayName("닉네임 패턴에 대해 검증이 실패하는 경우 유효하지 않은 닉네임 형식의 예외가 떨어지는 것을 확인한다.")
     void fromWithInvalidNicknamePatternShouldThrowException(String invalidNickname) {
         // given, when, then
-        assertThatThrownBy(() -> Nickname.validator(invalidNickname))
+        assertThatThrownBy(() -> new Nickname(invalidNickname))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_NICKNAME_FORMAT);
     }
@@ -47,8 +47,8 @@ class NicknameTest {
     @DisplayName("닉네임 객체의 동등성을 확인한다.")
     void equalNicknamesShouldBeEqual() {
         // given, when
-        Nickname baseNickname = Nickname.from("닉네임");
-        Nickname compareNickname = Nickname.from("닉네임");
+        Nickname baseNickname = new Nickname("닉네임");
+        Nickname compareNickname = new Nickname("닉네임");
         // then
         assertThat(baseNickname.equals(compareNickname)).isTrue();
     }
@@ -57,8 +57,8 @@ class NicknameTest {
     @DisplayName("닉네임 객체의 대소문자는 동등하지 않다.")
     void nicknamesWithDifferentCasesShouldBeNotEqual() {
         // given, when
-        Nickname baseNickname = Nickname.from("nickName");
-        Nickname compareNickname = Nickname.from("nickname");
+        Nickname baseNickname = new Nickname("nickName");
+        Nickname compareNickname = new Nickname("nickname");
         // then
         assertThat(baseNickname.equals(compareNickname)).isFalse();
     }

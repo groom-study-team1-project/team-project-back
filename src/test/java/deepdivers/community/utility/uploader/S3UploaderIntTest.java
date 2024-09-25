@@ -7,6 +7,8 @@ import static org.testcontainers.containers.localstack.LocalStackContainer.Servi
 import deepdivers.community.global.config.localstack.SimpleLocalStackContainer;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.global.utility.uploader.S3Exception;
+import deepdivers.community.global.utility.uploader.S3Uploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

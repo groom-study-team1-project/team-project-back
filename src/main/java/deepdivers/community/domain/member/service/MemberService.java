@@ -3,22 +3,23 @@ package deepdivers.community.domain.member.service;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.request.ResetPasswordRequest;
+import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.domain.member.model.Email;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.model.Nickname;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
-import deepdivers.community.utility.encryptor.Encryptor;
-import deepdivers.community.utility.encryptor.EncryptorBean;
-import deepdivers.community.utility.uploader.S3Uploader;
+import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.global.utility.uploader.S3Uploader;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -48,7 +49,7 @@ public class MemberService {
     @Transactional(readOnly = true)
     public API<TokenResponse> login(final MemberLoginRequest request) {
         final Member member = authenticateMember(request.email(), request.password());
-        validateMemberStatus(member);
+        member.validateStatus();
 
         final TokenResponse tokenResponse = tokenService.tokenGenerator(member);
         return API.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
@@ -69,7 +70,13 @@ public class MemberService {
     @Transactional(readOnly = true)
     public Member getMemberWithThrow(final Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
+    }
+
+    @Transactional(readOnly = true)
+    public Member getMemberWithThrow(final String email) {
+        return memberRepository.findByEmailValue(email)
+            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
@@ -77,21 +84,38 @@ public class MemberService {
         return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
     }
 
-    private Member authenticateMember(final String email, final String password) {
-        return memberRepository.findByEmailValue(email)
-                .filter(member -> encryptor.matches(password, member.getPassword()))
-                .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
+    public API<MemberProfileResponse> updateProfile(final Member member, final MemberProfileRequest request) {
+        updateAfterProfileValidation(member, request);
+
+        final Member updatedMember = memberRepository.save(member);
+        final MemberProfileResponse result = MemberProfileResponse.from(updatedMember);
+        return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
     }
 
-    private void validateMemberStatus(final Member member) {
-        switch (member.getStatus()) {
-            case REGISTERED:
-                break;
-            case DORMANCY:
-                throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
-            case UNREGISTERED:
-                throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+    public NoContent changePassword(final Member member, final UpdatePasswordRequest request) {
+        member.changePassword(encryptor, request);
+        memberRepository.save(member);
+        return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
+    }
+
+    protected NoContent resetPassword(final Member member, final ResetPasswordRequest request) {
+        // todo test
+        member.resetPassword(encryptor, request.password());
+        memberRepository.save(member);
+        return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
+    }
+
+    private Member authenticateMember(final String email, final String password) {
+        return memberRepository.findByEmailValue(email)
+            .filter(member -> encryptor.matches(password, member.getPassword()))
+            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
+    }
+
+    private void updateAfterProfileValidation(final Member member, final MemberProfileRequest request) {
+        if (!member.getNickname().equals(request.nickname())) {
+            validateUniqueNickname(request.nickname());
         }
+        member.updateProfile(request);
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {
@@ -99,27 +123,23 @@ public class MemberService {
         validateUniqueNickname(request.nickname());
     }
 
-    public NoContent validateUniqueEmail(final String email) {
-        Email.validator(email);
-
-        final Boolean isDuplicateEmail = memberRepository.existsAccountByEmailValue(email);
-        if (isDuplicateEmail) {
+    private void validateUniqueEmail(final String email) {
+        if (hasEmailVerification(email)) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }
-
-        return NoContent.from(MemberStatusType.EMAIL_VALIDATE_SUCCESS);
     }
 
-    public NoContent validateUniqueNickname(final String nickname) {
-        Nickname.validator(nickname);
+    protected boolean hasEmailVerification(final String email) {
+        return memberRepository.existsByEmailValue(email);
+    }
 
+    protected void validateUniqueNickname(final String nickname) {
         final String lowerNickname = nickname.toLowerCase(Locale.ENGLISH);
-        memberRepository.findByLowerNickname(lowerNickname)
-            .ifPresent(it -> {
-                throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
-            });
+        final boolean isDuplicateNickname = memberRepository.existsByLowerNickname(lowerNickname);
 
-        return NoContent.from(MemberStatusType.NICKNAME_VALIDATE_SUCCESS);
+        if (isDuplicateNickname) {
+            throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+        }
     }
 
 }

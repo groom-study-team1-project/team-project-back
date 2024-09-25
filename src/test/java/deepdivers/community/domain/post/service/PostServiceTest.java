@@ -25,7 +25,7 @@ import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.Encryptor;
 
 @SpringBootTest
 @Transactional

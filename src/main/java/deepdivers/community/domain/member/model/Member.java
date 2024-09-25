@@ -1,10 +1,14 @@
 package deepdivers.community.domain.member.model;
 
 import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
+import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.member.model.vo.MemberStatus;
-import deepdivers.community.utility.encryptor.Encryptor;
+import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.utility.encryptor.Encryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -18,11 +22,11 @@ import jakarta.persistence.UniqueConstraint;
 import java.util.Locale;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
 @Getter
@@ -34,7 +38,8 @@ import org.apache.commons.lang3.StringUtils;
                 columnNames = {"nickname"}
         )
 )
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicUpdate
 public class Member extends BaseEntity {
 
     @Id
@@ -64,26 +69,33 @@ public class Member extends BaseEntity {
     private String lowerNickname;
 
     @Embedded
-    private Contact contact;
+    private PhoneNumber phoneNumber;
+
+    @Column(nullable = false, length = 100)
+    private String githubAddr;
+
+    @Column(nullable = false, length = 200)
+    private String blogAddr;
 
     @Embedded
     private ActivityStats activityStats;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private MemberStatus status;
 
-    @Builder
-    public Member(final MemberSignUpRequest request, final Encryptor encryptor) {
+    private Member(final MemberSignUpRequest request, final Encryptor encryptor) {
         this.email = new Email(request.email());
-        this.password = Password.of(encryptor, request.password());
-        this.role = MemberRole.NORMAL;
-        this.nickname = Nickname.from(request.nickname());
+        this.password = new Password(encryptor, request.password());
+        this.nickname = new Nickname(request.nickname());
+        this.phoneNumber = new PhoneNumber(request.phoneNumber());
         this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
         this.imageUrl = request.imageUrl();
-        this.aboutMe = StringUtils.EMPTY;
-        this.contact = Contact.from(request.phoneNumber());
         this.activityStats = ActivityStats.createDefault();
+        this.aboutMe = StringUtils.EMPTY;
+        this.githubAddr = StringUtils.EMPTY;
+        this.blogAddr = StringUtils.EMPTY;
+        this.role = MemberRole.NORMAL;
         this.status = MemberStatus.REGISTERED;
     }
 
@@ -99,8 +111,69 @@ public class Member extends BaseEntity {
         return this.nickname.getValue();
     }
 
+    public String getPhoneNumber() {
+        return this.phoneNumber.getValue();
+    }
+
     public String getEmail() {
         return this.email.getValue();
+    }
+
+    public void updateProfile(final MemberProfileRequest request) {
+        this.nickname.update(request.nickname());
+        this.phoneNumber.update(request.phoneNumber());
+        this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
+        updateProfileImage(request.imageUrl());
+        updateAboutMe(request.aboutMe());
+        updateGithub(request.githubUrl());
+        updateBlog(request.blogUrl());
+    }
+
+    private void updateGithub(final String githubUrl) {
+        if (!(githubUrl == null || githubUrl.isEmpty())) {
+            this.githubAddr = githubUrl;
+        }
+    }
+
+    private void updateBlog(final String blogUrl) {
+        if (!(blogUrl == null || blogUrl.isEmpty())) {
+            this.blogAddr = blogUrl;
+        }
+    }
+
+    private void updateProfileImage(final String imageUrl) {
+        if (!(imageUrl == null || imageUrl.isEmpty())) {
+            this.imageUrl = imageUrl;
+        }
+    }
+
+    private void updateAboutMe(final String aboutMe) {
+        if (!(aboutMe == null || aboutMe.isEmpty())) {
+            this.aboutMe = aboutMe;
+        }
+    }
+
+    public void validateStatus() {
+        switch (this.status) {
+            case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+            case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+        }
+    }
+
+    public void resetPassword(final Encryptor encryptor, final String password) {
+        // todo test
+        this.password.reset(encryptor, password);
+    }
+
+    public void changePassword(final Encryptor encryptor, final UpdatePasswordRequest request) {
+        // todo test
+        if (!encryptor.matches(request.currentPassword(), this.getPassword())) {
+            throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD);
+        }
+        if (encryptor.matches(request.newPassword(), this.getPassword())) {
+            throw new BadRequestException(MemberExceptionType.ALREADY_USING_PASSWORD);
+        }
+        resetPassword(encryptor, request.newPassword());
     }
 
 }

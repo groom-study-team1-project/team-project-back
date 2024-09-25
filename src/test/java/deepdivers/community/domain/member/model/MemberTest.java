@@ -5,9 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.Encryptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -61,18 +60,6 @@ class MemberTest {
         // when, then
         assertThatThrownBy(() -> Member.of(request, encryptor))
                 .isInstanceOf(BadRequestException.class);
-    }
-
-    @Test
-    @DisplayName("잘못된 전화번호 정보를 포함한 사용자 정보 입력 시 전화번호 형식 예외가 발생한다.")
-    void fromWithInvalidPhoneNumberShouldThrowException() {
-        // given
-        MemberSignUpRequest request = new MemberSignUpRequest("email", "password1!", "테스트", "이미지", "010-0000-0000");
-
-        // when, then
-        assertThatThrownBy(() -> Member.of(request, encryptor))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PHONE_NUMBER_FORMAT);
     }
 
 }

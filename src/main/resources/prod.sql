@@ -17,23 +17,23 @@ INSERT INTO category (id, title, description, status) VALUES (3, '질문 게시�
 INSERT INTO category (id, title, description, status) VALUES (4, '공지사항 게시판', '공지사항 게시판 입니다.', 'ACTIVE');
 
 -- Post 테이블 INSERT 쿼리
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (1, '첫 번째 게시글', '첫 번째 게시글의 내용입니다.', 0, 0, 10, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (2, '두 번째 게시글', '두 번째 게시글의 내용입니다.', 0, 0, 20, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 2);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (3, '세 번째 게시글', '세 번째 게시글의 내용입니다.', 0, 0, 30, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3, 3);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (4, '네 번째 게시글', '네 번째 게시글의 내용입니다.', 0, 0, 40, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4, 1);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (5, '다섯 번째 게시글', '다섯 번째 게시글의 내용입니다.', 0, 0, 50, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 5, 2);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (6, '여섯 번째 게시글', '여섯 번째 게시글의 내용입니다.', 0, 0, 60, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 6, 3);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (7, '일곱 번째 게시글', '일곱 번째 게시글의 내용입니다.', 0, 0, 70, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 7, 4);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (8, '여덟 번째 게시글', '여덟 번째 게시글의 내용입니다.', 0, 0, 80, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 8, 1);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니다.', 0, 0, 90, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9, 2);
-INSERT INTO post (id, post_title, post_content, comment_count, recommend_count, view_count, status, created_at, updated_at, member_id, category_id)
+INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (10, '열 번째 게시글', '열 번째 게시글의 내용입니다.', 0, 0, 100, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 3);

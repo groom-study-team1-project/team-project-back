@@ -13,8 +13,12 @@ public record MemberProfileResponse(
         String imageUrl,
         @Schema(description = "사용자 소개", example = "안녕하세요. 구름톤 딥다이브 수강생입니다.")
         String aboutMe,
-        @Schema(description = "사용자 연락처 정보")
-        MemberContactResponse contact,
+        @Schema(description = "사용자 전화번호", example = "010-1234-5678")
+        String phoneNumber,
+        @Schema(description = "사용자 깃허브 주소", example = "https://github.com")
+        String githubUrl,
+        @Schema(description = "사용자 블로그 주소", example = "https://velog.io")
+        String blogUrl,
         @Schema(description = "사용자 활동 통계")
         MemberActivityStatsResponse activityStats
 ) {
@@ -25,7 +29,9 @@ public record MemberProfileResponse(
                 member.getRole().toString(),
                 member.getImageUrl(),
                 member.getAboutMe(),
-                MemberContactResponse.from(member.getContact()),
+                member.getPhoneNumber(),
+                member.getGithubAddr(),
+                member.getBlogAddr(),
                 MemberActivityStatsResponse.from(member.getActivityStats())
         );
     }
