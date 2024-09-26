@@ -1,7 +1,9 @@
 package deepdivers.community.domain.post.model;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ColumnDefault;
 
@@ -28,8 +30,10 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -72,6 +76,13 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
+    // 해시태그들을 문자열 리스트로 반환하는 메서드 추가
+    public List<String> getHashtags() {
+        return postHashtags.stream()
+            .map(postHashtag -> postHashtag.getHashtag().getName())
+            .collect(Collectors.toList());
+    }
+
     @Builder
     public Post(PostTitle title, PostContent content, PostCategory category, Member member, PostStatus status) {
         this.title = title;
@@ -92,6 +103,10 @@ public class Post extends BaseEntity {
             member,
             PostStatus.ACTIVE
         );
+    }
+
+    public void increaseViewCount() {
+        this.viewCount += 1;
     }
 
     public boolean isActive() {

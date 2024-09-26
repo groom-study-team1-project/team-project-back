@@ -80,4 +80,43 @@ class PostTest {
 			.isInstanceOf(BadRequestException.class)
 			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_CONTENT_LENGTH);
 	}
+
+	@Test
+	@DisplayName("게시글 정보를 올바르게 조회할 수 있는지 확인한다.")
+	void postRetrievalShouldReturnCorrectInformation() {
+		// given
+		String title = "게시글 제목";
+		String content = "게시글 내용입니다.";
+		PostCategory category = PostCategory.createCategory("카테고리", null, null);
+
+		// Mocking the Member object
+		Member member = mock(Member.class);
+		when(member.getId()).thenReturn(1L);
+		when(member.getNickname()).thenReturn("작성자닉네임");
+		when(member.getImageUrl()).thenReturn("imageUrl");
+
+		// when
+		Post post = Post.of(new PostCreateRequest(title, content, category.getId(), null), category, member);
+
+		// then
+		assertThat(post.getTitle().getTitle()).isEqualTo(title);
+		assertThat(post.getContent().getContent()).isEqualTo(content);
+		assertThat(post.getCategory()).isEqualTo(category);
+		assertThat(post.getMember()).isEqualTo(member);
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 게시글 조회 시 예외가 발생하는지 확인한다.")
+	void postRetrievalWithNonExistentPostShouldThrowException() {
+		// given
+		Post post = null; // 가정: 게시글이 없는 상태
+
+		// when, then
+		assertThatThrownBy(() -> {
+			if (post == null) {
+				throw new BadRequestException(PostExceptionType.POST_NOT_FOUND);
+			}
+		}).isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+	}
 }

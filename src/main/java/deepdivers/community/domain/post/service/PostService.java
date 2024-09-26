@@ -16,12 +16,16 @@ import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
+import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
+import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.model.PostVisitor;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
+import deepdivers.community.domain.post.repository.PostVisitorRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
 
@@ -51,7 +55,6 @@ public class PostService {
 		if (hashtags == null || hashtags.length == 0) {
 			return;
 		}
-
 		// 유효하지 않은 해시태그가 있으면 예외 발생
 		Arrays.stream(hashtags)
 			.filter(hashtag -> !isValidHashtag(hashtag))
@@ -84,4 +87,33 @@ public class PostService {
 		return categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new BadRequestException(CategoryExceptionType.CATEGORY_NOT_FOUND));
 	}
+
+	private final PostVisitorRepository postVisitorRepository;
+
+	@Transactional
+	public PostReadResponse getPostById(Long postId, String ipAddr) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+
+		increaseViewCount(post, ipAddr);
+
+		return PostReadResponse.from(post);
+	}
+
+	private void increaseViewCount(Post post, String ipAddr) {
+		PostVisitor postVisitor = postVisitorRepository.findByPostAndIpAddr(post, ipAddr)
+			.orElse(null);
+		if (postVisitor == null) {
+			PostVisitor newVisitor = new PostVisitor(post, ipAddr);
+			post.increaseViewCount();
+			postVisitorRepository.save(newVisitor);
+			postRepository.save(post);
+		} else if (postVisitor.canIncreaseViewCount()) {
+			post.increaseViewCount();
+			postVisitor.updateVisitedAt();
+			postVisitorRepository.save(postVisitor);
+			postRepository.save(post);
+		}
+	}
+
 }

@@ -1,4 +1,4 @@
-package deepdivers.community.domain.post.controller.api;
+package deepdivers.community.domain.post.controller.docs;
 
 import org.springframework.http.ResponseEntity;
 
@@ -6,14 +6,16 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
+import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
-@Tag(name = "게시글", description = "게시글 관련 API")
+@Tag(name = "게시글 - 토큰", description = "게시글 관련 API")
 public interface PostApiControllerDocs {
 
 	@Operation(summary = "게시글 작성", description = "새로운 게시글을 작성하는 기능")
@@ -35,4 +37,17 @@ public interface PostApiControllerDocs {
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
 	ResponseEntity<API<PostCreateResponse>> createPost(Member member, PostCreateRequest request);
+
+	@Operation(summary = "게시글 조회", description = "단일 게시글을 조회하는 기능")
+	@ApiResponse(
+		responseCode = "1203",
+		description = "게시글 조회에 성공하였습니다.",
+		content = @Content(schema = @Schema(implementation = PostReadResponse.class))
+	)
+	@ApiResponse(
+		responseCode = "2202",
+		description = "해당 게시글을 찾을 수 없습니다.",
+		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+	)
+	ResponseEntity<API<PostReadResponse>> getPostById(Member member, Long postId, HttpServletRequest request);
 }
