@@ -14,4 +14,9 @@ public record API<T>(
         return new API<>(StatusResponse.from(status), result);
     }
 
+    // getResult() 메서드 추가
+    public T getResult() {
+        return this.result;
+    }
+
 }

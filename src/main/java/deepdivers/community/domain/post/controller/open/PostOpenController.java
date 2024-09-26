@@ -28,7 +28,7 @@ public class PostOpenController implements PostOpenControllerDocs {
 		HttpServletRequest request
 	) {
 		String ipAddr = request.getRemoteAddr();
-		PostReadResponse response = postService.getPostById(postId, ipAddr);
-		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
+		PostReadResponse response = postService.getPostById(postId, ipAddr); // 게시글 조회
+		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response)); // API 응답 생성
 	}
 }
