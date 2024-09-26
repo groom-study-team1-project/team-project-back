@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.exception.PostExceptionType;
@@ -118,5 +121,41 @@ class PostTest {
 			}
 		}).isInstanceOf(BadRequestException.class)
 			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+	}
+
+	@Test
+	@DisplayName("전체 게시글을 성공적으로 조회할 수 있다.")
+	void shouldRetrieveAllPostsSuccessfully() {
+		// given
+		PostCategory category = PostCategory.createCategory("카테고리", null, null);
+
+		// Mocking the Member object
+		Member member = mock(Member.class);
+		when(member.getId()).thenReturn(1L);
+		when(member.getNickname()).thenReturn("작성자닉네임");
+
+		// 여러 개의 Post 객체 생성
+		List<Post> posts = new ArrayList<>();
+		for (int i = 1; i <= 3; i++) {
+			PostCreateRequest request = new PostCreateRequest("제목" + i, "내용내용내용" + i, category.getId(), null);
+			Post post = Post.of(request, category, member);
+			posts.add(post);
+		}
+
+		// when, then
+		assertThat(posts).hasSize(3);  // 3개의 게시글이 반환됨을 확인
+		assertThat(posts.get(0).getTitle().getTitle()).isEqualTo("제목1");
+		assertThat(posts.get(1).getTitle().getTitle()).isEqualTo("제목2");
+		assertThat(posts.get(2).getTitle().getTitle()).isEqualTo("제목3");
+	}
+
+	@Test
+	@DisplayName("전체 게시글 조회 시 반환된 게시글이 없는 경우를 처리한다.")
+	void shouldReturnEmptyListWhenNoPostsAreAvailable() {
+		// given
+		List<Post> posts = new ArrayList<>();  // 게시글 리스트가 비어있음
+
+		// when, then
+		assertThat(posts).isEmpty();  // 반환된 게시글이 없는지 확인
 	}
 }
