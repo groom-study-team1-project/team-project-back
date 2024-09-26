@@ -7,17 +7,14 @@ import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
-import deepdivers.community.global.security.jwt.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "댓글", description = "댓글 관련 API")
+@Tag(name = "8. 댓글 - 토큰", description = "댓글 관련 API")
 public interface CommentApiControllerDocs {
 
     @Operation(summary = "댓글 작성", description = "게시글 댓글을 작성하는 기능")
