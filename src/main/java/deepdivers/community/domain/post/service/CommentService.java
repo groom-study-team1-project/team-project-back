@@ -2,15 +2,18 @@ package deepdivers.community.domain.post.service;
 
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.dto.request.EditCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
 import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
+import deepdivers.community.domain.post.exception.CommentExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.comment.Comment;
 import deepdivers.community.domain.post.repository.CommentRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,9 +28,9 @@ public class CommentService {
 
     public NoContent writeComment(final Member member, final WriteCommentRequest request) {
         final Post post = postRepository.findById(request.postId())
-            .orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
-
+            .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
         final Comment comment = Comment.of(post, member, request.content());
+
         commentRepository.save(comment);
         postRepository.incrementCommentCount(post.getId());
 
@@ -35,14 +38,34 @@ public class CommentService {
     }
 
     public NoContent writeReply(final Member member, final WriteReplyRequest request) {
-        final Comment comment = commentRepository.findById(request.commentId())
-            .orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+        final Comment comment = getCommentWithThrow(request.commentId());
+        final Comment reply = Comment.of(comment.getPost(), member, request);
 
-        final Comment reply = Comment.of(comment.getPost(), member, request.content());
         commentRepository.save(reply);
         postRepository.incrementCommentCount(comment.getPost().getId());
 
         return NoContent.from(CommentStatusType.REPLY_CREATE_SUCCESS);
+    }
+
+    public NoContent updateComment(final Member member, final EditCommentRequest request) {
+        final Comment comment = getCommentWithThrow(request.commentId());
+        validateAuthor(member, comment.getMember());
+
+        comment.updateComment(request.content());
+        commentRepository.save(comment);
+
+        return NoContent.from(CommentStatusType.COMMENT_EDIT_SUCCESS);
+    }
+
+    private void validateAuthor(final Member member, final Member author) {
+        if (!member.equals(author)) {
+            throw new BadRequestException(CommentExceptionType.NOT_FOUND_COMMENT);
+        }
+    }
+
+    private Comment getCommentWithThrow(final Long id) {
+        return commentRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
     }
 
 }

@@ -9,7 +9,8 @@ import lombok.Getter;
 public enum CommentStatusType implements StatusType {
 
 	COMMENT_CREATE_SUCCESS(1300, "댓글 작성에 성공하였습니다."),
-	REPLY_CREATE_SUCCESS(1301, "답글 작성에 성공하였습니다.");
+	REPLY_CREATE_SUCCESS(1301, "답글 작성에 성공하였습니다."),
+	COMMENT_EDIT_SUCCESS(1302, "댓글 수정에 성공하였습니다.");
 
 	private final int code;
 	private final String message;
