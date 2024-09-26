@@ -1,5 +1,6 @@
 package deepdivers.community.domain.post.model.comment;
 
+import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
 import deepdivers.community.domain.post.model.vo.CommentStatus;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.model.Member;
@@ -60,8 +61,20 @@ public class Comment extends BaseEntity {
         this.status = CommentStatus.REGISTERED;
     }
 
+    protected Comment(final Post post, final Member member, final WriteReplyRequest request) {
+        this.post = post;
+        this.member = member;
+        this.content = new CommentContent(request.content());
+        this.parentCommentId = request.commentId();
+        this.status = CommentStatus.REGISTERED;
+    }
+
     public static Comment of(final Post post, final Member member, final String content) {
         return new Comment(post, member, content);
+    }
+
+    public static Comment of(final Post post, final Member member, final WriteReplyRequest request) {
+        return new Comment(post, member, request);
     }
 
     public void updateComment(final String content) {
