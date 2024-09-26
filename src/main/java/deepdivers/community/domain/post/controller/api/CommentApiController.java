@@ -6,6 +6,7 @@ import deepdivers.community.domain.post.controller.docs.CommentApiControllerDocs
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.service.CommentService;
 import deepdivers.community.global.security.jwt.Auth;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class CommentApiController implements CommentApiControllerDocs {
     @PostMapping("/write")
     public ResponseEntity<NoContent> writeCommentOnPosts(
         @Auth final Member member,
-        @RequestBody final WriteCommentRequest request
+        @RequestBody @Valid final WriteCommentRequest request
     ) {
         final NoContent response = commentService.writeComment(member, request);
         return ResponseEntity.ok(response);
