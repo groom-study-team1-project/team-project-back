@@ -1,6 +1,7 @@
 package deepdivers.community.domain.post.service;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,7 @@ public class PostService {
 		if (hashtags == null || hashtags.length == 0) {
 			return;
 		}
+
 		// 유효하지 않은 해시태그가 있으면 예외 발생
 		Arrays.stream(hashtags)
 			.filter(hashtag -> !isValidHashtag(hashtag))
@@ -89,6 +91,14 @@ public class PostService {
 	}
 
 	private final PostVisitorRepository postVisitorRepository;
+
+	@Transactional(readOnly = true)
+	public List<PostReadResponse> getAllPosts() {
+		List<Post> posts = postRepository.findAll();
+		return posts.stream()
+			.map(PostReadResponse::from)
+			.collect(Collectors.toList());
+	}
 
 	@Transactional
 	public PostReadResponse getPostById(Long postId, String ipAddr) {
