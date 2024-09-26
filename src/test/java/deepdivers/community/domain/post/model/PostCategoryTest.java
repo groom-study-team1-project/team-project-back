@@ -6,6 +6,9 @@ import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 class PostCategoryTest {
 
 	@Test
