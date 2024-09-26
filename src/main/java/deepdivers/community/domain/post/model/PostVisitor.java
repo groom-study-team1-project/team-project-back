@@ -43,9 +43,11 @@ public class PostVisitor {
     }
 
     public boolean canIncreaseViewCount() {
-        // 방문 시간이 없거나(처음 방문한 경우), 방문 시간이 30분 이상 지난 경우에만 true를 반환
-        return visitedAt == null || visitedAt.isBefore(LocalDateTime.now().minusMinutes(30));
+        boolean canIncrease = visitedAt == null || visitedAt.isBefore(LocalDateTime.now().minusMinutes(30));
+        System.out.println("canIncreaseViewCount 호출: visitedAt = " + visitedAt + ", canIncrease = " + canIncrease);
+        return canIncrease;
     }
+
 
     // 방문 시간을 현재 시간으로 업데이트하는 메서드
     public void updateVisitedAt() {
