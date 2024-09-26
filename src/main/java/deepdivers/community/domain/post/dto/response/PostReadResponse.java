@@ -16,6 +16,7 @@ public record PostReadResponse(
 	MemberInfo memberInfo, // 작성자 정보 포함
 	Integer viewCount,
 	Integer likeCount,
+	Integer commentCount,
 	List<String> hashtags, // 해시태그 포함
 	String createdAt // 생성일 포함
 ) {
@@ -32,6 +33,7 @@ public record PostReadResponse(
 			),
 			post.getViewCount(),
 			post.getLikeCount(),
+			post.getCommentCount(),
 			post.getHashtags(),
 			post.getCreatedAt().toString() // 생성일 포맷
 		);
