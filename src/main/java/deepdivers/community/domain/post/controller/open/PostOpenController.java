@@ -1,11 +1,7 @@
 package deepdivers.community.domain.post.controller.open;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.controller.docs.PostOpenControllerDocs;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
@@ -28,7 +24,7 @@ public class PostOpenController implements PostOpenControllerDocs {
 		HttpServletRequest request
 	) {
 		String ipAddr = request.getRemoteAddr();
-		PostReadResponse response = postService.getPostById(postId, ipAddr); // 게시글 조회
-		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response)); // API 응답 생성
+		PostReadResponse response = postService.getPostById(postId, ipAddr);
+		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
 	}
 }

@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
-@Tag(name = "게시글", description = "게시글 관련 API")
+@Tag(name = "게시글 - 토큰", description = "게시글 관련 API")
 public interface PostApiControllerDocs {
 
 	@Operation(summary = "게시글 작성", description = "새로운 게시글을 작성하는 기능")

@@ -138,4 +138,6 @@ class PostServiceTest {
 		assertThat(readResponse.title()).isEqualTo("조회 테스트 제목");
 		assertThat(readResponse.content()).isEqualTo("조회 테스트 내용");
 	}
+
+
 }

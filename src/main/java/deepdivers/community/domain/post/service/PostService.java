@@ -55,7 +55,6 @@ public class PostService {
 		if (hashtags == null || hashtags.length == 0) {
 			return;
 		}
-
 		// 유효하지 않은 해시태그가 있으면 예외 발생
 		Arrays.stream(hashtags)
 			.filter(hashtag -> !isValidHashtag(hashtag))
@@ -102,27 +101,18 @@ public class PostService {
 	}
 
 	private void increaseViewCount(Post post, String ipAddr) {
-		// 기존 방문자 조회
 		PostVisitor postVisitor = postVisitorRepository.findByPostAndIpAddr(post, ipAddr)
 			.orElse(null);
-
 		if (postVisitor == null) {
-			// 새로운 방문자라면 조회수 증가
-			System.out.println("새로운 방문자를 생성하고 조회수를 증가시킵니다.");
 			PostVisitor newVisitor = new PostVisitor(post, ipAddr);
-			post.increaseViewCount();  // 조회수 증가
+			post.increaseViewCount();
 			postVisitorRepository.save(newVisitor);
-			postRepository.save(post);  // 조회수 변경 사항을 명시적으로 저장
+			postRepository.save(post);
 		} else if (postVisitor.canIncreaseViewCount()) {
-			// 기존 방문자지만 30분 이상 지난 경우
-			System.out.println("조회수를 증가시킵니다.");
-			post.increaseViewCount();  // 조회수 증가
-			postVisitor.updateVisitedAt();  // 방문 시간 업데이트
+			post.increaseViewCount();
+			postVisitor.updateVisitedAt();
 			postVisitorRepository.save(postVisitor);
-			postRepository.save(post);  // 조회수 변경 사항을 명시적으로 저장
-		} else {
-			// 30분 내 재조회 시 조회수 증가하지 않음
-			System.out.println("30분 내에 재조회하여 조회수를 증가시키지 않습니다.");
+			postRepository.save(post);
 		}
 	}
 
