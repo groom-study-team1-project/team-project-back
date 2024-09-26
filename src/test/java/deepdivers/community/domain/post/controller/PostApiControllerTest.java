@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -249,5 +250,31 @@ class PostApiControllerTest extends ControllerTest {
 			.status(HttpStatus.BAD_REQUEST) // 400 Bad Request 기대
 			.body("code", equalTo(PostExceptionType.POST_NOT_FOUND.getCode()))
 			.body("message", equalTo(PostExceptionType.POST_NOT_FOUND.getMessage()));
+	}
+
+	@Test
+	@DisplayName("회원이 전체 게시글 조회에 성공하면 200 OK와 게시글 목록을 반환한다")
+	void getAllPostsSuccessfullyReturns200OK() {
+		// given
+		List<PostReadResponse> mockPostResponses = Arrays.asList(mockPostResponse, mockPostResponse); // 여러 게시글을 생성
+		API<List<PostReadResponse>> mockResponse = API.of(PostStatusType.POST_VIEW_SUCCESS, mockPostResponses);
+
+		given(postService.getAllPosts()).willReturn(mockPostResponses);
+
+		// when
+		API<List<PostReadResponse>> response = RestAssuredMockMvc
+			.given().log().all()
+			.header("Authorization", "Bearer sample-token")  // 인증 토큰
+			.contentType(MediaType.APPLICATION_JSON)
+			.when().get("/api/posts")
+			.then().log().all()
+			.status(HttpStatus.OK) // 200 OK 반환 기대
+			.extract()
+			.as(new TypeRef<API<List<PostReadResponse>>>() {});  // API<List<PostReadResponse>>로 변환
+
+		// then
+		assertThat(response.getResult()).hasSize(2);  // 2개의 게시글이 반환됨을 확인
+		assertThat(response.getResult().get(0).title()).isEqualTo("게시글 제목");
+		assertThat(response.getResult().get(0).hashtags()).containsExactly("해시태그1", "해시태그2");
 	}
 }
