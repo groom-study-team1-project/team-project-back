@@ -1,5 +1,7 @@
 package deepdivers.community.domain.post.controller.api;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
@@ -46,6 +49,14 @@ public class PostApiController implements PostApiControllerDocs {
 	) {
 		String ipAddr = request.getRemoteAddr();
 		PostReadResponse response = postService.getPostById(postId, ipAddr);
+		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
+	}
+
+	@GetMapping
+	public ResponseEntity<API<List<PostReadResponse>>> getAllPosts(
+		@Auth final Member member
+	) {
+		List<PostReadResponse> response = postService.getAllPosts();
 		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
 	}
 }
