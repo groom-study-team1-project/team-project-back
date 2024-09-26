@@ -10,9 +10,11 @@ import deepdivers.community.domain.post.repository.CommentRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommentService {
 
     private final PostRepository postRepository;
@@ -24,6 +26,7 @@ public class CommentService {
 
         final Comment comment = Comment.of(post, member, request.content());
         commentRepository.save(comment);
+        postRepository.incrementCommentCount();
 
         return NoContent.from(PostStatusType.POST_VIEW_SUCCESS);
     }
