@@ -3,6 +3,8 @@ package deepdivers.community.domain.post.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +55,10 @@ class PostServiceTest {
 
 	@BeforeEach
 	void setUp() {
+		postRepository.deleteAll(); // 테스트 전에 모든 게시글 삭제
+		categoryRepository.deleteAll(); // 모든 카테고리 삭제
+		memberRepository.deleteAll(); // 모든 멤버 삭제
+
 		encryptor = mock(Encryptor.class);
 
 		when(encryptor.encrypt(anyString())).thenReturn("encryptedPassword");
@@ -139,5 +145,33 @@ class PostServiceTest {
 		assertThat(readResponse.content()).isEqualTo("조회 테스트 내용");
 	}
 
+	@Test
+	@DisplayName("전체 게시글 조회 성공 통합 테스트")
+	void getAllPostsSuccessIntegrationTest() {
+		// Given
+		PostCreateRequest request1 = new PostCreateRequest("첫 번째 게시글", "첫 번째 게시글 내용", category.getId(), new String[]{"hashtag1"});
+		PostCreateRequest request2 = new PostCreateRequest("두 번째 게시글", "두 번째 게시글 내용", category.getId(), new String[]{"hashtag2"});
+		postService.createPost(request1, member);
+		postService.createPost(request2, member);
 
+		// When
+		List<PostReadResponse> response = postService.getAllPosts();
+
+		// Then
+		assertThat(response).hasSize(2);  // 게시글 2개가 존재하는지 확인
+		assertThat(response.get(0).title()).isEqualTo("첫 번째 게시글");
+		assertThat(response.get(0).content()).isEqualTo("첫 번째 게시글 내용");
+		assertThat(response.get(1).title()).isEqualTo("두 번째 게시글");
+		assertThat(response.get(1).content()).isEqualTo("두 번째 게시글 내용");
+	}
+
+	@Test
+	@DisplayName("전체 게시글이 없을 때 빈 리스트 반환 통합 테스트")
+	void getAllPostsReturnsEmptyListWhenNoPostsExist() {
+		// When
+		List<PostReadResponse> response = postService.getAllPosts();
+
+		// Then
+		assertThat(response).isEmpty();  // 게시글이 없을 때 빈 리스트 반환
+	}
 }
