@@ -1,6 +1,5 @@
 package deepdivers.community.domain.post.model.comment;
 
-import deepdivers.community.domain.common.Content;
 import deepdivers.community.domain.post.model.vo.CommentStatus;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.member.model.Member;
@@ -44,12 +43,10 @@ public class Comment extends BaseEntity {
     @Column(updatable = false)
     private Long parentCommentId;
 
-    @Column(nullable = false)
     @Embedded
-    private Content content;
+    private CommentContent content;
 
     @ColumnDefault("0")
-    @Column(nullable = false)
     private Integer likeCount;
 
     @Enumerated(EnumType.STRING)
