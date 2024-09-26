@@ -1,14 +1,18 @@
 package deepdivers.community.domain.post.controller.docs;
 
+import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 
 @Tag(name = "댓글", description = "댓글 관련 API")
-public interface CommentControllerDocs {
+public interface CommentApiControllerDocs {
 
     @Operation(summary = "댓글 작성", description = "게시글 댓글을 작성하는 기능")
     @ApiResponse(
@@ -31,6 +35,6 @@ public interface CommentControllerDocs {
                     """,
             content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    void example();
+    ResponseEntity<NoContent> writeCommentOnPosts(Member member, WriteCommentRequest request);
 
 }

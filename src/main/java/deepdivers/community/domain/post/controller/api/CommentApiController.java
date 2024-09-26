@@ -1,0 +1,32 @@
+package deepdivers.community.domain.post.controller.api;
+
+import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.controller.docs.CommentApiControllerDocs;
+import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
+import deepdivers.community.domain.post.service.CommentService;
+import deepdivers.community.global.security.jwt.Auth;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/comments")
+@RequiredArgsConstructor
+public class CommentApiController implements CommentApiControllerDocs {
+
+    private final CommentService commentService;
+
+    @PostMapping("/write")
+    public ResponseEntity<NoContent> writeCommentOnPosts(
+        @Auth final Member member,
+        @RequestBody final WriteCommentRequest request
+    ) {
+        final NoContent response = commentService.writeComment(member, request);
+        return ResponseEntity.ok(response);
+    }
+
+}
