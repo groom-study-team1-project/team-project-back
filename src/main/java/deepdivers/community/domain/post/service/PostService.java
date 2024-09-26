@@ -16,12 +16,16 @@ import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
+import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
+import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.model.PostVisitor;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
+import deepdivers.community.domain.post.repository.PostVisitorRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
 
@@ -84,4 +88,42 @@ public class PostService {
 		return categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new BadRequestException(CategoryExceptionType.CATEGORY_NOT_FOUND));
 	}
+
+	private final PostVisitorRepository postVisitorRepository;
+
+	@Transactional
+	public PostReadResponse getPostById(Long postId, String ipAddr) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+
+		increaseViewCount(post, ipAddr);
+
+		return PostReadResponse.from(post);
+	}
+
+	private void increaseViewCount(Post post, String ipAddr) {
+		// 기존 방문자 조회
+		PostVisitor postVisitor = postVisitorRepository.findByPostAndIpAddr(post, ipAddr)
+			.orElse(null);
+
+		if (postVisitor == null) {
+			// 새로운 방문자라면 조회수 증가
+			System.out.println("새로운 방문자를 생성하고 조회수를 증가시킵니다.");
+			PostVisitor newVisitor = new PostVisitor(post, ipAddr);
+			post.increaseViewCount();  // 조회수 증가
+			postVisitorRepository.save(newVisitor);
+			postRepository.save(post);  // 조회수 변경 사항을 명시적으로 저장
+		} else if (postVisitor.canIncreaseViewCount()) {
+			// 기존 방문자지만 30분 이상 지난 경우
+			System.out.println("조회수를 증가시킵니다.");
+			post.increaseViewCount();  // 조회수 증가
+			postVisitor.updateVisitedAt();  // 방문 시간 업데이트
+			postVisitorRepository.save(postVisitor);
+			postRepository.save(post);  // 조회수 변경 사항을 명시적으로 저장
+		} else {
+			// 30분 내 재조회 시 조회수 증가하지 않음
+			System.out.println("30분 내에 재조회하여 조회수를 증가시키지 않습니다.");
+		}
+	}
+
 }

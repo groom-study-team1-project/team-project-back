@@ -94,6 +94,10 @@ public class Post extends BaseEntity {
         );
     }
 
+    public void increaseViewCount() {
+        this.viewCount += 1;
+    }
+
     public boolean isActive() {
         return this.status == PostStatus.ACTIVE;
     }
