@@ -1,5 +1,7 @@
 package deepdivers.community.domain.post.model.comment;
 
+import deepdivers.community.domain.post.exception.CommentExceptionType;
+import deepdivers.community.global.exception.model.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -23,7 +25,7 @@ public class CommentContent {
 
     private void checkText(final String contentText) {
         if (contentText == null || contentText.isEmpty() || contentText.length() > NAX_COMMENT_LENGTH) {
-            throw new IllegalArgumentException();
+            throw new BadRequestException(CommentExceptionType.INVALID_COMMENT_CONTENT);
         }
     }
 
