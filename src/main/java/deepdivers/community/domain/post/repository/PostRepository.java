@@ -17,8 +17,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 	@Modifying
 	@Query("""
         update Post p set p.commentCount = p.commentCount + 1, p.updatedAt = now()
-        WHERE p.id = p.id
+        WHERE p.id = :postId
         """)
-	void incrementCommentCount();
+	void incrementCommentCount(Long postId);
 
 }

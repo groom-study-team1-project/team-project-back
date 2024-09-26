@@ -4,6 +4,7 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.CommentApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
+import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
 import deepdivers.community.domain.post.service.CommentService;
 import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
@@ -27,6 +28,15 @@ public class CommentApiController implements CommentApiControllerDocs {
         @RequestBody @Valid final WriteCommentRequest request
     ) {
         final NoContent response = commentService.writeComment(member, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/write/reply")
+    public ResponseEntity<NoContent> writeReplyOnComment(
+        @Auth final Member member,
+        @RequestBody @Valid final WriteReplyRequest request
+    ) {
+        final NoContent response = commentService.writeReply(member, request);
         return ResponseEntity.ok(response);
     }
 
