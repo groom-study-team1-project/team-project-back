@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.service;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.EditCommentRequest;
+import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
 import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
@@ -66,6 +67,16 @@ public class CommentService {
     private Comment getCommentWithThrow(final Long id) {
         return commentRepository.findById(id)
             .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
+    }
+
+    public NoContent removeComment(final Member member, final RemoveCommentRequest request) {
+        final Comment comment = getCommentWithThrow(request.commentId());
+        validateAuthor(member, comment.getMember());
+
+        comment.deleteComment();
+        commentRepository.save(comment);
+
+        return NoContent.from(CommentStatusType.COMMENT_REMOVE_SUCCESS);
     }
 
 }
