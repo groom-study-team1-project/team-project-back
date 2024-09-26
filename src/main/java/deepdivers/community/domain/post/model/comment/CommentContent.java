@@ -1,23 +1,35 @@
 package deepdivers.community.domain.post.model.comment;
 
-import deepdivers.community.domain.common.Content;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class CommentContent extends Content {
+@Embeddable
+@Getter
+public class CommentContent {
 
     private static final int NAX_COMMENT_LENGTH = 100;
 
-    public CommentContent(final String contentText) {
-        super(contentText);
+    @Column(name = "content", length = NAX_COMMENT_LENGTH, nullable = false)
+    private String value;
+
+    protected CommentContent(final String contentText) {
+        checkText(contentText);
+        this.value = contentText;
     }
 
-    @Override
-    protected void checkText(final String contentText) {
+    private void checkText(final String contentText) {
         if (contentText == null || contentText.isEmpty() || contentText.length() > NAX_COMMENT_LENGTH) {
             throw new IllegalArgumentException();
         }
+    }
+
+    public void updateContent(final String contentText) {
+        checkText(contentText);
+        this.value = contentText;
     }
 
 }
