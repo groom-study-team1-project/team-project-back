@@ -18,6 +18,7 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
+import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
@@ -96,7 +97,6 @@ class PostServiceTest {
 		assertThat(savedPost.getContent().getContent()).isEqualTo("통합 테스트 내용");
 	}
 
-
 	@Test
 	@DisplayName("존재하지 않는 카테고리로 게시물 생성 시 예외 발생 통합 테스트")
 	void createPostWithInvalidCategoryIntegrationTest() {
@@ -119,5 +119,23 @@ class PostServiceTest {
 		assertThatThrownBy(() -> postService.createPost(request, member))
 			.isInstanceOf(BadRequestException.class)
 			.hasFieldOrPropertyWithValue("exceptionType", HashtagExceptionType.INVALID_HASHTAG_FORMAT);
+	}
+
+	@Test
+	@DisplayName("게시글 조회 성공 통합 테스트")
+	void getPostByIdSuccessIntegrationTest() {
+		// Given
+		PostCreateRequest createRequest = new PostCreateRequest("조회 테스트 제목", "조회 테스트 내용", category.getId(), new String[]{"hashtag"});
+		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		Long postId = createResponse.result().postId(); // 생성된 게시물 ID
+
+		// When
+		PostReadResponse readResponse = postService.getPostById(postId, "127.0.0.1"); // IP 주소는 임의로 설정
+
+		// Then
+		assertThat(readResponse).isNotNull();
+		assertThat(readResponse.postId()).isEqualTo(postId);
+		assertThat(readResponse.title()).isEqualTo("조회 테스트 제목");
+		assertThat(readResponse.content()).isEqualTo("조회 테스트 내용");
 	}
 }
