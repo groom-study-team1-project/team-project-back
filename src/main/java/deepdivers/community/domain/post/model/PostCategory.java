@@ -43,6 +43,9 @@ public class PostCategory {
     @Column(nullable = false)
     private CategoryStatus status = CategoryStatus.ACTIVE;
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Post> posts;
+
     private PostCategory(String title, String description, CategoryStatus status) {
         this.title = title;
         this.description = description;
