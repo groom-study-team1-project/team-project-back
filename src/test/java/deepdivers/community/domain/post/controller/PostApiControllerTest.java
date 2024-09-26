@@ -61,6 +61,7 @@ class PostApiControllerTest extends ControllerTest {
 			),
 			100,                   // viewCount
 			10,                    // likeCount
+			5,                     // commentCount
 			Arrays.asList("해시태그1", "해시태그2"), // 해시태그 추가
 			"2024-09-26T12:00:00" // createdAt (예시)
 		);
