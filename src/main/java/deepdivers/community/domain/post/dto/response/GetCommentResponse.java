@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class GetCommentResponse extends CommentResponse {
+public class GetCommentResponse extends ContentResponse {
 
     private Integer replyCount;
 

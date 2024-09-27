@@ -1,7 +1,6 @@
 package deepdivers.community.domain.post.dto.response;
 
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +10,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentResponse {
+public class ContentResponse {
 
     private Long id;
     private String content;
