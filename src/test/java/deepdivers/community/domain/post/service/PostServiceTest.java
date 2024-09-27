@@ -19,9 +19,12 @@ import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
+import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
+import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
 import deepdivers.community.domain.post.model.vo.CategoryStatus;
@@ -174,4 +177,67 @@ class PostServiceTest {
 		// Then
 		assertThat(response).isEmpty();  // 게시글이 없을 때 빈 리스트 반환
 	}
+
+	@Test
+	@DisplayName("게시물 수정 성공 통합 테스트")
+	void updatePostSuccessIntegrationTest() {
+		// Given: 게시글을 먼저 생성
+		PostCreateRequest createRequest = new PostCreateRequest("원래 제목", "원래 내용", category.getId(), new String[]{"hashtag1"});
+		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		Long postId = createResponse.result().postId();
+
+		// 수정 요청 데이터 준비
+		PostUpdateRequest updateRequest = new PostUpdateRequest("수정된 제목", "수정된 내용", category.getId(), new String[]{"hashtag2"});
+
+		// When: 게시글 수정
+		API<PostUpdateResponse> updateResponse = postService.updatePost(postId, updateRequest, member);
+
+		// Then: 수정된 결과 검증
+		assertThat(updateResponse).isNotNull();
+		PostUpdateResponse result = updateResponse.result();
+		assertThat(result.postId()).isEqualTo(postId);
+		assertThat(result.updatedTitle()).isEqualTo("수정된 제목");
+		assertThat(result.updatedContent()).isEqualTo("수정된 내용");
+
+		// DB에서 수정된 게시글을 검증
+		Post updatedPost = postRepository.findById(postId).orElse(null);
+		assertThat(updatedPost).isNotNull();
+		assertThat(updatedPost.getTitle().getTitle()).isEqualTo("수정된 제목");
+		assertThat(updatedPost.getContent().getContent()).isEqualTo("수정된 내용");
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 게시글 수정 시 예외 발생 통합 테스트")
+	void updateNonExistentPostThrowsExceptionIntegrationTest() {
+		// Given: 존재하지 않는 게시글 ID로 수정 시도
+		PostUpdateRequest updateRequest = new PostUpdateRequest("수정된 제목", "수정된 내용", category.getId(), new String[]{"hashtag2"});
+
+		// When & Then: 예외 발생 검증
+		assertThatThrownBy(() -> postService.updatePost(999L, updateRequest, member))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+	}
+
+	@Test
+	@DisplayName("게시물 수정 시 작성자가 아닌 경우 예외 발생 통합 테스트")
+	void updatePostByNonAuthorThrowsExceptionIntegrationTest() {
+		// Given: 게시글을 먼저 생성
+		PostCreateRequest createRequest = new PostCreateRequest("원래 제목", "원래 내용", category.getId(), new String[]{"hashtag1"});
+		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		Long postId = createResponse.result().postId();
+
+		// 새로운 작성자 생성 (비밀번호를 유효성 검사를 통과하도록 수정)
+		MemberSignUpRequest newMemberRequest = new MemberSignUpRequest("new@mail.com", "newPassword123*", "newNickname", "http://new.url", "010-5678-1234");
+		Member newMember = Member.of(newMemberRequest, encryptor);
+		memberRepository.save(newMember);
+
+		// 수정 요청 데이터 준비
+		PostUpdateRequest updateRequest = new PostUpdateRequest("수정된 제목", "수정된 내용", category.getId(), new String[]{"hashtag2"});
+
+		// When & Then: 예외 발생 검증
+		assertThatThrownBy(() -> postService.updatePost(postId, updateRequest, newMember))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.NOT_POST_AUTHOR);
+	}
+
 }
