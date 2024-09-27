@@ -422,4 +422,56 @@ class PostApiControllerTest extends ControllerTest {
 			.body("code", equalTo(HashtagExceptionType.INVALID_HASHTAG_FORMAT.getCode())) // 해시태그 오류 코드
 			.body("message", containsString("유효하지 않은 해시태그 형식입니다."));
 	}
+
+	@Test
+	@DisplayName("게시글 삭제가 성공적으로 처리되면 200 OK를 반환한다")
+	void deletePostSuccessfullyReturns204NoContent() {
+		// given
+		given(postService.deletePost(anyLong(), any(Member.class)))
+			.willReturn(NoContent.from(PostStatusType.POST_DELETE_SUCCESS));
+
+		// when, then
+		RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.when().delete("/api/posts/delete/1")
+			.then().log().all()
+			.status(HttpStatus.OK); // 성공적으로 삭제될 때 204 No Content 반환
+	}
+
+	@Test
+	@DisplayName("게시글 삭제 시 작성자가 아닌 경우 400 Bad Request를 반환한다")
+	void deletePostNotAuthorReturns400BadRequest() {
+		// given
+		willThrow(new BadRequestException(PostExceptionType.NOT_POST_AUTHOR))
+			.given(postService).deletePost(anyLong(), any(Member.class));
+
+		// when, then
+		RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.when().delete("/api/posts/delete/1")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST) // 400 오류 예상
+			.body("code", equalTo(PostExceptionType.NOT_POST_AUTHOR.getCode()))
+			.body("message", containsString(PostExceptionType.NOT_POST_AUTHOR.getMessage()));
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 게시글 삭제 시 400 Bad Request를 반환한다")
+	void deletePostNotFoundReturns400BadRequest() {
+		// given
+		willThrow(new BadRequestException(PostExceptionType.POST_NOT_FOUND))
+			.given(postService).deletePost(anyLong(), any(Member.class));
+
+		// when, then
+		RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.when().delete("/api/posts/delete/999")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST) // 400 오류 예상
+			.body("code", equalTo(PostExceptionType.POST_NOT_FOUND.getCode()))
+			.body("message", containsString(PostExceptionType.POST_NOT_FOUND.getMessage()));
+	}
 }
