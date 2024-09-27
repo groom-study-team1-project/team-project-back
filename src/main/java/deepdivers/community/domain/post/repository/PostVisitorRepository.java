@@ -8,4 +8,6 @@ import java.util.Optional;
 
 public interface PostVisitorRepository extends JpaRepository<PostVisitor, Long> {
 	Optional<PostVisitor> findByPostAndIpAddr(Post post, String ipAddr);
+
+	void deleteAllByPost(Post post);
 }

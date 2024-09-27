@@ -1,9 +1,11 @@
 package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.request.PostUpdateRequest; // PostUpdateRequest import
+import deepdivers.community.domain.post.dto.request.PostDeleteRequest;
+import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -13,7 +15,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -27,16 +28,6 @@ public interface PostApiControllerDocs {
 		description = "게시글 작성에 성공하였습니다.",
 		content = @Content(schema = @Schema(implementation = PostCreateResponse.class))
 	)
-	@ApiResponse(
-		responseCode = "2200, 2201, 3200, 9000~9005",
-		description = """
-            1. 게시글 제목은 2자 이상, 50자 이하로 작성해야 합니다.
-            2. 게시글 내용은 최소 5자 이상이어야 합니다.
-            3. 해당 카테고리를 찾을 수 없습니다.
-            4. 토큰 관련 예외입니다.
-            """,
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
 	ResponseEntity<API<PostCreateResponse>> createPost(Member member, PostCreateRequest request);
 
 	@Operation(summary = "게시글 조회", description = "단일 게시글을 조회하는 기능")
@@ -45,12 +36,7 @@ public interface PostApiControllerDocs {
 		description = "게시글 조회에 성공하였습니다.",
 		content = @Content(schema = @Schema(implementation = PostReadResponse.class))
 	)
-	@ApiResponse(
-		responseCode = "2202",
-		description = "해당 게시글을 찾을 수 없습니다.",
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
-	ResponseEntity<API<PostReadResponse>> getPostById(Member member, Long postId, HttpServletRequest request);
+	ResponseEntity<API<PostReadResponse>> getPostById(Member member, Long postId);
 
 	@Operation(summary = "전체 게시글 조회", description = "회원이 모든 게시글을 조회하는 기능")
 	@ApiResponse(
@@ -71,15 +57,14 @@ public interface PostApiControllerDocs {
 		description = "게시글 수정에 성공하였습니다.",
 		content = @Content(schema = @Schema(implementation = PostUpdateResponse.class))
 	)
+	ResponseEntity<API<PostUpdateResponse>> updatePost(Member member, Long postId, PostUpdateRequest request);
+
+	@Operation(summary = "게시글 삭제", description = "게시글을 삭제하는 기능")
 	@ApiResponse(
-		responseCode = "2200, 2201, 3200, 9000~9005",
-		description = """
-            1. 게시글 제목은 2자 이상, 50자 이하로 작성해야 합니다.
-            2. 게시글 내용은 최소 5자 이상이어야 합니다.
-            3. 해당 카테고리를 찾을 수 없습니다.
-            4. 토큰 관련 예외입니다.
-            """,
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+		responseCode = "1202",
+		description = "게시글 삭제에 성공하였습니다.",
+		content = @Content(schema = @Schema(implementation = NoContent.class))
 	)
-	ResponseEntity<API<PostUpdateResponse>> updatePost(Member member, Long postId, PostUpdateRequest request); // 수정
+	ResponseEntity<NoContent> deletePost(Member member, Long postId);  // 삭제 메서드 추가
 }
+

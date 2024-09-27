@@ -240,4 +240,48 @@ class PostServiceTest {
 			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.NOT_POST_AUTHOR);
 	}
 
+	@Test
+	@DisplayName("게시물 삭제 성공 통합 테스트")
+	void deletePostSuccessIntegrationTest() {
+		// Given: 게시글을 먼저 생성
+		PostCreateRequest createRequest = new PostCreateRequest("삭제 테스트 제목", "삭제 테스트 내용", category.getId(), new String[]{"hashtag"});
+		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		Long postId = createResponse.result().postId();
+
+		// When: 게시글 삭제
+		postService.deletePost(postId, member);
+
+		// Then: 게시글이 데이터베이스에서 삭제되었는지 검증
+		Post deletedPost = postRepository.findById(postId).orElse(null);
+		assertThat(deletedPost).isNull(); // 삭제되었기 때문에 null이어야 함
+	}
+
+	@Test
+	@DisplayName("게시글 삭제 시 작성자가 아닌 경우 예외 발생 통합 테스트")
+	void deletePostByNonAuthorThrowsExceptionIntegrationTest() {
+		// Given: 게시글을 먼저 생성
+		PostCreateRequest createRequest = new PostCreateRequest("삭제 테스트 제목", "삭제 테스트 내용", category.getId(), new String[]{"hashtag"});
+		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		Long postId = createResponse.result().postId();
+
+		// 새로운 작성자 생성 (비밀번호 유효성 검사를 통과하도록 수정)
+		MemberSignUpRequest newMemberRequest = new MemberSignUpRequest("new@mail.com", "newPassword123*", "newNickname", "http://new.url", "010-5678-1234");
+		Member newMember = Member.of(newMemberRequest, encryptor);
+		memberRepository.save(newMember);
+
+		// When & Then: 작성자가 아닌 사용자가 삭제 시도하면 예외 발생 검증
+		assertThatThrownBy(() -> postService.deletePost(postId, newMember))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.NOT_POST_AUTHOR);
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 게시글 삭제 시 예외 발생 통합 테스트")
+	void deleteNonExistentPostThrowsExceptionIntegrationTest() {
+		// When & Then: 존재하지 않는 게시글 ID로 삭제 시도 시 예외 발생 검증
+		assertThatThrownBy(() -> postService.deletePost(999L, member))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+	}
+
 }

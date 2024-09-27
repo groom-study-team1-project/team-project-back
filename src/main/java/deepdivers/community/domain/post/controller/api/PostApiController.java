@@ -1,6 +1,7 @@
 package deepdivers.community.domain.post.controller.api;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
@@ -17,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+	import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,11 +41,9 @@ public class PostApiController implements PostApiControllerDocs {
 	@GetMapping("/{postId}")
 	public ResponseEntity<API<PostReadResponse>> getPostById(
 		@Auth Member member,
-		@PathVariable Long postId,
-		HttpServletRequest request
+		@PathVariable Long postId
 	) {
-		String ipAddr = request.getRemoteAddr();
-		PostReadResponse response = postService.getPostById(postId, ipAddr);
+		PostReadResponse response = postService.getPostById(postId, "");
 		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
 	}
 
@@ -56,6 +55,7 @@ public class PostApiController implements PostApiControllerDocs {
 		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
 	}
 
+	@Override
 	@PostMapping("/update/{postId}")
 	public ResponseEntity<API<PostUpdateResponse>> updatePost(
 		@Auth final Member member,
@@ -63,6 +63,17 @@ public class PostApiController implements PostApiControllerDocs {
 		@Valid @RequestBody final PostUpdateRequest request
 	) {
 		final API<PostUpdateResponse> response = postService.updatePost(postId, request, member);
-		return ResponseEntity.ok(response);  // 변경된 결과 구조로 반환
+		return ResponseEntity.ok(response);
+	}
+
+	@Override
+	@DeleteMapping("/delete/{postId}")
+	public ResponseEntity<NoContent> deletePost(
+		@Auth final Member member,
+		@PathVariable final Long postId
+	) {
+		final NoContent response = postService.deletePost(postId, member);
+		return ResponseEntity.ok(response);
 	}
 }
+
