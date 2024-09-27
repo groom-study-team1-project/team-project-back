@@ -8,7 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum LikeStatusType implements StatusType {
 
-	COMMENT_LIKE_SUCCESS(1500, "댓글 좋아요에 성공하였습니다.");
+	COMMENT_LIKE_SUCCESS(1500, "댓글 좋아요를 했습니다."),
+	COMMENT_UNLIKE_SUCCESS(1501, "댓글 좋아요를 취소했습니다.");
 
 	private final int code;
 	private final String message;

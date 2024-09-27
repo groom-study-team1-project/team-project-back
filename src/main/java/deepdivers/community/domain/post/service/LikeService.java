@@ -34,4 +34,16 @@ public class LikeService {
         return NoContent.from(LikeStatusType.COMMENT_LIKE_SUCCESS);
     }
 
+    public NoContent unlikeComment(final LikeRequest request, final Long memberId)  {
+        final Like like = Like.of(request.targetId(), memberId, LikeTarget.COMMENT);
+        if (!likeRepository.existsById(like.getId())) {
+            throw new BadRequestException(LikeExceptionType.INVALID_ACCESS);
+        }
+
+        likeRepository.delete(like);
+        commentRepository.decrementLikeCount(request.targetId());
+
+        return NoContent.from(LikeStatusType.COMMENT_UNLIKE_SUCCESS);
+    }
+
 }
