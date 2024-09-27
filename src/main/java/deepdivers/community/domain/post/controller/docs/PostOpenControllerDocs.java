@@ -1,9 +1,5 @@
 package deepdivers.community.domain.post.controller.docs;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
@@ -13,8 +9,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
 
-@Tag(name = "게시글", description = "비회원 게시글 조회 API")
+@Tag(name = "5. 게시글", description = "비회원 게시글 조회 API")
 public interface PostOpenControllerDocs {
 
 	@Operation(summary = "게시글 조회 (비회원)", description = "비회원이 게시글을 조회하는 기능")

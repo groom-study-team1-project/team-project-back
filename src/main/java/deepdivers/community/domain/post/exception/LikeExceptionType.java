@@ -8,7 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum LikeExceptionType implements ExceptionType {
 
-	INVALID_ACCESS(2400, "유효하지 않은 접근입니다.");
+	INVALID_ACCESS(2500, "유효하지 않은 접근입니다.");
 
 	private final int code;
 	private final String message;

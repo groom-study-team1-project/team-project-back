@@ -17,7 +17,7 @@ public interface CommentOpenControllerDocs {
 
     @Operation(summary = "댓글 조회", description = "게시글 댓글을 조회하는 기능")
     @ApiResponse(
-        responseCode = "1304",
+        responseCode = "1404",
         description = """
                     1. 댓글 조회에 성공하였습니다.
                     """
@@ -33,7 +33,7 @@ public interface CommentOpenControllerDocs {
 
     @Operation(summary = "답글 조회", description = "게시글 댓글의 답글을 조회하는 기능")
     @ApiResponse(
-        responseCode = "1305",
+        responseCode = "1405",
         description = """
                     1. 답글 조회에 성공하였습니다.
                     """

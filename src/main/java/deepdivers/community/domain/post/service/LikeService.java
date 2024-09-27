@@ -2,7 +2,7 @@ package deepdivers.community.domain.post.service;
 
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.dto.response.statustype.LikeStatusType;
+import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
 import deepdivers.community.domain.post.exception.LikeExceptionType;
 import deepdivers.community.domain.post.model.like.Like;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
@@ -31,7 +31,7 @@ public class LikeService {
         likeRepository.save(like);
         commentRepository.incrementLikeCount(request.targetId());
 
-        return NoContent.from(LikeStatusType.COMMENT_LIKE_SUCCESS);
+        return NoContent.from(CommentStatusType.COMMENT_LIKE_SUCCESS);
     }
 
     public NoContent unlikeComment(final LikeRequest request, final Long memberId)  {
@@ -43,7 +43,7 @@ public class LikeService {
         likeRepository.delete(like);
         commentRepository.decrementLikeCount(request.targetId());
 
-        return NoContent.from(LikeStatusType.COMMENT_UNLIKE_SUCCESS);
+        return NoContent.from(CommentStatusType.COMMENT_UNLIKE_SUCCESS);
     }
 
 }
