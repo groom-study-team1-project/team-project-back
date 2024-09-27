@@ -120,4 +120,10 @@ public class Post extends BaseEntity {
     public void delete() {
         this.status = PostStatus.DELETED;
     }
+
+    public void decrementCommentCount() {
+        if (this.commentCount > 0) {
+            this.commentCount -= 1;
+        }
+    }
 }

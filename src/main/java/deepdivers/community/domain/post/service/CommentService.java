@@ -70,13 +70,20 @@ public class CommentService {
             .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
     }
 
+    /* todo: 낙관 락으로 동시성 이슈 해결하기, 로직 개선하기
+     *  batch 작업으로 대댓글 다같이 삭제하기*/
     public NoContent removeComment(final Member member, final RemoveCommentRequest request) {
-        // todo: 댓글 삭제 시, 게시글 댓글 수 감소 & 답변일 경우 댓글 답글 수 감소
         final Comment comment = getCommentWithThrow(request.commentId());
         validateAuthor(member, comment.getMember());
 
         comment.deleteComment();
         commentRepository.save(comment);
+
+        if (comment.getParentCommentId() != null) {
+            final Comment parent = getCommentWithThrow(comment.getParentCommentId());
+            parent.decrementReplyCount();
+            commentRepository.save(parent);
+        }
 
         return NoContent.from(CommentStatusType.COMMENT_REMOVE_SUCCESS);
     }
