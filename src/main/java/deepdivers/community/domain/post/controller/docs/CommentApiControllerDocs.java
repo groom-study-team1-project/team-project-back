@@ -57,7 +57,7 @@ public interface CommentApiControllerDocs {
     @ApiResponse(
         responseCode = "1302",
         description = """
-                    1. 댓글 수정에 성공하였습니다.
+                    1. 댓글 및 답글 수정에 성공하였습니다.
                     """
     )
     @ApiResponse(
@@ -76,7 +76,7 @@ public interface CommentApiControllerDocs {
     @ApiResponse(
         responseCode = "1303",
         description = """
-                    1. 댓글 삭제에 성공하였습니다.
+                    1. 댓글 및 답글 삭제에 성공하였습니다.
                     """
     )
     @ApiResponse(

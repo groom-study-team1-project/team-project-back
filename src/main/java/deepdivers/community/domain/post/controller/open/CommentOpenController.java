@@ -2,6 +2,7 @@ package deepdivers.community.domain.post.controller.open;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.dto.response.CommentResponse;
+import deepdivers.community.domain.post.dto.response.GetCommentResponse;
 import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
 import deepdivers.community.domain.post.repository.CommentQueryRepository;
 import java.util.List;
@@ -21,12 +22,12 @@ public class CommentOpenController {
     private final CommentQueryRepository commentQueryRepository;
 
     @GetMapping("/{postId}")
-    public ResponseEntity<API<List<CommentResponse>>> getCommentsOnPost(
+    public ResponseEntity<API<List<GetCommentResponse>>> getCommentsOnPost(
         @PathVariable final Long postId,
         @RequestParam(required = false, defaultValue = "0") final Long memberId,
         @RequestParam(required = false, defaultValue = "9223372036854775807") final Long lastCommentId
     ) {
-        final List<CommentResponse> response =
+        final List<GetCommentResponse> response =
             commentQueryRepository.findTop5CommentsByPost(postId, memberId, lastCommentId);
         return ResponseEntity.ok(API.of(CommentStatusType.COMMENT_REMOVE_SUCCESS, response));
     }

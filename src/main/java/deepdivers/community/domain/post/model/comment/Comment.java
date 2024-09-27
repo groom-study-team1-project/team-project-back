@@ -48,6 +48,9 @@ public class Comment extends BaseEntity {
     private CommentContent content;
 
     @ColumnDefault("0")
+    private Integer replyCount;
+
+    @ColumnDefault("0")
     private Integer likeCount;
 
     @Enumerated(EnumType.STRING)

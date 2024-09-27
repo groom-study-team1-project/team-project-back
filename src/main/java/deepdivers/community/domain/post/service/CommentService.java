@@ -44,6 +44,7 @@ public class CommentService {
 
         commentRepository.save(reply);
         postRepository.incrementCommentCount(comment.getPost().getId());
+        commentRepository.incrementReplyCount(reply.getParentCommentId());
 
         return NoContent.from(CommentStatusType.REPLY_CREATE_SUCCESS);
     }
@@ -70,6 +71,7 @@ public class CommentService {
     }
 
     public NoContent removeComment(final Member member, final RemoveCommentRequest request) {
+        // todo: 댓글 삭제 시, 게시글 댓글 수 감소 & 답변일 경우 댓글 답글 수 감소
         final Comment comment = getCommentWithThrow(request.commentId());
         validateAuthor(member, comment.getMember());
 

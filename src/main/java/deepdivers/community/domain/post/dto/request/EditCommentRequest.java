@@ -9,7 +9,7 @@ public record EditCommentRequest(
     @Schema(description = "댓글 ID", example = "1")
     @NotNull(message = "댓글 정보가 필요합니다.")
     Long commentId,
-    @Schema(description = "댓글 내용", example = "답글 작성입니당")
+    @Schema(description = "댓글 내용", example = "댓글 및 답글 수정입니당")
     @NotBlank(message = "댓글 내용이 필요합니다.")
     String content
 ) {

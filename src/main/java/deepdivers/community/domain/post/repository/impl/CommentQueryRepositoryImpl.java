@@ -9,6 +9,7 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.post.dto.response.CommentResponse;
+import deepdivers.community.domain.post.dto.response.GetCommentResponse;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
 import deepdivers.community.domain.post.repository.CommentQueryRepository;
 import java.util.List;
@@ -22,16 +23,17 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<CommentResponse> findTop5CommentsByPost(
+    public List<GetCommentResponse> findTop5CommentsByPost(
         final Long postId,
         final Long memberId,
         final Long lastCommentId
     ) {
         return queryFactory.select(
                 Projections.fields(
-                    CommentResponse.class,
+                    GetCommentResponse.class,
                     comment.id.as("id"),
                     comment.content.value.as("content"),
+                    comment.replyCount.as("replyCount"),
                     comment.likeCount.as("likeCount"),
                     comment.createdAt.as("createdAt"),
                     member.id.as("memberId"),
