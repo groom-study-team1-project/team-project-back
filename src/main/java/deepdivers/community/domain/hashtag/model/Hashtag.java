@@ -11,7 +11,7 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 
 @Entity

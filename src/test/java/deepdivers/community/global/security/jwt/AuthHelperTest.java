@@ -7,9 +7,13 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import deepdivers.community.domain.global.security.jwt.AuthHelper;
+import deepdivers.community.domain.global.security.jwt.AuthHelperImpl;
+import deepdivers.community.domain.global.security.jwt.AuthPayload;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.time.TimeProvider;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.utility.time.TimeProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;

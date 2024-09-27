@@ -1,19 +1,14 @@
 package deepdivers.community.domain.token.controller;
 
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.token.dto.ReissueResponse;
 import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.global.exception.dto.response.ExceptionResponse;
-import deepdivers.community.global.security.jwt.Auth;
+import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 @Tag(name = "4. 토큰", description = "토큰 관련 API")
 public interface TokenControllerDocs {

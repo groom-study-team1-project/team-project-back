@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.exception;
 
-import deepdivers.community.global.exception.model.ExceptionType;
+import deepdivers.community.domain.global.exception.model.ExceptionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -11,13 +11,9 @@ import java.util.List;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 class PostTest {
 

@@ -8,8 +8,7 @@ import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.global.exception.dto.response.ExceptionResponse;
-import deepdivers.community.global.security.jwt.Auth;
+import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "2. 회원 - 토큰", description = "토큰 정보가 필요한 회원 관련 API")

@@ -2,11 +2,12 @@ package deepdivers.community.global.config;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
-import deepdivers.community.global.utility.encryptor.EncryptorTypes;
-import deepdivers.community.global.utility.encryptor.IpEncryptor;
-import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
+import deepdivers.community.domain.global.config.EncryptorConfig;
+import deepdivers.community.domain.global.utility.encryptor.Encryptor;
+import deepdivers.community.domain.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.domain.global.utility.encryptor.EncryptorTypes;
+import deepdivers.community.domain.global.utility.encryptor.IpEncryptor;
+import deepdivers.community.domain.global.utility.encryptor.PasswordEncryptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

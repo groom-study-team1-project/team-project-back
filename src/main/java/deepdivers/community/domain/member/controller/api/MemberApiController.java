@@ -12,7 +12,7 @@ import deepdivers.community.domain.member.dto.response.statustype.MemberStatusTy
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.global.security.jwt.Auth;
+import deepdivers.community.domain.global.security.jwt.Auth;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

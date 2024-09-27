@@ -9,7 +9,7 @@ import deepdivers.community.domain.post.model.vo.LikeTarget;
 import deepdivers.community.domain.post.repository.CommentRepository;
 import deepdivers.community.domain.post.repository.LikeRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

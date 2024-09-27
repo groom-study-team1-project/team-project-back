@@ -7,7 +7,6 @@ import static org.mockito.BDDMockito.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +30,7 @@ import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
@@ -61,6 +60,7 @@ class PostApiControllerTest extends ControllerTest {
 			),
 			100,                   // viewCount
 			10,                    // likeCount
+			10,
 			Arrays.asList("해시태그1", "해시태그2"), // 해시태그 추가
 			"2024-09-26T12:00:00" // createdAt (예시)
 		);

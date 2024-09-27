@@ -27,7 +27,7 @@ import deepdivers.community.domain.post.model.PostVisitor;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.domain.post.repository.PostVisitorRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
 
 @Service

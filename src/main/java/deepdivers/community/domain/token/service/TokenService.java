@@ -1,15 +1,13 @@
 package deepdivers.community.domain.token.service;
 
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.StatusResponse;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.token.dto.ReissueResponse;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.dto.TokenStatusType;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.security.jwt.AuthHelper;
-import deepdivers.community.global.security.jwt.AuthPayload;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.security.jwt.AuthHelper;
+import deepdivers.community.domain.global.security.jwt.AuthPayload;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
