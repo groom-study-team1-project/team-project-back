@@ -44,6 +44,7 @@ public class CommentService {
 
         commentRepository.save(reply);
         postRepository.incrementCommentCount(comment.getPost().getId());
+        commentRepository.incrementReplyCount(reply.getParentCommentId());
 
         return NoContent.from(CommentStatusType.REPLY_CREATE_SUCCESS);
     }
@@ -69,12 +70,20 @@ public class CommentService {
             .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
     }
 
+    /* todo: 낙관 락으로 동시성 이슈 해결하기, 로직 개선하기
+     *  batch 작업으로 대댓글 다같이 삭제하기*/
     public NoContent removeComment(final Member member, final RemoveCommentRequest request) {
         final Comment comment = getCommentWithThrow(request.commentId());
         validateAuthor(member, comment.getMember());
 
         comment.deleteComment();
         commentRepository.save(comment);
+
+        if (comment.getParentCommentId() != null) {
+            final Comment parent = getCommentWithThrow(comment.getParentCommentId());
+            parent.decrementReplyCount();
+            commentRepository.save(parent);
+        }
 
         return NoContent.from(CommentStatusType.COMMENT_REMOVE_SUCCESS);
     }

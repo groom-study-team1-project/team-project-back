@@ -22,7 +22,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         indexes = {
-                @Index(name = "idx_comment_member_id_id_status", columnList = "memberId, id, status")
+            @Index(name = "idx_like_target_id_type_member_id", columnList = "target_id, target_type, member_id")
         }
 )
 @DynamicInsert
@@ -46,6 +46,9 @@ public class Comment extends BaseEntity {
 
     @Embedded
     private CommentContent content;
+
+    @ColumnDefault("0")
+    private Integer replyCount;
 
     @ColumnDefault("0")
     private Integer likeCount;
@@ -83,6 +86,13 @@ public class Comment extends BaseEntity {
 
     public void deleteComment() {
         this.status = CommentStatus.UNREGISTERED;
+        this.post.decrementCommentCount();
+    }
+
+    public void decrementReplyCount() {
+        if (this.replyCount > 0) {
+            this.replyCount--;
+        }
     }
 
 }
