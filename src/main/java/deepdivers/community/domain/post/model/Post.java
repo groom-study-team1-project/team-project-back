@@ -1,6 +1,7 @@
 package deepdivers.community.domain.post.model;
 
 import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.hashtag.model.Hashtag;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
