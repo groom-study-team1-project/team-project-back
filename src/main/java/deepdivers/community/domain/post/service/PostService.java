@@ -1,13 +1,5 @@
 package deepdivers.community.domain.post.service;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 import deepdivers.community.domain.hashtag.model.Hashtag;
@@ -16,19 +8,30 @@ import deepdivers.community.domain.hashtag.repository.HashtagRepository;
 import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
+import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.model.PostContent;
+import deepdivers.community.domain.post.model.PostTitle;
 import deepdivers.community.domain.post.model.PostVisitor;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.domain.post.repository.PostVisitorRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,25 +42,75 @@ public class PostService {
 	private final CategoryRepository categoryRepository;
 	private final HashtagRepository hashtagRepository;
 	private final PostHashtagRepository postHashtagRepository;
+	private final PostVisitorRepository postVisitorRepository;
 
 	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
 		PostCategory postCategory = getCategoryById(request.categoryId());
-
 		Post post = Post.of(request, postCategory, member);
-
 		postRepository.save(post);
-
 		saveHashtags(post, request.hashtags());
-
 		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
 	}
 
-	private void saveHashtags(Post post, String[] hashtags) {
-		if (hashtags == null || hashtags.length == 0) {
-			return;
+	@Transactional(readOnly = true)
+	public List<PostReadResponse> getAllPosts() {
+		List<Post> posts = postRepository.findAll();
+		return posts.stream()
+			.map(PostReadResponse::from)
+			.collect(Collectors.toList());
+	}
+
+	@Transactional
+	public PostReadResponse getPostById(Long postId, String ipAddr) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+		increaseViewCount(post, ipAddr);
+		return PostReadResponse.from(post);
+	}
+
+	@Transactional
+	public API<PostUpdateResponse> updatePost(Long postId, PostUpdateRequest request, Member member) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+
+		if (!post.getMember().getId().equals(member.getId())) {
+			throw new BadRequestException(PostExceptionType.NOT_POST_AUTHOR);
 		}
 
-		// 유효하지 않은 해시태그가 있으면 예외 발생
+		PostCategory postCategory = getCategoryById(request.categoryId());
+
+		post.updatePost(PostTitle.of(request.title()), PostContent.of(request.content()), postCategory);
+
+		// 기존 해시태그 제거
+		removeExistingHashtags(post);
+
+		// 새로운 해시태그 저장
+		saveHashtags(post, request.hashtags());
+
+		// 사용되지 않는 해시태그 삭제
+		cleanUpUnusedHashtags();
+
+		postRepository.save(post);
+
+		return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostUpdateResponse.from(post));
+	}
+
+	private void removeExistingHashtags(Post post) {
+		// 게시글에 연결된 모든 해시태그 삭제
+		postHashtagRepository.deleteAllByPost(post);
+	}
+
+	@Transactional
+	public void cleanUpUnusedHashtags() {
+		List<Hashtag> unusedHashtags = hashtagRepository.findUnusedHashtags();  // 사용되지 않는 해시태그 조회
+		if (!unusedHashtags.isEmpty()) {
+			hashtagRepository.deleteAll(unusedHashtags);  // 사용되지 않는 해시태그 삭제
+		}
+	}
+
+	private void saveHashtags(Post post, String[] hashtags) {
+		if (hashtags == null || hashtags.length == 0) return;
+
 		Arrays.stream(hashtags)
 			.filter(hashtag -> !isValidHashtag(hashtag))
 			.findFirst()
@@ -79,35 +132,13 @@ public class PostService {
 		postHashtagRepository.saveAll(postHashtags);
 	}
 
-
 	private boolean isValidHashtag(String hashtag) {
-		// 해시태그가 1자 이상 10자 이하의 문자로만 구성되었는지 확인
 		return hashtag.matches("^[\\p{L}\\p{N}]{1,10}$");
 	}
 
 	private PostCategory getCategoryById(Long categoryId) {
 		return categoryRepository.findById(categoryId)
 			.orElseThrow(() -> new BadRequestException(CategoryExceptionType.CATEGORY_NOT_FOUND));
-	}
-
-	private final PostVisitorRepository postVisitorRepository;
-
-	@Transactional(readOnly = true)
-	public List<PostReadResponse> getAllPosts() {
-		List<Post> posts = postRepository.findAll();
-		return posts.stream()
-			.map(PostReadResponse::from)
-			.collect(Collectors.toList());
-	}
-
-	@Transactional
-	public PostReadResponse getPostById(Long postId, String ipAddr) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
-
-		increaseViewCount(post, ipAddr);
-
-		return PostReadResponse.from(post);
 	}
 
 	private void increaseViewCount(Post post, String ipAddr) {
@@ -125,5 +156,4 @@ public class PostService {
 			postRepository.save(post);
 		}
 	}
-
 }

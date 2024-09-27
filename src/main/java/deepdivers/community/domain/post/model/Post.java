@@ -1,36 +1,20 @@
 package deepdivers.community.domain.post.model;
 
+import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.hashtag.model.Hashtag;
+import deepdivers.community.domain.hashtag.model.PostHashtag;
+import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.model.vo.PostStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.ColumnDefault;
-
-import deepdivers.community.domain.common.BaseEntity;
-import deepdivers.community.domain.hashtag.model.PostHashtag;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.model.vo.PostStatus;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -76,7 +60,6 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
-    // 해시태그들을 문자열 리스트로 반환하는 메서드 추가
     public List<String> getHashtags() {
         return postHashtags.stream()
             .map(postHashtag -> postHashtag.getHashtag().getName())
@@ -103,6 +86,12 @@ public class Post extends BaseEntity {
             member,
             PostStatus.ACTIVE
         );
+    }
+
+    public void updatePost(PostTitle title, PostContent content, PostCategory category) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
     }
 
     public void increaseViewCount() {

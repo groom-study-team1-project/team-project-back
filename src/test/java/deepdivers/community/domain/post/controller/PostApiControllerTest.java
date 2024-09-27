@@ -3,11 +3,13 @@ package deepdivers.community.domain.post.controller;
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.anyLong;
+import static org.mockito.BDDMockito.anySet;
 import static org.mockito.BDDMockito.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,17 +23,24 @@ import org.springframework.web.context.WebApplicationContext;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
+import deepdivers.community.domain.hashtag.repository.HashtagRepository;
+import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.api.PostApiController;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.MemberInfo;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
+import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.model.Post;
+import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.global.exception.model.BadRequestException;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
@@ -39,9 +48,16 @@ import io.restassured.module.mockmvc.RestAssuredMockMvc;
 class PostApiControllerTest extends ControllerTest {
 
 	@MockBean
-	private PostService postService; // PostService를MockBean으로 선언
+	private PostService postService;
+
+	@MockBean
+	private PostRepository postRepository;
 
 	private PostReadResponse mockPostResponse;
+
+	private PostHashtagRepository postHashtagRepository;
+
+	private HashtagRepository hashtagRepository;
 
 	@BeforeEach
 	void setUp(WebApplicationContext webApplicationContext) throws Exception {
@@ -61,6 +77,7 @@ class PostApiControllerTest extends ControllerTest {
 			),
 			100,                   // viewCount
 			10,                    // likeCount
+			10,
 			Arrays.asList("해시태그1", "해시태그2"), // 해시태그 추가
 			"2024-09-26T12:00:00" // createdAt (예시)
 		);
@@ -276,5 +293,132 @@ class PostApiControllerTest extends ControllerTest {
 		assertThat(response.getResult()).hasSize(2);  // 2개의 게시글이 반환됨을 확인
 		assertThat(response.getResult().get(0).title()).isEqualTo("게시글 제목");
 		assertThat(response.getResult().get(0).hashtags()).containsExactly("해시태그1", "해시태그2");
+	}
+
+	// 게시글 수정 성공 테스트
+	@Test
+	@DisplayName("게시글 수정이 성공적으로 처리되면 200 OK를 반환한다")
+	void updatePostSuccessfullyReturns200OK() {
+		// given
+		String[] hashtags = {"Updated", "Post"};
+		PostUpdateRequest request = new PostUpdateRequest("수정된 게시글 제목", "수정된 게시글 내용", 1L, hashtags);
+
+		// PostUpdateResponse 구조에서 categoryId가 앞에 오도록 수정
+		PostUpdateResponse updateResponse = new PostUpdateResponse(1L, 1L, "수정된 게시글 제목", "수정된 게시글 내용");
+
+		API<PostUpdateResponse> mockResponse = API.of(PostStatusType.POST_UPDATE_SUCCESS, updateResponse);
+
+		given(postService.updatePost(anyLong(), any(PostUpdateRequest.class), any(Member.class)))
+			.willReturn(mockResponse);
+
+		// when
+		API<PostUpdateResponse> response = RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(request)
+			.when().post("/api/posts/update/1")
+			.then().log().all()
+			.status(HttpStatus.OK) // 성공적으로 게시글이 수정될 때 200 OK 반환
+			.extract()
+			.as(new TypeRef<>() {});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response.getResult().postId()).isEqualTo(1L);
+		assertThat(response.getResult().categoryId()).isEqualTo(1L); // categoryId 확인
+		assertThat(response.getResult().updatedTitle()).isEqualTo("수정된 게시글 제목"); // title 확인
+		assertThat(response.getResult().updatedContent()).isEqualTo("수정된 게시글 내용"); // content 확인
+
+		// 추가된 해시태그가 제대로 반영되었는지 확인
+		assertThat(hashtags).containsExactly("Updated", "Post");
+	}
+
+	// 게시글 수정 시 작성자가 아닌 경우 400 Bad Request 반환
+	@Test
+	@DisplayName("게시글 수정 시 작성자가 아닌 경우 400 Bad Request를 반환한다")
+	void updatePostNotAuthorReturns400BadRequest() {
+		// given
+		String[] hashtags = {"Updated", "Post"};
+		PostUpdateRequest request = new PostUpdateRequest("수정된 게시글 제목", "수정된 게시글 내용", 1L, hashtags);
+
+		// Mock 설정: 작성자가 아닌 경우 예외 발생
+		given(postService.updatePost(anyLong(), any(PostUpdateRequest.class), any(Member.class)))
+			.willThrow(new BadRequestException(PostExceptionType.NOT_POST_AUTHOR));
+
+		// when, then
+		RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(request)
+			.when().post("/api/posts/update/1")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST) // 400 오류 예상
+			.body("code", equalTo(PostExceptionType.NOT_POST_AUTHOR.getCode()))
+			.body("message", containsString(PostExceptionType.NOT_POST_AUTHOR.getMessage()));
+	}
+
+	// 게시글 수정 시 제목이 없으면 400 Bad Request 반환
+	@Test
+	@DisplayName("게시글 수정 시 제목이 없으면 400 Bad Request를 반환한다")
+	void updatePostWithoutTitleReturns400BadRequest() {
+		// given
+		String[] hashtags = {"Updated", "Post"};
+		PostUpdateRequest request = new PostUpdateRequest(null, "수정된 게시글 내용", 1L, hashtags);
+
+		// when, then
+		RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(request)
+			.when().post("/api/posts/update/1")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST) // 400 오류 예상
+			.body("code", equalTo(101)) // 실제 오류 코드 101 예상
+			.body("message", containsString("게시글 제목은 필수입니다."));
+	}
+
+	// 게시글 수정 시 내용이 없으면 400 Bad Request 반환
+	@Test
+	@DisplayName("게시글 수정 시 내용이 없으면 400 Bad Request를 반환한다")
+	void updatePostWithoutContentReturns400BadRequest() {
+		// given
+		String[] hashtags = {"Updated", "Post"};
+		PostUpdateRequest request = new PostUpdateRequest("수정된 게시글 제목", null, 1L, hashtags);
+
+		// when, then
+		RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(request)
+			.when().post("/api/posts/update/1")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST) // 400 오류 예상
+			.body("code", equalTo(101)) // 실제 오류 코드 101 예상
+			.body("message", containsString("게시글 내용은 필수입니다."));
+	}
+
+	// 게시글 수정 시 잘못된 해시태그가 입력되면 400 Bad Request 반환
+	@Test
+	@DisplayName("게시글 수정 시 잘못된 해시태그가 입력되면 400 Bad Request를 반환한다")
+	void updatePostWithInvalidHashtagsReturns400BadRequest() {
+		// given
+		String[] invalidHashtags = {"#Invalid!", "#TooLongTag123"};
+		// 유효한 게시글 제목과 내용을 입력하여 해시태그만 테스트하도록 함
+		PostUpdateRequest request = new PostUpdateRequest("유효한 제목", "유효한 내용입니다.", 1L, invalidHashtags);
+
+		// Mock 설정: 잘못된 해시태그가 입력되면 예외 발생
+		given(postService.updatePost(anyLong(), any(PostUpdateRequest.class), any(Member.class)))
+			.willThrow(new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT));
+
+		// when, then
+		RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(request)
+			.when().post("/api/posts/update/1")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST) // 400 오류 예상
+			.body("code", equalTo(HashtagExceptionType.INVALID_HASHTAG_FORMAT.getCode())) // 해시태그 오류 코드
+			.body("message", containsString("유효하지 않은 해시태그 형식입니다."));
 	}
 }

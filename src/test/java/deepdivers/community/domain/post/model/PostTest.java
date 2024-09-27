@@ -6,18 +6,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import deepdivers.community.domain.hashtag.model.Hashtag;
+import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 class PostTest {
 
@@ -157,5 +156,89 @@ class PostTest {
 
 		// when, then
 		assertThat(posts).isEmpty();  // 반환된 게시글이 없는지 확인
+	}
+
+	@Test
+	@DisplayName("유효한 게시물 수정 요청 시 Post 객체가 성공적으로 업데이트되는 것을 확인한다.")
+	void postUpdateShouldUpdateValidPost() {
+		// given
+		String originalTitle = "원래 제목";
+		String originalContent = "원래 내용";
+		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
+		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
+
+		// Mocking the Member object
+		Member member = mock(Member.class);
+		when(member.getEmail()).thenReturn("test@mail.com");
+
+		// Post 객체 생성
+		Post post = Post.of(createRequest, originalCategory, member);
+
+		// 수정할 새로운 제목, 내용, 카테고리
+		String updatedTitle = "수정된 제목";
+		String updatedContent = "수정된 내용";
+		PostCategory updatedCategory = PostCategory.createCategory("수정된 카테고리", null, null);
+
+		// when
+		post.updatePost(PostTitle.of(updatedTitle), PostContent.of(updatedContent), updatedCategory);
+
+		// then
+		assertThat(post.getTitle().getTitle()).isEqualTo(updatedTitle);
+		assertThat(post.getContent().getContent()).isEqualTo(updatedContent);
+		assertThat(post.getCategory()).isEqualTo(updatedCategory);
+	}
+
+	@Test
+	@DisplayName("게시물 수정 시 제목이 유효하지 않은 경우 예외가 발생하는 것을 확인한다.")
+	void postUpdateWithInvalidTitleShouldThrowException() {
+		// given
+		String originalTitle = "원래 제목";
+		String originalContent = "원래 내용";
+		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
+		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
+
+		// Mocking the Member object
+		Member member = mock(Member.class);
+		when(member.getEmail()).thenReturn("test@mail.com");
+
+		// Post 객체 생성
+		Post post = Post.of(createRequest, originalCategory, member);
+
+		// 유효하지 않은 제목 (51자 이상)
+		String invalidTitle = "a".repeat(51);
+		String updatedContent = "수정된 내용";
+		PostCategory updatedCategory = PostCategory.createCategory("수정된 카테고리", null, null);
+
+		// when, then
+		assertThatThrownBy(() -> post.updatePost(PostTitle.of(invalidTitle), PostContent.of(updatedContent), updatedCategory))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_TITLE_LENGTH);
+	}
+
+	@Test
+	@DisplayName("게시물 수정 시 내용이 유효하지 않은 경우 예외가 발생하는 것을 확인한다.")
+	void postUpdateWithInvalidContentShouldThrowException() {
+		// given
+		String originalTitle = "원래 제목";
+		String originalContent = "원래 내용";
+		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
+		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
+
+		// Mocking the Member object
+		Member member = mock(Member.class);
+		when(member.getEmail()).thenReturn("test@mail.com");
+
+		// Post 객체 생성
+		Post post = Post.of(createRequest, originalCategory, member);
+
+		// 유효하지 않은 내용 (101자 이상)
+		String updatedTitle = "수정된 제목";
+		String invalidContent = "a".repeat(101);
+		PostCategory updatedCategory = PostCategory.createCategory("수정된 카테고리", null, null);
+
+		// when, then
+		assertThatThrownBy(() -> post.updatePost(PostTitle.of(updatedTitle), PostContent.of(invalidContent), updatedCategory))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_CONTENT_LENGTH);
 	}
 }

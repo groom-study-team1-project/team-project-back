@@ -3,7 +3,7 @@ package deepdivers.community.domain.post.controller.docs;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.dto.response.ContentResponse;
 import deepdivers.community.domain.post.dto.response.GetCommentResponse;
-import deepdivers.community.global.exception.dto.response.ExceptionResponse;
+import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
