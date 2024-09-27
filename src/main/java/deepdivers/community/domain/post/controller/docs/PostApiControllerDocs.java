@@ -1,9 +1,5 @@
 package deepdivers.community.domain.post.controller.docs;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
@@ -16,8 +12,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+import org.springframework.http.ResponseEntity;
 
-@Tag(name = "게시글 - 토큰", description = "토큰 정보가 필요한 게시글 관련 API")
+@Tag(name = "6. 게시글 - 토큰", description = "토큰 정보가 필요한 게시글 관련 API")
 public interface PostApiControllerDocs {
 
 	@Operation(summary = "게시글 작성", description = "새로운 게시글을 작성하는 기능")

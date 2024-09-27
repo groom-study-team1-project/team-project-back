@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.controller.docs;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.EditCommentRequest;
+import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
@@ -19,7 +20,7 @@ public interface CommentApiControllerDocs {
 
     @Operation(summary = "댓글 작성", description = "게시글 댓글을 작성하는 기능")
     @ApiResponse(
-            responseCode = "1300",
+            responseCode = "1400",
             description = """
                     1. 댓글 작성에 성공하였습니다.
                     """
@@ -37,7 +38,7 @@ public interface CommentApiControllerDocs {
 
     @Operation(summary = "답글 작성", description = "댓글에 답글을 작성하는 기능")
     @ApiResponse(
-        responseCode = "1301",
+        responseCode = "1401",
         description = """
                     1. 답글 작성에 성공하였습니다.
                     """
@@ -55,7 +56,7 @@ public interface CommentApiControllerDocs {
 
     @Operation(summary = "댓글 및 답글 수정", description = "댓글 및 답글을 수정하는 기능")
     @ApiResponse(
-        responseCode = "1302",
+        responseCode = "1402",
         description = """
                     1. 댓글 및 답글 수정에 성공하였습니다.
                     """
@@ -74,7 +75,7 @@ public interface CommentApiControllerDocs {
 
     @Operation(summary = "댓글 및 답글 삭제", description = "댓글 및 답글을 삭제하는 기능")
     @ApiResponse(
-        responseCode = "1303",
+        responseCode = "1403",
         description = """
                     1. 댓글 및 답글 삭제에 성공하였습니다.
                     """
@@ -89,4 +90,39 @@ public interface CommentApiControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<NoContent> removeCommentOnPost(Member member, RemoveCommentRequest request);
+
+    @Operation(summary = "댓글 및 답글 좋아요", description = "댓글 및 답글을 좋아요 하는 기능")
+    @ApiResponse(
+        responseCode = "1406",
+        description = """
+                    1. 댓글 좋아요에 성공했습니다.
+                    """
+    )
+    @ApiResponse(
+        responseCode = "2500\n9000~9005",
+        description = """
+            1. 유효하지 않은 접근입니다.
+            2. 토큰 관련 예외입니다.
+            """,
+        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    ResponseEntity<NoContent> likeComment(Member member, LikeRequest request);
+
+    @Operation(summary = "댓글 및 답글 좋아요 취소", description = "댓글 및 답글을 좋아요를 취소 하는 기능")
+    @ApiResponse(
+        responseCode = "1407",
+        description = """
+                    1. 댓글 좋아요 취소에 성공했습니다.
+                    """
+    )
+    @ApiResponse(
+        responseCode = "2500\n9000~9005",
+        description = """
+            1. 유효하지 않은 접근입니다.
+            2. 토큰 관련 예외입니다.
+            """,
+        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    ResponseEntity<NoContent> unlikeComment(Member member, LikeRequest request);
+
 }

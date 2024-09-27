@@ -8,6 +8,7 @@ import deepdivers.community.domain.member.dto.response.statustype.AccountStatusT
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.utility.mail.MailHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class AccountService {
         // todo test
         boolean hasEMail = memberService.hasEmailVerification(request.email());
         if (!hasEMail) {
-            throw new BadRequestException(MemberExceptionType.NOT_FOUND_ACCOUNT);
+            throw new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT);
         }
         mailHelper.sendAuthenticatedEmail(request.email());
         return NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);

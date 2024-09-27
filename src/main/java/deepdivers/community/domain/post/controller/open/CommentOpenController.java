@@ -30,7 +30,7 @@ public class CommentOpenController implements CommentOpenControllerDocs {
     ) {
         final List<GetCommentResponse> response =
             commentQueryRepository.findTop5CommentsByPost(postId, memberId, lastCommentId);
-        return ResponseEntity.ok(API.of(CommentStatusType.COMMENT_REMOVE_SUCCESS, response));
+        return ResponseEntity.ok(API.of(CommentStatusType.COMMENT_GET_SUCCESS, response));
     }
 
     @GetMapping("/replies/{commentId}")
@@ -41,7 +41,7 @@ public class CommentOpenController implements CommentOpenControllerDocs {
     ) {
         final List<ContentResponse> response =
             commentQueryRepository.findTop5RepliesByComment(commentId, memberId, lastCommentId);
-        return ResponseEntity.ok(API.of(CommentStatusType.COMMENT_REMOVE_SUCCESS, response));
+        return ResponseEntity.ok(API.of(CommentStatusType.REPLY_GET_SUCCESS, response));
     }
 
 }

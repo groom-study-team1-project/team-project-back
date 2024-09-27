@@ -14,4 +14,18 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
         """)
     void incrementReplyCount(Long commentId);
 
+    @Modifying
+    @Query("""
+        update Comment c set c.likeCount = c.likeCount + 1
+        WHERE c.id = :commentId
+        """)
+    void incrementLikeCount(Long commentId);
+
+    @Modifying
+    @Query("""
+        update Comment c set c.likeCount = c.likeCount - 1
+        WHERE c.id = :commentId
+        """)
+    void decrementLikeCount(Long commentId);
+
 }
