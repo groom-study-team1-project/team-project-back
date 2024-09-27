@@ -19,4 +19,8 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         """)
 	void incrementCommentCount(Long postId);
 
+	@Modifying
+	@Query("DELETE FROM Comment c WHERE c.post.id = :postId")
+	void deleteAllByPost(Post post);
+
 }

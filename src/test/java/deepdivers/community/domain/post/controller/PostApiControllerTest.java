@@ -23,6 +23,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.global.exception.model.BadRequestException;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 import deepdivers.community.domain.hashtag.repository.HashtagRepository;
