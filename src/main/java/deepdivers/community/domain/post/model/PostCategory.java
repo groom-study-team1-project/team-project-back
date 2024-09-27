@@ -1,6 +1,9 @@
 package deepdivers.community.domain.post.model;
 
+import java.util.List;
+
 import deepdivers.community.domain.post.model.vo.CategoryStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -8,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
@@ -38,6 +42,9 @@ public class PostCategory {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CategoryStatus status = CategoryStatus.ACTIVE;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Post> posts;
 
     private PostCategory(String title, String description, CategoryStatus status) {
         this.title = title;
