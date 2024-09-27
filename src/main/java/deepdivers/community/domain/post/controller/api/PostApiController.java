@@ -63,7 +63,6 @@ public class PostApiController implements PostApiControllerDocs {
 		@Valid @RequestBody final PostUpdateRequest request
 	) {
 		final API<PostUpdateResponse> response = postService.updatePost(postId, request, member);
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok(response);  // 변경된 결과 구조로 반환
 	}
-
 }

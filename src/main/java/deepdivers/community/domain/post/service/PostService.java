@@ -73,21 +73,39 @@ public class PostService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
 
-		// 작성자 확인
 		if (!post.getMember().getId().equals(member.getId())) {
 			throw new BadRequestException(PostExceptionType.NOT_POST_AUTHOR);
 		}
 
 		PostCategory postCategory = getCategoryById(request.categoryId());
 
-		// 게시글 수정
 		post.updatePost(PostTitle.of(request.title()), PostContent.of(request.content()), postCategory);
 
+		// 기존 해시태그 제거
+		removeExistingHashtags(post);
+
+		// 새로운 해시태그 저장
 		saveHashtags(post, request.hashtags());
+
+		// 사용되지 않는 해시태그 삭제
+		cleanUpUnusedHashtags();
 
 		postRepository.save(post);
 
 		return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostUpdateResponse.from(post));
+	}
+
+	private void removeExistingHashtags(Post post) {
+		// 게시글에 연결된 모든 해시태그 삭제
+		postHashtagRepository.deleteAllByPost(post);
+	}
+
+	@Transactional
+	public void cleanUpUnusedHashtags() {
+		List<Hashtag> unusedHashtags = hashtagRepository.findUnusedHashtags();  // 사용되지 않는 해시태그 조회
+		if (!unusedHashtags.isEmpty()) {
+			hashtagRepository.deleteAll(unusedHashtags);  // 사용되지 않는 해시태그 삭제
+		}
 	}
 
 	private void saveHashtags(Post post, String[] hashtags) {
