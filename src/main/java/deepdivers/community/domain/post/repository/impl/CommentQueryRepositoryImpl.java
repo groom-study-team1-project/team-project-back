@@ -10,6 +10,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.post.dto.response.CommentResponse;
 import deepdivers.community.domain.post.dto.response.GetCommentResponse;
+import deepdivers.community.domain.post.model.vo.CommentStatus;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
 import deepdivers.community.domain.post.repository.CommentQueryRepository;
 import java.util.List;
@@ -48,7 +49,8 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
             .where(
                 comment.post.id.eq(postId),
                 comment.id.lt(lastCommentId),
-                comment.parentCommentId.isNull()
+                comment.parentCommentId.isNull(),
+                comment.status.eq(CommentStatus.REGISTERED)
             )
             .orderBy(comment.id.desc())
             .limit(5)
