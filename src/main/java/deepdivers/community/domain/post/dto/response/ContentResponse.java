@@ -21,5 +21,6 @@ public class ContentResponse {
     private String memberImageUrl;
     private boolean isModified;
     private boolean isLikedMe;
+    private boolean isAuthor;
 
 }
