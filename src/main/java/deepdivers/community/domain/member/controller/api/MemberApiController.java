@@ -79,9 +79,9 @@ public class MemberApiController implements MemberApiControllerDocs {
         @RequestParam final Long categoryId,
         @RequestParam final Long lastPostId
     ) {
-        final Long memberId = member.getId();
-        final List<AllMyPostsResponse> response = postQueryRepository.findAllMyPosts(memberId, lastPostId, categoryId);
-        return ResponseEntity.ok(API.of(MemberStatusType.UPDATE_PASSWORD_SUCCESS, response));
+        final List<AllMyPostsResponse> response =
+            postQueryRepository.findAllMyPosts(member.getId(), lastPostId, categoryId);
+        return ResponseEntity.ok(API.of(MemberStatusType.GET_MY_POSTS_SUCCESS, response));
     }
 
 }
