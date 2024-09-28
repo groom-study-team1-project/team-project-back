@@ -37,4 +37,5 @@ public class PostContent {
 		validator(content);
 		return new PostContent(content);
 	}
+
 }

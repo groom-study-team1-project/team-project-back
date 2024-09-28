@@ -32,7 +32,9 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.api.PostApiController;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
+import deepdivers.community.domain.post.dto.response.CountInfo;
 import deepdivers.community.domain.post.dto.response.MemberInfo;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -67,20 +69,14 @@ class PostApiControllerTest extends ControllerTest {
 
 		// 게시글 조회 시 사용할 mock 데이터 생성
 		mockPostResponse = new PostReadResponse(
-			1L,                    // postId
-			"게시글 제목",            // title
-			"게시글 내용",            // content
-			1L,                    // categoryId (예시로 ID 추가)
-			new MemberInfo(        // 작성자 정보
-				1L,                // memberId
-				"작성자 닉네임",       // nickname
-				"작성자 이미지 URL"   // imageUrl
-			),
-			100,                   // viewCount
-			10,                    // likeCount
-			10,
-			Arrays.asList("해시태그1", "해시태그2"), // 해시태그 추가
-			"2024-09-26T12:00:00" // createdAt (예시)
+			1L,
+			"게시글 제목",  // 제목은 테스트에서 기대하는 값과 일치
+			"Test Content",
+			1L,
+			new MemberInfo(1L, "작성자 닉네임", "profile.jpg"),  // 닉네임을 '작성자 닉네임'으로 수정
+			new CountInfo(100, 50, 20), // CountInfo 객체로 전달
+			List.of("hashtag1", "hashtag2"),
+			"2024-09-26T12:00:00"  // 날짜를 테스트에서 기대하는 값으로 수정
 		);
 	}
 
@@ -244,10 +240,12 @@ class PostApiControllerTest extends ControllerTest {
 		assertThat(postResponse).isNotNull();
 		assertThat(postResponse.title()).isEqualTo("게시글 제목");
 		assertThat(postResponse.categoryId()).isEqualTo(1L); // categoryId 검증
-		assertThat(postResponse.memberInfo().nickname()).isEqualTo("작성자 닉네임"); // 작성자 닉네임 검증
-		assertThat(postResponse.viewCount()).isEqualTo(100);
-		assertThat(postResponse.hashtags()).containsExactly("해시태그1", "해시태그2"); // 해시태그 검증
-		assertThat(postResponse.createdAt()).isEqualTo("2024-09-26T12:00:00"); // 생성일 검증
+		assertThat(postResponse.memberInfo().getNickname()).isEqualTo("작성자 닉네임");// 작성자 닉네임 검증
+		assertThat(postResponse.countInfo().getViewCount()).isEqualTo(100);;
+		assertThat(postResponse.countInfo().getLikeCount()).isEqualTo(50);
+		assertThat(postResponse.countInfo().getCommentCount()).isEqualTo(20);
+		assertThat(postResponse.hashtags()).containsExactly("hashtag1", "hashtag2");  // 해시태그 검증
+		assertThat(postResponse.createdAt()).isEqualTo("2024-09-26T12:00:00");  // 생성일 검증
 	}
 
 	@Test
@@ -274,13 +272,17 @@ class PostApiControllerTest extends ControllerTest {
 	@DisplayName("회원이 전체 게시글 조회에 성공하면 200 OK와 게시글 목록을 반환한다")
 	void getAllPostsSuccessfullyReturns200OK() {
 		// given
-		List<PostReadResponse> mockPostResponses = Arrays.asList(mockPostResponse, mockPostResponse); // 여러 게시글을 생성
-		API<List<PostReadResponse>> mockResponse = API.of(PostStatusType.POST_VIEW_SUCCESS, mockPostResponses);
+		List<PostAllReadResponse> mockPostList = Arrays.asList(
+			createMockPost(1L, "게시글 제목 1", "게시글 내용 1", "작성자 닉네임 1", "이미지 URL 1", new CountInfo(100, 50, 10), Arrays.asList("해시태그1", "해시태그2"), "2024-09-26 12:00:00"),
+			createMockPost(2L, "게시글 제목 2", "게시글 내용 2", "작성자 닉네임 2", "이미지 URL 2", new CountInfo(200, 100, 20), Arrays.asList("해시태그3", "해시태그4"), "2024-09-27 12:00:00"),
+			createMockPost(3L, "게시글 제목 3", "게시글 내용 3", "작성자 닉네임 3", "이미지 URL 3", new CountInfo(300, 150, 30), Arrays.asList("해시태그5", "해시태그6"), "2024-09-28T12:00:00")
+		);
 
-		given(postService.getAllPosts()).willReturn(mockPostResponses);
+		// Mocking the service method to return the mock post list
+		given(postService.getAllPosts(anyLong(), any())).willReturn(mockPostList);
 
 		// when
-		API<List<PostReadResponse>> response = RestAssuredMockMvc
+		API<List<PostAllReadResponse>> response = RestAssuredMockMvc
 			.given().log().all()
 			.header("Authorization", "Bearer sample-token")  // 인증 토큰
 			.contentType(MediaType.APPLICATION_JSON)
@@ -288,12 +290,54 @@ class PostApiControllerTest extends ControllerTest {
 			.then().log().all()
 			.status(HttpStatus.OK) // 200 OK 반환 기대
 			.extract()
-			.as(new TypeRef<API<List<PostReadResponse>>>() {});  // API<List<PostReadResponse>>로 변환
+			.as(new TypeRef<API<List<PostAllReadResponse>>>() {});  // API<List<PostAllReadResponse>>로 변환
 
 		// then
-		assertThat(response.getResult()).hasSize(2);  // 2개의 게시글이 반환됨을 확인
-		assertThat(response.getResult().get(0).title()).isEqualTo("게시글 제목");
-		assertThat(response.getResult().get(0).hashtags()).containsExactly("해시태그1", "해시태그2");
+		List<PostAllReadResponse> postResponses = response.getResult();  // getResult()로 List<PostAllReadResponse> 추출
+		assertThat(postResponses).isNotNull();
+		assertThat(postResponses.size()).isEqualTo(3); // Verify size of the list is now 2
+
+		// Verify content of the posts
+		assertThat(postResponses.get(0).getTitle()).isEqualTo("게시글 제목 1");
+		assertThat(postResponses.get(1).getTitle()).isEqualTo("게시글 제목 2");
+		assertThat(postResponses.get(2).getTitle()).isEqualTo("게시글 제목 3");
+	}
+	// Mock 데이터 생성 메서드
+	private PostAllReadResponse createMockPost(Long postId, String title, String content, String nickname, String imageUrl, CountInfo countInfo, List<String> hashtags, String createdAt) {
+		return new PostAllReadResponse(
+			postId,
+			title,
+			content,
+			1L, // categoryId (예시로 고정)
+			new MemberInfo(postId, nickname, imageUrl), // memberInfo
+			countInfo,
+			hashtags,
+			createdAt
+		);
+	}
+
+	// 전체 게시글이 없는 경우 테스트
+	@Test
+	@DisplayName("전체 게시글 조회 시 게시글이 없으면 200 OK와 빈 목록을 반환한다")
+	void getAllPostsReturnsEmptyList() {
+		// given
+		given(postService.getAllPosts(anyLong(), anyLong())).willReturn(Arrays.asList()); // Return an empty list
+
+		// when
+		API<List<PostAllReadResponse>> response = RestAssuredMockMvc
+			.given().log().all()
+			.header("Authorization", "Bearer sample-token")  // 인증 토큰
+			.contentType(MediaType.APPLICATION_JSON)
+			.when().get("/api/posts") // Assuming the endpoint for all posts is "/open/posts"
+			.then().log().all()
+			.status(HttpStatus.OK) // 200 OK 반환 기대
+			.extract()
+			.as(new TypeRef<API<List<PostAllReadResponse>>>() {});  // API<List<PostAllReadResponse>>로 직접 변환
+
+		// then
+		List<PostAllReadResponse> postResponses = response.getResult();  // getResult()로 List<PostAllReadResponse> 추출
+		assertThat(postResponses).isNotNull();
+		assertThat(postResponses).isEmpty(); // Verify that the list is empty
 	}
 
 	// 게시글 수정 성공 테스트

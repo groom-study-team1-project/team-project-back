@@ -1,19 +1,31 @@
 package deepdivers.community.domain.post.repository.impl;
 
-import static deepdivers.community.domain.member.model.QMember.member;
-import static deepdivers.community.domain.post.model.QPost.post;
-import static deepdivers.community.domain.post.model.like.QLike.like;
+import static deepdivers.community.domain.member.model.QMember.*;
+import static deepdivers.community.domain.post.model.QPost.*;
+import static deepdivers.community.domain.post.model.like.QLike.*;
+import static deepdivers.community.domain.hashtag.model.QHashtag.hashtag1; // QHashtag import 수정
+import static deepdivers.community.domain.hashtag.model.QPostHashtag.postHashtag; // QPostHashtag import 추가
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Repository;
+
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
-import deepdivers.community.domain.post.model.QPost;
+import deepdivers.community.domain.post.dto.response.CountInfo;
+import deepdivers.community.domain.post.dto.response.MemberInfo;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
+import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,7 +43,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             Projections.fields(
                 AllMyPostsResponse.class,
                 post.id.as("id"),
-                post.title.as("title"),
+                post.title.title.as("title"),
                 post.viewCount.as("viewCount"),
                 post.likeCount.as("likeCount"),
                 post.commentCount.as("commentCount"),
@@ -60,4 +72,54 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .and(like.id.memberId.eq(memberId));
     }
 
+    @Override
+    public List<PostAllReadResponse> findAllPosts(Long lastContentId, Long categoryId) {
+        // 먼저 게시글 리스트를 가져옵니다
+        List<PostAllReadResponse> posts = queryFactory.select(
+                Projections.fields(
+                    PostAllReadResponse.class,
+                    post.id.as("postId"),
+                    post.title.title.as("title"),
+                    post.content.content.as("content"),
+                    post.category.id.as("categoryId"),
+                    Projections.fields(MemberInfo.class,
+                        member.id.as("memberId"),
+                        member.nickname.value.as("nickname"),
+                        member.imageUrl.as("imageUrl")
+                    ).as("memberInfo"),
+                    Projections.fields(CountInfo.class,
+                        post.viewCount.as("viewCount"),
+                        post.likeCount.as("likeCount"),
+                        post.commentCount.as("commentCount")
+                    ).as("countInfo"),
+                    Expressions.stringTemplate("FORMATDATETIME({0}, 'yyyy-MM-dd HH:mm:ss')", post.createdAt).as("createdAt")
+                ))
+            .from(post)
+            .join(member).on(post.member.id.eq(member.id))
+            .where(
+                post.id.lt(lastContentId),
+                categoryId != null ? post.category.id.eq(categoryId) : null
+            )
+            .orderBy(post.id.desc())
+            .limit(10)
+            .fetch();
+
+        // 각각의 게시글에 대한 해시태그를 가져와서 리스트로 변환합니다
+        for (PostAllReadResponse postResponse : posts) {
+            List<String> hashtags = queryFactory
+                .select(postHashtag.hashtag.hashtag)
+                .from(postHashtag)
+                .join(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
+                .where(postHashtag.post.id.eq(postResponse.getPostId()))
+                .fetch();
+
+            // 가져온 해시태그 리스트를 각 게시글에 설정합니다
+            postResponse.setHashtags(hashtags);
+        }
+
+        // 로그 추가: 쿼리 결과 확인
+        System.out.println("Posts Retrieved in Query: " + posts);
+
+        return posts;
+    }
 }

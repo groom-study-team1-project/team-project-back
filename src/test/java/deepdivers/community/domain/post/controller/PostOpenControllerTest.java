@@ -2,7 +2,7 @@ package deepdivers.community.domain.post.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 import java.util.Arrays;
@@ -16,12 +16,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.controller.open.PostOpenController;
+import deepdivers.community.domain.post.dto.response.CountInfo;
 import deepdivers.community.domain.post.dto.response.MemberInfo;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse; // Ensure this is used
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
@@ -36,11 +40,13 @@ class PostOpenControllerTest extends ControllerTest {
 	@MockBean
 	private PostService postService; // PostService를 MockBean으로 선언
 
+	private MockMvc mockMvc; // MockMvc 필드 선언
 	private PostReadResponse mockPostResponse;
 
 	@BeforeEach
 	void setUp(WebApplicationContext webApplicationContext) throws Exception {
-		RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+		RestAssuredMockMvc.mockMvc(mockMvc);
 
 		// 게시글 조회 시 사용할 mock 데이터 생성
 		mockPostResponse = new PostReadResponse(
@@ -48,14 +54,8 @@ class PostOpenControllerTest extends ControllerTest {
 			"게시글 제목",            // title
 			"게시글 내용",            // content
 			1L,                    // categoryId (예시로 ID 추가)
-			new MemberInfo(        // 작성자 정보
-				1L,                // memberId
-				"작성자 닉네임",       // nickname
-				"작성자 이미지 URL"   // imageUrl
-			),
-			100,                   // viewCount
-			10,                    // likeCount
-			10,
+			new MemberInfo(1L, "작성자 닉네임", "이미지 URL"), // memberInfo
+			new CountInfo(100, 50, 10), // countInfo
 			Arrays.asList("해시태그1", "해시태그2"), // 해시태그 추가
 			"2024-09-26T12:00:00" // createdAt (예시)
 		);
@@ -66,7 +66,7 @@ class PostOpenControllerTest extends ControllerTest {
 	@DisplayName("비회원 게시글 조회가 성공적으로 처리되면 200 OK와 게시글 정보를 반환한다")
 	void getPostByIdSuccessfullyReturns200OKForOpen() {
 		// given
-		given(postService.getPostById(anyLong(), ArgumentMatchers.anyString())).willReturn(mockPostResponse);
+		given(postService.getPostById(anyLong(), anyString())).willReturn(mockPostResponse);
 
 		// when
 		API<PostReadResponse> response = RestAssuredMockMvc
@@ -84,8 +84,10 @@ class PostOpenControllerTest extends ControllerTest {
 		assertThat(postResponse).isNotNull();
 		assertThat(postResponse.title()).isEqualTo("게시글 제목");
 		assertThat(postResponse.categoryId()).isEqualTo(1L); // categoryId 검증
-		assertThat(postResponse.memberInfo().nickname()).isEqualTo("작성자 닉네임"); // 작성자 닉네임 검증
-		assertThat(postResponse.viewCount()).isEqualTo(100);
+		assertThat(postResponse.memberInfo().getNickname()).isEqualTo("작성자 닉네임");// 작성자 닉네임 검증
+		assertThat(postResponse.countInfo().getViewCount()).isEqualTo(100);
+		assertThat(postResponse.countInfo().getLikeCount()).isEqualTo(50);
+		assertThat(postResponse.countInfo().getCommentCount()).isEqualTo(10);
 		assertThat(postResponse.hashtags()).containsExactly("해시태그1", "해시태그2"); // 해시태그 검증
 		assertThat(postResponse.createdAt()).isEqualTo("2024-09-26T12:00:00"); // 생성일 검증
 	}
@@ -95,7 +97,7 @@ class PostOpenControllerTest extends ControllerTest {
 	@DisplayName("존재하지 않는 게시글 조회 시 400 Bad Request를 반환한다")
 	void getPostByIdNotFoundReturns400ForOpen() {
 		// given
-		given(postService.getPostById(anyLong(), ArgumentMatchers.anyString()))
+		given(postService.getPostById(anyLong(), anyString()))
 			.willThrow(new BadRequestException(PostExceptionType.POST_NOT_FOUND));
 
 		// when, then
@@ -111,28 +113,77 @@ class PostOpenControllerTest extends ControllerTest {
 	}
 
 	@Test
-	@DisplayName("비회원이 전체 게시글 조회에 성공하면 200 OK와 게시글 목록을 반환한다")
-	void getAllPostsSuccessfullyReturns200OKForOpen() {
+	@DisplayName("전체 게시글 조회가 성공적으로 처리되면 200 OK와 게시글 목록을 반환한다")
+	void getAllPostsSuccessfullyReturns200OK() {
 		// given
-		List<PostReadResponse> mockPostResponses = Arrays.asList(mockPostResponse, mockPostResponse); // 여러 게시글을 생성
-		API<List<PostReadResponse>> mockResponse = API.of(PostStatusType.POST_VIEW_SUCCESS, mockPostResponses);
+		List<PostAllReadResponse> mockPostList = Arrays.asList(
+			createMockPost(1L, "게시글 제목 1", "게시글 내용 1", "작성자 닉네임 1", "이미지 URL 1", new CountInfo(100, 50, 10), Arrays.asList("해시태그1", "해시태그2"), "2024-09-26T12:00:00"),
+			createMockPost(2L, "게시글 제목 2", "게시글 내용 2", "작성자 닉네임 2", "이미지 URL 2", new CountInfo(200, 100, 20), Arrays.asList("해시태그3", "해시태그4"), "2024-09-27T12:00:00"),
+			createMockPost(3L, "게시글 제목 3", "게시글 내용 3", "작성자 닉네임 3", "이미지 URL 3", new CountInfo(300, 150, 30), Arrays.asList("해시태그5", "해시태그6"), "2024-09-28T12:00:00")
+		);
 
-		given(postService.getAllPosts()).willReturn(mockPostResponses);
+		// Mocking the service method to return the mock post list
+		given(postService.getAllPosts(anyLong(), any())).willReturn(mockPostList);
 
 		// when
-		API<List<PostReadResponse>> response = RestAssuredMockMvc
+		API<List<PostAllReadResponse>> response = RestAssuredMockMvc
 			.given().log().all()
 			.header("X-Forwarded-For", "127.0.0.1")  // IP 주소
 			.contentType(MediaType.APPLICATION_JSON)
-			.when().get("/open/posts")
+			.when().get("/open/posts") // Assuming the endpoint for all posts is "/open/posts"
 			.then().log().all()
 			.status(HttpStatus.OK) // 200 OK 반환 기대
 			.extract()
-			.as(new TypeRef<API<List<PostReadResponse>>>() {});  // API<List<PostReadResponse>>로 변환
+			.as(new TypeRef<API<List<PostAllReadResponse>>>() {});  // API<List<PostAllReadResponse>>로 직접 변환
 
 		// then
-		assertThat(response.getResult()).hasSize(2);  // 2개의 게시글이 반환됨을 확인
-		assertThat(response.getResult().get(0).title()).isEqualTo("게시글 제목");
-		assertThat(response.getResult().get(0).hashtags()).containsExactly("해시태그1", "해시태그2");
+		List<PostAllReadResponse> postResponses = response.getResult();  // getResult()로 List<PostAllReadResponse> 추출
+		assertThat(postResponses).isNotNull();
+		assertThat(postResponses.size()).isEqualTo(3); // Verify size of the list is now 3
+
+		// Verify content of the posts
+		assertThat(postResponses.get(0).getTitle()).isEqualTo("게시글 제목 1");
+		assertThat(postResponses.get(1).getTitle()).isEqualTo("게시글 제목 2");
+		assertThat(postResponses.get(2).getTitle()).isEqualTo("게시글 제목 3");
+	}
+
+	// Mock 데이터 생성 메서드
+	private PostAllReadResponse createMockPost(Long postId, String title, String content, String nickname, String imageUrl, CountInfo countInfo, List<String> hashtags, String createdAt) {
+		return new PostAllReadResponse(
+			postId,
+			title,
+			content,
+			1L, // categoryId (예시로 고정)
+			new MemberInfo(postId, nickname, imageUrl), // memberInfo
+			countInfo,
+			hashtags,
+			createdAt
+		);
+	}
+
+
+
+	// 전체 게시글이 없는 경우 테스트
+	@Test
+	@DisplayName("전체 게시글 조회 시 게시글이 없으면 200 OK와 빈 목록을 반환한다")
+	void getAllPostsReturnsEmptyList() {
+		// given
+		given(postService.getAllPosts(anyLong(), anyLong())).willReturn(Arrays.asList()); // Return an empty list
+
+		// when
+		API<List<PostAllReadResponse>> response = RestAssuredMockMvc
+			.given().log().all()
+			.header("X-Forwarded-For", "127.0.0.1")  // IP 주소
+			.contentType(MediaType.APPLICATION_JSON)
+			.when().get("/open/posts") // Assuming the endpoint for all posts is "/open/posts"
+			.then().log().all()
+			.status(HttpStatus.OK) // 200 OK 반환 기대
+			.extract()
+			.as(new TypeRef<API<List<PostAllReadResponse>>>() {});  // API<List<PostAllReadResponse>>로 직접 변환
+
+		// then
+		List<PostAllReadResponse> postResponses = response.getResult();  // getResult()로 List<PostAllReadResponse> 추출
+		assertThat(postResponses).isNotNull();
+		assertThat(postResponses).isEmpty(); // Verify that the list is empty
 	}
 }

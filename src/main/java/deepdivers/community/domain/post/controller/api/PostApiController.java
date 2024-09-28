@@ -6,6 +6,7 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -48,12 +49,19 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@GetMapping
-	public ResponseEntity<API<List<PostReadResponse>>> getAllPosts(
-		@Auth final Member member
+	public ResponseEntity<API<List<PostAllReadResponse>>> getAllPosts(
+		@Auth final Member member,
+		@RequestParam(required = false) Long categoryId,
+		@RequestParam(required = false) Long lastPostId
 	) {
-		List<PostReadResponse> response = postService.getAllPosts();
+		if (lastPostId == null) {
+			lastPostId = Long.MAX_VALUE;  // lastPostId가 없으면 Long.MAX_VALUE 사용
+		}
+		List<PostAllReadResponse> response = postService.getAllPosts(lastPostId, categoryId);
 		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
 	}
+
+
 
 	@Override
 	@PostMapping("/update/{postId}")

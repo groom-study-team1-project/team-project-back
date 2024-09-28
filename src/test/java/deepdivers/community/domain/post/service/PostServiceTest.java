@@ -20,6 +20,7 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -32,6 +33,7 @@ import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.domain.global.exception.model.BadRequestException;
 import deepdivers.community.domain.global.utility.encryptor.Encryptor;
+import jakarta.persistence.EntityManager;
 
 @SpringBootTest
 @Transactional
@@ -48,6 +50,9 @@ class PostServiceTest {
 
 	@Autowired
 	private MemberRepository memberRepository;
+
+	@Autowired
+	private EntityManager entityManager; // EntityManager 주입
 
 	private PostCategory category;
 
@@ -151,31 +156,31 @@ class PostServiceTest {
 	@Test
 	@DisplayName("전체 게시글 조회 성공 통합 테스트")
 	void getAllPostsSuccessIntegrationTest() {
-		// Given
-		PostCreateRequest request1 = new PostCreateRequest("첫 번째 게시글", "첫 번째 게시글 내용", category.getId(), new String[]{"hashtag1"});
-		PostCreateRequest request2 = new PostCreateRequest("두 번째 게시글", "두 번째 게시글 내용", category.getId(), new String[]{"hashtag2"});
-		postService.createPost(request1, member);
-		postService.createPost(request2, member);
+		// Given: 테스트에 사용할 게시글을 미리 생성
+		PostCreateRequest createRequest1 = new PostCreateRequest("게시글 제목 1", "게시글 내용 1", category.getId(), new String[]{"hashtag1", "hashtag2"});
+		PostCreateRequest createRequest2 = new PostCreateRequest("게시글 제목 2", "게시글 내용 2", category.getId(), new String[]{"hashtag3", "hashtag4"});
+		PostCreateRequest createRequest3 = new PostCreateRequest("게시글 제목 3", "게시글 내용 3", category.getId(), new String[]{"hashtag5", "hashtag6"});
 
-		// When
-		List<PostReadResponse> response = postService.getAllPosts();
+		// 각 게시글을 생성
+		postService.createPost(createRequest1, member);
+		postService.createPost(createRequest2, member);
+		postService.createPost(createRequest3, member);
 
-		// Then
-		assertThat(response).hasSize(2);  // 게시글 2개가 존재하는지 확인
-		assertThat(response.get(0).title()).isEqualTo("첫 번째 게시글");
-		assertThat(response.get(0).content()).isEqualTo("첫 번째 게시글 내용");
-		assertThat(response.get(1).title()).isEqualTo("두 번째 게시글");
-		assertThat(response.get(1).content()).isEqualTo("두 번째 게시글 내용");
-	}
+		// DB에 강제로 반영
+		entityManager.flush();  // 트랜잭션을 강제로 DB에 반영
+		entityManager.clear();  // 영속성 컨텍스트 초기화
 
-	@Test
-	@DisplayName("전체 게시글이 없을 때 빈 리스트 반환 통합 테스트")
-	void getAllPostsReturnsEmptyListWhenNoPostsExist() {
-		// When
-		List<PostReadResponse> response = postService.getAllPosts();
+		// When: 전체 게시글 조회 수행 (lastContentId에 큰 값을 전달하여 모든 게시글 조회)
+		List<PostAllReadResponse> postResponses = postService.getAllPosts(Long.MAX_VALUE, null);  // 모든 게시글 조회
 
-		// Then
-		assertThat(response).isEmpty();  // 게시글이 없을 때 빈 리스트 반환
+		// Then: 반환된 게시글 리스트 검증
+		assertThat(postResponses).isNotNull();
+		assertThat(postResponses.size()).isEqualTo(3); // 3개의 게시글이 반환되는지 확인
+
+		// 게시글이 내림차순으로 정렬되었는지 검증
+		assertThat(postResponses.get(0).getTitle()).isEqualTo("게시글 제목 3");
+		assertThat(postResponses.get(1).getTitle()).isEqualTo("게시글 제목 2");
+		assertThat(postResponses.get(2).getTitle()).isEqualTo("게시글 제목 1");
 	}
 
 	@Test

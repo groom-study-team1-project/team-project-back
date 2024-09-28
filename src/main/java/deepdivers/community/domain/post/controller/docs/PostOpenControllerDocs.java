@@ -1,6 +1,8 @@
 package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "5. 게시글", description = "비회원 게시글 조회 API")
 public interface PostOpenControllerDocs {
@@ -39,5 +42,5 @@ public interface PostOpenControllerDocs {
 		description = "해당 게시글을 찾을 수 없습니다.",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<List<PostReadResponse>>> getAllPosts();
+	ResponseEntity<API<List<PostAllReadResponse>>> getAllPosts(Long categoryId, Long lastPostId);
 }

@@ -37,4 +37,5 @@ public class PostTitle {
 		validator(title);
 		return new PostTitle(title);
 	}
+
 }

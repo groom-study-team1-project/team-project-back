@@ -2,10 +2,13 @@ package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.global.security.jwt.Auth;
+import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostDeleteRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -16,6 +19,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -49,7 +53,7 @@ public interface PostApiControllerDocs {
 		description = "해당 게시글을 찾을 수 없습니다.",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<List<PostReadResponse>>> getAllPosts(Member member);
+	ResponseEntity<API<List<PostAllReadResponse>>> getAllPosts(Member member, Long categoryId, Long lastPostId);
 
 	@Operation(summary = "게시글 수정", description = "기존 게시글을 수정하는 기능")
 	@ApiResponse(
