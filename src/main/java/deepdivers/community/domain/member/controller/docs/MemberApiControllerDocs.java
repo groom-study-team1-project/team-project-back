@@ -112,5 +112,4 @@ public interface MemberApiControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<API<List<AllMyPostsResponse>>> allWrittenPosts(Member member, Long categoryId, Long lastPostId);
-
 }

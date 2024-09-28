@@ -14,9 +14,7 @@ public record PostReadResponse(
 	String content,
 	Long categoryId, // 카테고리 ID 사용
 	MemberInfo memberInfo, // 작성자 정보 포함
-	Integer viewCount,
-	Integer likeCount,
-	Integer commentCount,
+	CountInfo countInfo, // CountInfo 사용
 	List<String> hashtags, // 해시태그 포함
 	String createdAt // 생성일 포함
 ) {
@@ -31,10 +29,12 @@ public record PostReadResponse(
 				post.getMember().getNickname(), // 작성자 닉네임
 				post.getMember().getImageUrl() // 작성자 이미지 URL
 			),
-			post.getViewCount(),
-			post.getLikeCount(),
-			post.getCommentCount(),
-			post.getHashtags(),
+			new CountInfo(
+				post.getViewCount(), // 조회수
+				post.getLikeCount(), // 좋아요 수
+				post.getCommentCount() // 댓글 수
+			),
+			post.getHashtags(), // 해시태그 리스트
 			post.getCreatedAt().toString() // 생성일 포맷
 		);
 	}

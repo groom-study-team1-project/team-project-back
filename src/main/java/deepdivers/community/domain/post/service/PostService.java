@@ -10,6 +10,7 @@ import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
+import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -23,6 +24,7 @@ import deepdivers.community.domain.post.model.PostTitle;
 import deepdivers.community.domain.post.model.PostVisitor;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.domain.post.repository.CommentRepository;
+import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.domain.post.repository.PostVisitorRepository;
 import deepdivers.community.domain.global.exception.model.BadRequestException;
@@ -46,6 +48,7 @@ public class PostService {
 	private final PostHashtagRepository postHashtagRepository;
 	private final PostVisitorRepository postVisitorRepository;
 	private final CommentRepository commentRepository;
+	private final PostQueryRepository postQueryRepository;
 
 	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
 		PostCategory postCategory = getCategoryById(request.categoryId());
@@ -56,11 +59,9 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<PostReadResponse> getAllPosts() {
-		List<Post> posts = postRepository.findAll();
-		return posts.stream()
-			.map(PostReadResponse::from)
-			.collect(Collectors.toList());
+	public List<PostAllReadResponse> getAllPosts(Long lastContentId, Long categoryId) {
+		System.out.println("PostService - getAllPosts 호출됨");
+		return postQueryRepository.findAllPosts(lastContentId, categoryId);
 	}
 
 	@Transactional

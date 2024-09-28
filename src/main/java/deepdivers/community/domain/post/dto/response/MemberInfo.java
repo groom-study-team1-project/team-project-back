@@ -1,10 +1,16 @@
 package deepdivers.community.domain.post.dto.response;
 
-import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Schema(description = "게시글 작성자 정보")
-public record MemberInfo(
-	Long memberId,
-	String nickname,
-	String imageUrl
-) {}
+@Getter
+@Setter
+@NoArgsConstructor // Add this annotation to create a no-arg constructor
+@AllArgsConstructor // Existing constructor with arguments
+public class MemberInfo {
+	private Long memberId;
+	private String nickname;
+	private String imageUrl;
+}
