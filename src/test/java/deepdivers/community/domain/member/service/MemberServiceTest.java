@@ -246,41 +246,6 @@ class MemberServiceTest {
     }
 
     /*
-    * 프로필 조회 관련 테스트
-    * */
-    @Test
-    @DisplayName("내 프로필 조회에 성공한 경우를 테스트한다.")
-    void findMyProfileSuccessTest() {
-        // Given, test.sql
-        Long memberId = 1L;
-        Member member = memberService.getMemberWithThrow(memberId);
-
-        // When
-        API<MemberProfileResponse> profile = memberService.getProfile(member, memberId);
-
-        // Then
-        MemberProfileResponse result = profile.result();
-        assertThat(result.nickname()).isEqualTo(member.getNickname());
-    }
-
-    @Test
-    @DisplayName("다른 사용자 프로필 조회에 성공한 경우를 테스트한다.")
-    void findOtherProfileSuccessTest() {
-        // Given, test.sql
-        Long memberId = 1L;
-        Member member = memberService.getMemberWithThrow(memberId);
-        Long otherMemberId = 2L;
-        Member other = memberService.getMemberWithThrow(otherMemberId);
-
-        // When
-        API<MemberProfileResponse> profile = memberService.getProfile(member, otherMemberId);
-
-        // Then
-        MemberProfileResponse result = profile.result();
-        assertThat(result.nickname()).isEqualTo(other.getNickname());
-    }
-
-    /*
     * 프로필 수정 관련 테스트
     * */
     @Test
@@ -323,17 +288,13 @@ class MemberServiceTest {
         MemberProfileRequest request = new MemberProfileRequest("test","test","","010-1234-5678","","");
 
         // When
-        API<MemberProfileResponse> memberProfileResponseAPI = memberService.updateProfile(member, request);
+        NoContent memberProfileResponseAPI = memberService.updateProfile(member, request);
 
         // then
         StatusResponse responseStatus = memberProfileResponseAPI.status();
-        MemberProfileResponse responseResult = memberProfileResponseAPI.result();
         MemberStatusType status = MemberStatusType.UPDATE_PROFILE_SUCCESS;
         assertThat(responseStatus.code()).isEqualTo(status.getCode());
         assertThat(responseStatus.message()).isEqualTo(status.getMessage());
-        assertThat(responseResult.nickname()).isEqualTo(request.nickname());
-        assertThat(responseResult.imageUrl()).isEqualTo(request.imageUrl());
-        assertThat(responseResult.phoneNumber()).isEqualTo(request.phoneNumber());
     }
 
     /*

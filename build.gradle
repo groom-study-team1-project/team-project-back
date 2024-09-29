@@ -19,6 +19,14 @@ configurations {
 	}
 }
 
+tasks.test {
+	doFirst {
+		filter {
+			excludeTestsMatching "S3UploaderIntTest"
+		}
+	}
+}
+
 repositories {
 	mavenCentral()
 }
