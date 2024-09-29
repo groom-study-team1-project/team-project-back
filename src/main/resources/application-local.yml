@@ -8,7 +8,7 @@ spring:
         endpoint: http://localhost:4566
         bucket: test-bucket
       region:
-        static: ap-northeast-2
+        static: ${AWS_STATIC_REGION}
       credentials:
         access-key: test
         secret-key: test

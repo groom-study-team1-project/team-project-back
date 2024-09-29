@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: product
+  cloud:
+    aws:
+      region:
+        static: ${AWS_STATIC_REGION}
+      credentials:
+        access-key: ${AWS_CREDENTIALS_ACCESS_KEY}
+        secret-key: ${AWS_CREDENTIALS_SECRET_KEY}
+      s3:
+        region: ${AWS_S3_REGION}
+        bucket: deepdivers
