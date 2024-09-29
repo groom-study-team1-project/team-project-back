@@ -10,6 +10,7 @@ import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.repository.MemberQueryRepository;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.domain.global.security.jwt.Auth;
@@ -36,14 +37,15 @@ public class MemberApiController implements MemberApiControllerDocs {
 
     private final MemberService memberService;
     private final PostQueryRepository postQueryRepository;
+    private final MemberQueryRepository memberQueryRepository;
 
     @GetMapping("/me/{memberId}")
     public ResponseEntity<API<MemberProfileResponse>> me(
             @Auth final Member member,
             @PathVariable final Long memberId
     ) {
-        final API<MemberProfileResponse> response = memberService.getProfile(member, memberId);
-        return ResponseEntity.ok(response);
+        final MemberProfileResponse memberProfile = memberQueryRepository.getMemberProfile(memberId, member.getId());
+        return ResponseEntity.ok(API.of(MemberStatusType.GET_PROFILE_SUCCESS, memberProfile));
     }
 
     @PostMapping(value = "/me/profile-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })

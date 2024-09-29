@@ -18,6 +18,7 @@ import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.repository.MemberQueryRepository;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -37,6 +38,10 @@ class MemberApiControllerTest extends ControllerTest {
 
     @MockBean
     PostQueryRepository PostQueryRepository;
+
+    @MockBean
+    MemberQueryRepository memberQueryRepository;
+
     @BeforeEach
     void setUp(WebApplicationContext webApplicationContext) throws Exception {
         RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
