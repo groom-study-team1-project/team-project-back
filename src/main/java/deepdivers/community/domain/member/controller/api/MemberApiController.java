@@ -2,6 +2,7 @@ package deepdivers.community.domain.member.controller.api;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.global.security.jwt.Auth;
 import deepdivers.community.domain.member.controller.docs.MemberApiControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
@@ -13,7 +14,6 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberQueryRepository;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.domain.global.security.jwt.Auth;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -58,11 +58,11 @@ public class MemberApiController implements MemberApiControllerDocs {
     }
 
     @PutMapping("/me")
-    public ResponseEntity<API<MemberProfileResponse>> updateProfile(
+    public ResponseEntity<NoContent> updateProfile(
         @Auth final Member member,
         @Valid @RequestBody final MemberProfileRequest request
     ) {
-        final API<MemberProfileResponse> response = memberService.updateProfile(member, request);
+        final NoContent response = memberService.updateProfile(member, request);
         return ResponseEntity.ok(response);
     }
 

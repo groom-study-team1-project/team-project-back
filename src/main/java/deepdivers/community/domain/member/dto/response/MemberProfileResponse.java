@@ -34,20 +34,4 @@ public class MemberProfileResponse {
     @Schema(description = "본인 식별", example = "false/true")
     private final boolean isMe;
 
-    public static MemberProfileResponse from(final Member member) {
-        return new MemberProfileResponse(
-            member.getId(),
-            member.getNickname(),
-            member.getRole(),
-            member.getImageUrl(),
-            member.getAboutMe(),
-            member.getPhoneNumber(),
-            member.getGithubAddr(),
-            member.getBlogAddr(),
-            member.getActivityStats().getPostCount(),
-            member.getActivityStats().getCommentCount(),
-            false
-        );
-    }
-
 }

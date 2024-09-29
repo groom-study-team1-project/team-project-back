@@ -2,24 +2,23 @@ package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.global.exception.model.BadRequestException;
+import deepdivers.community.domain.global.exception.model.NotFoundException;
+import deepdivers.community.domain.global.utility.encryptor.Encryptor;
+import deepdivers.community.domain.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.domain.global.utility.uploader.S3Uploader;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.ResetPasswordRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
-import deepdivers.community.domain.global.exception.model.BadRequestException;
-import deepdivers.community.domain.global.exception.model.NotFoundException;
-import deepdivers.community.domain.global.utility.encryptor.Encryptor;
-import deepdivers.community.domain.global.utility.encryptor.EncryptorBean;
-import deepdivers.community.domain.global.utility.uploader.S3Uploader;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -56,18 +55,6 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public API<MemberProfileResponse> getProfile(final Member me, final Long memberId) {
-        final Member profileOwner = getMemberWithThrow(memberId);
-        if (me.equals(profileOwner)) {
-            final MemberProfileResponse result = MemberProfileResponse.from(me);
-            return API.of(MemberStatusType.VIEW_OWN_PROFILE_SUCCESS, result);
-        }
-
-        final MemberProfileResponse result = MemberProfileResponse.from(profileOwner);
-        return API.of(MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS, result);
-    }
-
-    @Transactional(readOnly = true)
     public Member getMemberWithThrow(final Long memberId) {
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
@@ -84,12 +71,15 @@ public class MemberService {
         return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
     }
 
-    public API<MemberProfileResponse> updateProfile(final Member member, final MemberProfileRequest request) {
-        updateAfterProfileValidation(member, request);
+    public NoContent updateProfile(final Member member, final MemberProfileRequest request) {
+        if (!member.getNickname().equals(request.nickname())) {
+            validateUniqueNickname(request.nickname());
+        }
 
-        final Member updatedMember = memberRepository.save(member);
-        final MemberProfileResponse result = MemberProfileResponse.from(updatedMember);
-        return API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS, result);
+        member.updateProfile(request);
+        memberRepository.save(member);
+
+        return NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
     }
 
     public NoContent changePassword(final Member member, final UpdatePasswordRequest request) {
@@ -109,13 +99,6 @@ public class MemberService {
         return memberRepository.findByEmailValue(email)
             .filter(member -> encryptor.matches(password, member.getPassword()))
             .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
-    }
-
-    private void updateAfterProfileValidation(final Member member, final MemberProfileRequest request) {
-        if (!member.getNickname().equals(request.nickname())) {
-            validateUniqueNickname(request.nickname());
-        }
-        member.updateProfile(request);
     }
 
     private void signUpValidate(final MemberSignUpRequest request) {

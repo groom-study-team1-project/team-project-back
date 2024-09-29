@@ -23,10 +23,9 @@ public interface MemberApiControllerDocs {
 
     @Operation(summary = "프로필 조회", description = "프로필을 조회하는 기능")
     @ApiResponse(
-            responseCode = "1002, 1003",
+            responseCode = "1002",
             description = """
-                    1. 본인 프로필 조회에 성공하였습니다.
-                    2. 다른 사용자의 프로필 조회에 성공하였습니다.
+                    1. 프로필 조회에 성공했습니다.
                     """
     )
     @ApiResponse(
@@ -75,7 +74,7 @@ public interface MemberApiControllerDocs {
                     """,
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
-    ResponseEntity<API<MemberProfileResponse>> updateProfile(Member member, MemberProfileRequest request);
+    ResponseEntity<NoContent> updateProfile(Member member, MemberProfileRequest request);
 
     @Operation(summary = "비밀번호 수정", description = "비밀번호를 수정하는 기능")
     @ApiResponse(

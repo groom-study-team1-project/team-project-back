@@ -49,37 +49,6 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     /*
-    * 프로필 조회 컨트롤러 테스트
-    * */
-    @Test
-    @DisplayName("프로필 조회 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
-    void findProfileSuccessfullyReturns200OK() {
-        // given
-        MemberSignUpRequest signUpRequest = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test",
-            "010-1234-5678");
-        Member member = Member.of(signUpRequest, encryptor);
-        MemberProfileResponse memberProfileResponse = MemberProfileResponse.from(member);
-        API<MemberProfileResponse> mockResponse = API.of(MemberStatusType.VIEW_OTHER_PROFILE_SUCCESS,
-            memberProfileResponse);
-        given(memberService.getProfile(any(Member.class), anyLong())).willReturn(mockResponse);
-        Long profileOwnerId = 1L;
-
-        // when
-        API<MemberProfileResponse> response = RestAssuredMockMvc.given().log().all()
-            .pathParam("memberId", profileOwnerId)
-            .when().get("/api/members/me/{memberId}")
-            .then().log().all()
-            .status(HttpStatus.OK)
-            .extract()
-            .as(new TypeRef<>() {
-            });
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
-    }
-
-    /*
     * 프로필 이미지 업로드 컨트롤러 테스트
     * */
     @Test
@@ -132,12 +101,11 @@ class MemberApiControllerTest extends ControllerTest {
         // given
         MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "");
         Member member = memberService.getMemberWithThrow(1L);
-        API<MemberProfileResponse> mockResponse = API.of(MemberStatusType.UPDATE_PROFILE_SUCCESS,
-            MemberProfileResponse.from(member));
+        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
         given(memberService.updateProfile(member, request)).willReturn(mockResponse);
 
         // when
-        API<MemberProfileResponse> response = RestAssuredMockMvc.given().log().all()
+        NoContent response = RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .body(request)
             .when().put("/api/members/me")
