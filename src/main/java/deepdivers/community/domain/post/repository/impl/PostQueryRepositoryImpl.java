@@ -61,7 +61,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 post.id.lt(lastContentId)
             )
             .orderBy(post.id.desc())
-            .limit(10)
+            .limit(5)
             .fetch();
     }
 
