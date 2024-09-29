@@ -11,7 +11,7 @@ spring:
   h2:
     console:
       enabled: true
-      path: /h2-console
+      path: /test-path
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
@@ -56,8 +56,8 @@ logging:
 
 token:
   secret:
-    key: SpringBootJWTHelperTokenSecretKeyValue123!@#
+    key: ${TOKEN_SECRET_KEY}
   access-token:
-    expiration-time: 1800000
+    expiration-time: ${TOKEN_ACCESS_EXP}
   refresh-token:
-    expiration-time: 43200000
+    expiration-time: ${TOKEN_REFRESH_EXP}
