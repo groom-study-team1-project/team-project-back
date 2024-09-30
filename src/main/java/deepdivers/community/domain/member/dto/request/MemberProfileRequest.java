@@ -20,6 +20,8 @@ public record MemberProfileRequest(
     @Schema(description = "사용자 깃허브", example = "https://github.com")
     String githubUrl,
     @Schema(description = "사용자 블로그", example = "https://velog.io")
-    String blogUrl
+    String blogUrl,
+    @Schema(description = "사용자 직업", example = "개발자")
+    String job
 ) {
 }

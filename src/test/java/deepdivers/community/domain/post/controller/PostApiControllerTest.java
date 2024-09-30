@@ -73,7 +73,7 @@ class PostApiControllerTest extends ControllerTest {
 			"게시글 제목",  // 제목은 테스트에서 기대하는 값과 일치
 			"Test Content",
 			1L,
-			new MemberInfo(1L, "작성자 닉네임", "profile.jpg"),  // 닉네임을 '작성자 닉네임'으로 수정
+			new MemberInfo(1L, "작성자 닉네임", "profile.jpg", "개발자"),  // job 추가
 			new CountInfo(100, 50, 20), // CountInfo 객체로 전달
 			List.of("hashtag1", "hashtag2"),
 			"2024-09-26T12:00:00"  // 날짜를 테스트에서 기대하는 값으로 수정
@@ -309,7 +309,7 @@ class PostApiControllerTest extends ControllerTest {
 			title,
 			content,
 			1L, // categoryId (예시로 고정)
-			new MemberInfo(postId, nickname, imageUrl), // memberInfo
+			new MemberInfo(postId, nickname, imageUrl, "개발자"), // job 추가
 			countInfo,
 			hashtags,
 			createdAt
