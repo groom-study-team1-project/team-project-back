@@ -21,6 +21,7 @@ import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
+import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -171,7 +172,10 @@ class PostServiceTest {
 		entityManager.clear();  // 영속성 컨텍스트 초기화
 
 		// When: 전체 게시글 조회 수행 (lastContentId에 큰 값을 전달하여 모든 게시글 조회)
-		List<PostAllReadResponse> postResponses = postService.getAllPosts(Long.MAX_VALUE, null);  // 모든 게시글 조회
+		API<PostCountResponse> response = postService.getAllPosts(Long.MAX_VALUE, null);  // 모든 게시글 조회
+
+		// PostCountResponse에서 posts 리스트 추출
+		List<PostAllReadResponse> postResponses = response.getResult().getPosts();
 
 		// Then: 반환된 게시글 리스트 검증
 		assertThat(postResponses).isNotNull();
@@ -182,6 +186,7 @@ class PostServiceTest {
 		assertThat(postResponses.get(1).getTitle()).isEqualTo("게시글 제목 2");
 		assertThat(postResponses.get(2).getTitle()).isEqualTo("게시글 제목 1");
 	}
+
 
 	@Test
 	@DisplayName("게시물 수정 성공 통합 테스트")

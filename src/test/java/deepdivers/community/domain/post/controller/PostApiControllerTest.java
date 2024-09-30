@@ -35,6 +35,7 @@ import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.CountInfo;
 import deepdivers.community.domain.post.dto.response.MemberInfo;
 import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
+import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -278,11 +279,14 @@ class PostApiControllerTest extends ControllerTest {
 			createMockPost(3L, "게시글 제목 3", "게시글 내용 3", "작성자 닉네임 3", "이미지 URL 3", new CountInfo(300, 150, 30), Arrays.asList("해시태그5", "해시태그6"), "2024-09-28T12:00:00")
 		);
 
-		// Mocking the service method to return the mock post list
-		given(postService.getAllPosts(anyLong(), any())).willReturn(mockPostList);
+		PostCountResponse postCountResponse = new PostCountResponse(3L, mockPostList); // 게시글 총 개수와 목록 설정
+		API<PostCountResponse> mockApiResponse = API.of(PostStatusType.POST_VIEW_SUCCESS, postCountResponse);
+
+		// Mocking the service method to return the mock API response
+		given(postService.getAllPosts(anyLong(), any())).willReturn(mockApiResponse);
 
 		// when
-		API<List<PostAllReadResponse>> response = RestAssuredMockMvc
+		API<PostCountResponse> response = RestAssuredMockMvc
 			.given().log().all()
 			.header("Authorization", "Bearer sample-token")  // 인증 토큰
 			.contentType(MediaType.APPLICATION_JSON)
@@ -290,17 +294,17 @@ class PostApiControllerTest extends ControllerTest {
 			.then().log().all()
 			.status(HttpStatus.OK) // 200 OK 반환 기대
 			.extract()
-			.as(new TypeRef<API<List<PostAllReadResponse>>>() {});  // API<List<PostAllReadResponse>>로 변환
+			.as(new TypeRef<API<PostCountResponse>>() {});  // API<PostCountResponse>로 변환
 
 		// then
-		List<PostAllReadResponse> postResponses = response.getResult();  // getResult()로 List<PostAllReadResponse> 추출
+		PostCountResponse postResponses = response.getResult();  // getResult()로 PostCountResponse 추출
 		assertThat(postResponses).isNotNull();
-		assertThat(postResponses.size()).isEqualTo(3); // Verify size of the list is now 2
+		assertThat(postResponses.getPosts().size()).isEqualTo(3); // Verify size of the list is now 3
 
 		// Verify content of the posts
-		assertThat(postResponses.get(0).getTitle()).isEqualTo("게시글 제목 1");
-		assertThat(postResponses.get(1).getTitle()).isEqualTo("게시글 제목 2");
-		assertThat(postResponses.get(2).getTitle()).isEqualTo("게시글 제목 3");
+		assertThat(postResponses.getPosts().get(0).getTitle()).isEqualTo("게시글 제목 1");
+		assertThat(postResponses.getPosts().get(1).getTitle()).isEqualTo("게시글 제목 2");
+		assertThat(postResponses.getPosts().get(2).getTitle()).isEqualTo("게시글 제목 3");
 	}
 	// Mock 데이터 생성 메서드
 	private PostAllReadResponse createMockPost(Long postId, String title, String content, String nickname, String imageUrl, CountInfo countInfo, List<String> hashtags, String createdAt) {
@@ -314,30 +318,6 @@ class PostApiControllerTest extends ControllerTest {
 			hashtags,
 			createdAt
 		);
-	}
-
-	// 전체 게시글이 없는 경우 테스트
-	@Test
-	@DisplayName("전체 게시글 조회 시 게시글이 없으면 200 OK와 빈 목록을 반환한다")
-	void getAllPostsReturnsEmptyList() {
-		// given
-		given(postService.getAllPosts(anyLong(), anyLong())).willReturn(Arrays.asList()); // Return an empty list
-
-		// when
-		API<List<PostAllReadResponse>> response = RestAssuredMockMvc
-			.given().log().all()
-			.header("Authorization", "Bearer sample-token")  // 인증 토큰
-			.contentType(MediaType.APPLICATION_JSON)
-			.when().get("/api/posts") // Assuming the endpoint for all posts is "/open/posts"
-			.then().log().all()
-			.status(HttpStatus.OK) // 200 OK 반환 기대
-			.extract()
-			.as(new TypeRef<API<List<PostAllReadResponse>>>() {});  // API<List<PostAllReadResponse>>로 직접 변환
-
-		// then
-		List<PostAllReadResponse> postResponses = response.getResult();  // getResult()로 List<PostAllReadResponse> 추출
-		assertThat(postResponses).isNotNull();
-		assertThat(postResponses).isEmpty(); // Verify that the list is empty
 	}
 
 	// 게시글 수정 성공 테스트

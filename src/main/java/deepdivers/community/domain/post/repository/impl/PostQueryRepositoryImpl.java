@@ -40,19 +40,18 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         final Long categoryId
     ) {
         return queryFactory.select(
-                Projections.fields(
-                    AllMyPostsResponse.class,
-                    post.id.as("id"),
-                    post.title.title.as("title"),
-                    post.viewCount.as("viewCount"),
-                    post.likeCount.as("likeCount"),
-                    post.commentCount.as("commentCount"),
-                    post.createdAt.as("createdAt"),
-                    member.id.as("memberId"),
-                    member.nickname.value.as("memberNickname"),
-                    member.job.as("memberJob"),
-                    like.isNotNull().as("isLikedMe")
-                ))
+            Projections.fields(
+                AllMyPostsResponse.class,
+                post.id.as("id"),
+                post.title.title.as("title"),
+                post.viewCount.as("viewCount"),
+                post.likeCount.as("likeCount"),
+                post.commentCount.as("commentCount"),
+                post.createdAt.as("createdAt"),
+                member.id.as("memberId"),
+                member.nickname.value.as("memberNickname"),
+                like.isNotNull().as("isLikedMe")
+            ))
             .from(post)
             .join(member).on(post.member.id.eq(member.id))
             .leftJoin(like).on(hasLike(memberId))
@@ -75,7 +74,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
 
     @Override
     public List<PostAllReadResponse> findAllPosts(Long lastContentId, Long categoryId) {
-
         List<PostAllReadResponse> posts = queryFactory.select(
                 Projections.fields(
                     PostAllReadResponse.class,
@@ -113,9 +111,10 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 .join(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
                 .where(postHashtag.post.id.eq(postResponse.getPostId()))
                 .fetch();
-
             postResponse.setHashtags(hashtags);
         }
-        return posts;
+
+        return posts;  // 게시글 리스트만 반환
     }
+
 }

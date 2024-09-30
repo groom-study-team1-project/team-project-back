@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.controller.docs;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
+import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,5 +43,5 @@ public interface PostOpenControllerDocs {
 		description = "해당 게시글을 찾을 수 없습니다.",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<List<PostAllReadResponse>>> getAllPosts(Long categoryId, Long lastPostId);
+	ResponseEntity<API<PostCountResponse>> getAllPosts(Long categoryId, Long lastPostId);
 }
