@@ -18,19 +18,20 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepository {
     @Override
     public MemberProfileResponse getMemberProfile(final Long profileId, final Long viewerId) {
         return queryFactory.select(
-            Projections.constructor(
-                MemberProfileResponse.class,
-                member.id,
-                member.nickname.value,
-                member.role,
-                member.imageUrl,
-                member.aboutMe,
-                member.phoneNumber.value,
-                member.githubAddr,
-                member.blogAddr,
-                member.activityStats.postCount,
-                member.activityStats.commentCount,
-                member.id.eq(viewerId)))
+                Projections.constructor(
+                    MemberProfileResponse.class,
+                    member.id,
+                    member.nickname.value,
+                    member.role,
+                    member.imageUrl,
+                    member.aboutMe,
+                    member.phoneNumber.value,
+                    member.job,
+                    member.githubAddr,
+                    member.blogAddr,
+                    member.activityStats.postCount,
+                    member.activityStats.commentCount,
+                    member.id.eq(viewerId)))
             .from(member)
             .where(member.id.eq(profileId))
             .fetchOne();

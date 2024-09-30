@@ -53,9 +53,9 @@ class MemberServiceTest {
     private MemberRepository memberRepository;
 
     /*
-    * 회원 가입 관련 테스트
-    * 성공, 예외
-    * */
+     * 회원 가입 관련 테스트
+     * 성공, 예외
+     * */
     @Test
     @DisplayName("회원 가입이 성공했을 경우 저장된 정보를 테스트한다.")
     void signUpSuccessAfterFindMemberTest() {
@@ -119,8 +119,8 @@ class MemberServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_EMAIL);
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_EMAIL);
     }
 
     @Test
@@ -136,8 +136,8 @@ class MemberServiceTest {
     }
 
     /*
-    * 로그인 관련 테스트
-    * */
+     * 로그인 관련 테스트
+     * */
     @Test
     @DisplayName("로그인이 성공했을 경우를 테스트한다.")
     void loginSuccessTest() {
@@ -216,8 +216,8 @@ class MemberServiceTest {
     }
 
     /*
-    * 사용자 정보 찾기 관련 테스트
-    * */
+     * 사용자 정보 찾기 관련 테스트
+     * */
     @Test
     @DisplayName("사용자 정보 찾기에 성공한 경우를 테스트 한다.")
     void findMemberSuccessTest() {
@@ -246,8 +246,8 @@ class MemberServiceTest {
     }
 
     /*
-    * 프로필 수정 관련 테스트
-    * */
+     * 프로필 수정 관련 테스트
+     * */
     @Test
     @DisplayName("프로필 이미지 업로드에 성공한 경우를 테스트한다.")
     void imageUploadSuccessTest() {
@@ -285,7 +285,7 @@ class MemberServiceTest {
     void profileUpdateSuccessTest() {
         // Given test.sql
         Member member = memberService.getMemberWithThrow(1L);
-        MemberProfileRequest request = new MemberProfileRequest("test","test","","010-1234-5678","","");
+        MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "", "EMPTY");
 
         // When
         NoContent memberProfileResponseAPI = memberService.updateProfile(member, request);
@@ -298,8 +298,8 @@ class MemberServiceTest {
     }
 
     /*
-    * 비밀번호 변경 서비스
-    * */
+     * 비밀번호 변경 서비스
+     * */
     @Test
     @DisplayName("비밀번호 수정이 성공할 경우를 테스트한다.")
     void passwordUpdateSuccessTest() {
@@ -344,8 +344,8 @@ class MemberServiceTest {
     }
 
     /*
-    * 부가 서비스
-    * */
+     * 부가 서비스
+     * */
     @Test
     @DisplayName("중복 닉네임은 예외가 발생한다.")
     void duplicateNicknameCheckTest() {

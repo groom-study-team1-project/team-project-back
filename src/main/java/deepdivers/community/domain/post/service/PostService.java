@@ -1,5 +1,7 @@
 package deepdivers.community.domain.post.service;
 
+import static deepdivers.community.domain.post.model.QPost.*;
+
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
@@ -11,6 +13,7 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
+import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
@@ -37,6 +40,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -49,6 +55,7 @@ public class PostService {
 	private final PostVisitorRepository postVisitorRepository;
 	private final CommentRepository commentRepository;
 	private final PostQueryRepository postQueryRepository;
+	private final JPAQueryFactory queryFactory;
 
 	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
 		PostCategory postCategory = getCategoryById(request.categoryId());
@@ -59,9 +66,33 @@ public class PostService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<PostAllReadResponse> getAllPosts(Long lastContentId, Long categoryId) {
-		System.out.println("PostService - getAllPosts 호출됨");
-		return postQueryRepository.findAllPosts(lastContentId, categoryId);
+	public API<PostCountResponse> getAllPosts(Long lastContentId, Long categoryId) {
+
+		Long totalPostCount = getTotalPostCount(categoryId);
+
+		List<PostAllReadResponse> posts = postQueryRepository.findAllPosts(lastContentId, categoryId);
+
+		PostCountResponse response = new PostCountResponse(totalPostCount, posts);
+		return API.of(PostStatusType.POST_VIEW_SUCCESS, response);
+	}
+
+	private Long getTotalPostCount(Long categoryId) {
+		BooleanBuilder whereClause = buildWhereClause(categoryId);
+
+		Long totalPostCount = queryFactory.select(post.count())
+			.from(post)
+			.where(whereClause)
+			.fetchOne();
+
+		return totalPostCount != null ? totalPostCount : 0L;
+	}
+
+	private BooleanBuilder buildWhereClause(Long categoryId) {
+		BooleanBuilder whereClause = new BooleanBuilder();
+		if (categoryId != null) {
+			whereClause.and(post.category.id.eq(categoryId));
+		}
+		return whereClause;
 	}
 
 	@Transactional
@@ -85,13 +116,10 @@ public class PostService {
 
 		post.updatePost(PostTitle.of(request.title()), PostContent.of(request.content()), postCategory);
 
-		// 기존 해시태그 제거
 		removeExistingHashtags(post);
 
-		// 새로운 해시태그 저장
 		saveHashtags(post, request.hashtags());
 
-		// 사용되지 않는 해시태그 삭제
 		cleanUpUnusedHashtags();
 
 		postRepository.save(post);
@@ -107,15 +135,12 @@ public class PostService {
 			throw new BadRequestException(PostExceptionType.NOT_POST_AUTHOR);
 		}
 
-		// 관련된 댓글, 해시태그 등 삭제
 		deleteComments(post);
 		removeExistingHashtags(post);
 		cleanUpCategory(post.getCategory());
 
-		// 관련된 PostVisitor 삭제
 		deleteVisitors(post);
 
-		// 물리적 삭제
 		postRepository.delete(post);
 
 		cleanUpUnusedHashtags();

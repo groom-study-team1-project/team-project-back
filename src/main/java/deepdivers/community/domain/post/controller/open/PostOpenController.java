@@ -8,8 +8,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.global.security.jwt.Auth;
+import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostOpenControllerDocs;
 import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
+import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.service.PostService;
@@ -35,27 +38,15 @@ public class PostOpenController implements PostOpenControllerDocs {
 		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
 	}
 
-	@Override
 	@GetMapping
-	public ResponseEntity<API<List<PostAllReadResponse>>> getAllPosts(
+	public ResponseEntity<API<PostCountResponse>> getAllPosts(
 		@RequestParam(required = false) Long categoryId,
 		@RequestParam(required = false) Long lastPostId
 	) {
-
-		// Log 추가: 서비스 호출 전에 로그 추가
-		System.out.println("PostOpenController - getAllPosts() 호출 시작");
-
 		if (lastPostId == null) {
 			lastPostId = Long.MAX_VALUE;  // lastPostId가 없으면 Long.MAX_VALUE 사용
 		}
-		List<PostAllReadResponse> response = postService.getAllPosts(lastPostId, categoryId);
-
-		System.out.println("PostOpenController - postService에서 반환된 게시글 목록: " + response);
-
-		if (response.isEmpty()) {
-			System.out.println("PostOpenController - 빈 목록이 반환되었습니다.");
-		}
-
-		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
+		API<PostCountResponse> response = postService.getAllPosts(lastPostId, categoryId);
+		return ResponseEntity.ok(response);
 	}
 }

@@ -33,10 +33,10 @@ import org.hibernate.annotations.DynamicUpdate;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_member_nickname",
-                columnNames = {"nickname"}
-        )
+    uniqueConstraints = @UniqueConstraint(
+        name = "uk_member_nickname",
+        columnNames = {"nickname"}
+    )
 )
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
@@ -84,6 +84,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false, columnDefinition = "varchar(50)")
     private MemberStatus status;
 
+    @Column(nullable = false, length = 50)
+    private String job;
+
     private Member(final MemberSignUpRequest request, final Encryptor encryptor) {
         this.email = new Email(request.email());
         this.password = new Password(encryptor, request.password());
@@ -97,6 +100,7 @@ public class Member extends BaseEntity {
         this.blogAddr = StringUtils.EMPTY;
         this.role = MemberRole.NORMAL;
         this.status = MemberStatus.REGISTERED;
+        this.job = StringUtils.EMPTY;
     }
 
     public static Member of(final MemberSignUpRequest request, final Encryptor encryptor) {
@@ -119,6 +123,10 @@ public class Member extends BaseEntity {
         return this.email.getValue();
     }
 
+    public String getJob() {
+        return job;
+    }
+
     public void updateProfile(final MemberProfileRequest request) {
         this.nickname.update(request.nickname());
         this.phoneNumber.update(request.phoneNumber());
@@ -127,6 +135,7 @@ public class Member extends BaseEntity {
         updateAboutMe(request.aboutMe());
         updateGithub(request.githubUrl());
         updateBlog(request.blogUrl());
+        updateJob(request.job());
     }
 
     private void updateGithub(final String githubUrl) {
@@ -150,6 +159,12 @@ public class Member extends BaseEntity {
     private void updateAboutMe(final String aboutMe) {
         if (!(aboutMe == null || aboutMe.isEmpty())) {
             this.aboutMe = aboutMe;
+        }
+    }
+
+    private void updateJob(final String job) {
+        if (!(job == null || job.isEmpty())) {
+            this.job = job;
         }
     }
 

@@ -74,7 +74,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
 
     @Override
     public List<PostAllReadResponse> findAllPosts(Long lastContentId, Long categoryId) {
-        // 먼저 게시글 리스트를 가져옵니다
         List<PostAllReadResponse> posts = queryFactory.select(
                 Projections.fields(
                     PostAllReadResponse.class,
@@ -85,7 +84,8 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     Projections.fields(MemberInfo.class,
                         member.id.as("memberId"),
                         member.nickname.value.as("nickname"),
-                        member.imageUrl.as("imageUrl")
+                        member.imageUrl.as("imageUrl"),
+                        member.job.as("memberJob")
                     ).as("memberInfo"),
                     Projections.fields(CountInfo.class,
                         post.viewCount.as("viewCount"),
@@ -104,7 +104,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .limit(10)
             .fetch();
 
-        // 각각의 게시글에 대한 해시태그를 가져와서 리스트로 변환합니다
         for (PostAllReadResponse postResponse : posts) {
             List<String> hashtags = queryFactory
                 .select(postHashtag.hashtag.hashtag)
@@ -112,14 +111,10 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 .join(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
                 .where(postHashtag.post.id.eq(postResponse.getPostId()))
                 .fetch();
-
-            // 가져온 해시태그 리스트를 각 게시글에 설정합니다
             postResponse.setHashtags(hashtags);
         }
 
-        // 로그 추가: 쿼리 결과 확인
-        System.out.println("Posts Retrieved in Query: " + posts);
-
-        return posts;
+        return posts;  // 게시글 리스트만 반환
     }
+
 }

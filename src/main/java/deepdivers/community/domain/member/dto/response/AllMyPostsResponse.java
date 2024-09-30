@@ -20,6 +20,7 @@ public class AllMyPostsResponse {
     private LocalDateTime createdAt;
     private Long memberId;
     private String memberNickname;
+    private String memberJob;
     private boolean isLikedMe;
 
 }

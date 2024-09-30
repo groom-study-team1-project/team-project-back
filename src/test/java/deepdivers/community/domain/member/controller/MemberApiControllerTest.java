@@ -49,8 +49,8 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     /*
-    * 프로필 이미지 업로드 컨트롤러 테스트
-    * */
+     * 프로필 이미지 업로드 컨트롤러 테스트
+     * */
     @Test
     @DisplayName("프로필 이미지 업로드가 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
     void uploadProfileImageSuccessfullyReturns200OK() {
@@ -93,13 +93,13 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     /*
-    * 프로필 수정 컨트롤러 테스트
-    * */
+     * 프로필 수정 컨트롤러 테스트
+     * */
     @Test
     @DisplayName("올바른 프로필 정보 수정시 200 OK가 떨어진다.")
     void updateProfileReturns200OK() {
         // given
-        MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "");
+        MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "", "EMPTY");
         Member member = memberService.getMemberWithThrow(1L);
         NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
         given(memberService.updateProfile(member, request)).willReturn(mockResponse);
@@ -124,7 +124,7 @@ class MemberApiControllerTest extends ControllerTest {
     @DisplayName("프로필 정보 수정시 닉네임 정보가 없다면 400 BadRequest 가 떨어진다.")
     void profileUpdateNullNicknameReturns400BadRequest() {
         // given
-        MemberProfileRequest request = new MemberProfileRequest("", "test", "", "010-1234-5678", "", "");
+        MemberProfileRequest request = new MemberProfileRequest("", "test", "", "010-1234-5678", "", "", "EMPTY");
 
         // when, then
         RestAssuredMockMvc.given().log().all()
@@ -141,7 +141,7 @@ class MemberApiControllerTest extends ControllerTest {
     @DisplayName("프로필 정보 수정시 이미지 정보가 없다면 400 BadRequest 가 떨어진다.")
     void profileUpdateNullImageUrlReturns400BadRequest() {
         // given
-        MemberProfileRequest request = new MemberProfileRequest("test", "", "", "010-1234-5678", "", "");
+        MemberProfileRequest request = new MemberProfileRequest("test", "", "", "010-1234-5678", "", "", "EMPTY");
 
         // when, then
         RestAssuredMockMvc.given().log().all()
@@ -158,7 +158,7 @@ class MemberApiControllerTest extends ControllerTest {
     @DisplayName("프로필 정보 수정시 전화번호 정보가 없다면 400 BadRequest 가 떨어진다.")
     void profileUpdateNullPhoneNumberReturns400BadRequest() {
         // given
-        MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "", "", "");
+        MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "", "", "", "EMPTY");
 
         // when, then
         RestAssuredMockMvc.given().log().all()

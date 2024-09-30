@@ -23,6 +23,8 @@ public class MemberProfileResponse {
     private final String aboutMe;
     @Schema(description = "사용자 전화번호", example = "010-1234-5678")
     private final String phoneNumber;
+    @Schema(description = "사용자 직업", example = "개발자")
+    private final String job;
     @Schema(description = "사용자 깃허브 주소", example = "https://github.com")
     private final String githubUrl;
     @Schema(description = "사용자 블로그 주소", example = "https://velog.io")
@@ -33,5 +35,4 @@ public class MemberProfileResponse {
     private final int commentCount;
     @Schema(description = "본인 식별", example = "false/true")
     private final boolean isMe;
-
 }
