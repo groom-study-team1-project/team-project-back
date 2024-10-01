@@ -10,7 +10,7 @@ import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
 import deepdivers.community.domain.post.service.CommentService;
 import deepdivers.community.domain.post.service.LikeService;
-import deepdivers.community.domain.global.security.jwt.Auth;
+import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

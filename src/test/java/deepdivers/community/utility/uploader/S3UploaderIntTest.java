@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
-import deepdivers.community.domain.global.config.localstack.SimpleLocalStackContainer;
-import deepdivers.community.domain.global.exception.model.BadRequestException;
-import deepdivers.community.domain.global.exception.model.NotFoundException;
-import deepdivers.community.domain.global.utility.uploader.S3Exception;
-import deepdivers.community.domain.global.utility.uploader.S3Uploader;
+import deepdivers.community.global.config.localstack.SimpleLocalStackContainer;
+import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.global.utility.uploader.S3Exception;
+import deepdivers.community.global.utility.uploader.S3Uploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

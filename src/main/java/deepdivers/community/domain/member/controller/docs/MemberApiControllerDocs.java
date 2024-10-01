@@ -8,7 +8,7 @@ import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
+import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

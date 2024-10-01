@@ -20,11 +20,6 @@ import org.hibernate.annotations.DynamicUpdate;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(
-        indexes = {
-            @Index(name = "idx_like_target_id_type_member_id", columnList = "target_id, target_type, member_id")
-        }
-)
 @DynamicInsert
 @DynamicUpdate
 public class Comment extends BaseEntity {

@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -31,7 +30,7 @@ import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.domain.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.BadRequestException;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 

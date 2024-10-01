@@ -6,21 +6,17 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
-import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.domain.global.security.jwt.Auth;
-import jakarta.servlet.http.HttpServletRequest;
+import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-	import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

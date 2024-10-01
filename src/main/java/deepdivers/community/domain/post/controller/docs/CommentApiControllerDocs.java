@@ -7,7 +7,7 @@ import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
+import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
