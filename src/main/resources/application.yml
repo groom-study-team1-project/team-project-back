@@ -2,33 +2,15 @@ spring:
   application:
     name: backend
   profiles:
-    active: local
-  datasource:
-    driver-class-name: ${DATASOURCE_DRIVER}
-    url: ${DATASOURCE_URL}
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
-  h2:
-    console:
-      enabled: ${H2_CONSOLE_ENABLE}
-      path: ${H2_CONSOLE_PATH}
+    active: product
   jpa:
     database-platform: ${JPA_DATABASE_PLATFORM}
-    hibernate:
-      ddl-auto: ${HIBERNATE_DDL_AUTO}
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         default_batch_fetch_size: 50
     defer-datasource-initialization: true
-  sql:
-    init:
-      mode: always
-      data-locations: classpath:prod.sql
   servlet:
     multipart:
       max-file-size: 5MB

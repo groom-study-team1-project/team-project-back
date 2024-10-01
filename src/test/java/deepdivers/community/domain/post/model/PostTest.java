@@ -6,15 +6,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import deepdivers.community.domain.hashtag.model.Hashtag;
-import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

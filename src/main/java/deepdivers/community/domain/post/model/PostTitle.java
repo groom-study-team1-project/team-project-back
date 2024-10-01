@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.model;
 
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

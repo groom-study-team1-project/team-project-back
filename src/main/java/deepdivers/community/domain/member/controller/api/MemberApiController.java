@@ -2,7 +2,7 @@ package deepdivers.community.domain.member.controller.api;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.global.security.jwt.Auth;
+import deepdivers.community.global.security.jwt.Auth;
 import deepdivers.community.domain.member.controller.docs.MemberApiControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;

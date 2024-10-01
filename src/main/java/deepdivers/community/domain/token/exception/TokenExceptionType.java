@@ -1,6 +1,6 @@
 package deepdivers.community.domain.token.exception;
 
-import deepdivers.community.domain.global.exception.model.ExceptionType;
+import deepdivers.community.global.exception.model.ExceptionType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

@@ -1,6 +1,6 @@
 package deepdivers.community;
 
-import deepdivers.community.domain.global.utility.encryptor.PasswordEncryptor;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import org.junit.jupiter.api.Test;
 
 class BackendApplicationTests {

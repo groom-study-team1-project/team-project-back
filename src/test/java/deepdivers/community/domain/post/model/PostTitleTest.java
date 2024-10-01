@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;

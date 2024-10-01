@@ -2,27 +2,20 @@ package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.global.security.jwt.Auth;
-import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.request.PostDeleteRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
-import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
-import deepdivers.community.domain.global.exception.dto.response.ExceptionResponse;
+import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 @Tag(name = "6. 게시글 - 토큰", description = "토큰 정보가 필요한 게시글 관련 API")
 public interface PostApiControllerDocs {
