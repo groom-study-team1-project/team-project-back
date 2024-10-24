@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
@@ -93,6 +94,13 @@ public class S3Uploader {
         return originalFilename.substring(originalFilename.lastIndexOf("."));
     }
 
+    private String getFileNameWithoutExtension(final MultipartFile file) {
+        final String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+        int lastDotIndex = originalFilename.lastIndexOf('.');
+
+        return originalFilename.substring(0, lastDotIndex);
+    }
+
     private String parseSaveFileName(final MultipartFile file) {
         final String fileExtension = getExtension(file);
         final String fileBaseName = UUID.randomUUID().toString().substring(0, 8);
@@ -105,6 +113,19 @@ public class S3Uploader {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String moveImage(String sourceKey, String destinationKey) {
+        CopyObjectRequest copyReq = CopyObjectRequest.builder()
+                .sourceBucket(bucket)
+                .sourceKey(sourceKey)
+                .destinationBucket(bucket)
+                .destinationKey(destinationKey)
+                .build();
+
+        s3Client.copyObject(copyReq);
+
+        return String.format("%s/%s", baseUrl, destinationKey);
     }
 
 }
