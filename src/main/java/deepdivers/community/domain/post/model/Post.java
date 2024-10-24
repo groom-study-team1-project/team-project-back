@@ -57,6 +57,9 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private PostStatus status;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 

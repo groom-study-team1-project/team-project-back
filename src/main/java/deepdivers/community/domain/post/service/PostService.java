@@ -12,11 +12,7 @@ import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
-import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
-import deepdivers.community.domain.post.dto.response.PostCountResponse;
-import deepdivers.community.domain.post.dto.response.PostCreateResponse;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
-import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
+import deepdivers.community.domain.post.dto.response.*;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
@@ -31,17 +27,20 @@ import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.domain.post.repository.PostVisitorRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.utility.uploader.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -56,14 +55,28 @@ public class PostService {
 	private final CommentRepository commentRepository;
 	private final PostQueryRepository postQueryRepository;
 	private final JPAQueryFactory queryFactory;
+	private final S3Uploader s3Uploader;
 
 	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
 		PostCategory postCategory = getCategoryById(request.categoryId());
 		Post post = Post.of(request, postCategory, member);
-		postRepository.save(post);
+		Post savedPost = postRepository.save(post);
+
+		if (request.imageFile() != null) {
+			String fileName = getFileNameWithoutExtension(request.imageFile());
+			String finalImageUrl = moveTempImageToPostBucket(fileName, savedPost.getId());
+			savedPost.setImageUrl(finalImageUrl);
+		}
+
 		saveHashtags(post, request.hashtags());
 		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
 	}
+
+	public API<PostImageUploadResponse> postImageUpload(final MultipartFile imageFile) {
+		final String uploadUrl = s3Uploader.postImageUpload(imageFile);
+		return API.of(PostStatusType.POST_UPLOAD_IMAGE_SUCCESS, PostImageUploadResponse.of(uploadUrl));
+	}
+
 
 	@Transactional(readOnly = true)
 	public API<PostCountResponse> getAllPosts(Long lastContentId, Long categoryId) {
@@ -222,5 +235,19 @@ public class PostService {
 			postVisitorRepository.save(postVisitor);
 			postRepository.save(post);
 		}
+	}
+
+	private String getFileNameWithoutExtension(final MultipartFile file) {
+		final String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
+		int lastDotIndex = originalFilename.lastIndexOf('.');
+
+		return originalFilename.substring(0, lastDotIndex);
+	}
+
+	private String moveTempImageToPostBucket(String fileName, Long postId) {
+		String tempKey = String.format("temp/%s", fileName);
+		String finalKey = String.format("posts/%d/%s", postId, fileName);
+
+		return s3Uploader.moveImage(tempKey, finalKey);
 	}
 }

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
 
 @Schema(description = "게시글 생성 요청")
 public record PostCreateRequest(
@@ -22,5 +23,8 @@ public record PostCreateRequest(
 	Long categoryId,
 
 	@Schema(description = "해시태그 목록", example = "[\"Spring\", \"Boot\"]")
-	String[] hashtags
+	String[] hashtags,
+
+	@Schema(description = "게시글 이미지 파일")
+	MultipartFile imageFile
 ) {}
