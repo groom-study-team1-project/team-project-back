@@ -15,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
+import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
@@ -128,4 +130,18 @@ public class S3Uploader {
         return String.format("%s/%s", baseUrl, destinationKey);
     }
 
+    public boolean isFileInTempStorage(String fileName) {
+        String key = String.format("temp/%s", fileName);
+        HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .build();
+
+        try {
+            s3Client.headObject(headObjectRequest);
+            return true;
+        } catch (NoSuchKeyException e) {
+            return false;
+        }
+    }
 }
