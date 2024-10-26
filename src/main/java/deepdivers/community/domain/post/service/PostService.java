@@ -32,10 +32,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.querydsl.core.BooleanBuilder;
@@ -62,10 +59,14 @@ public class PostService {
 		Post post = Post.of(request, postCategory, member);
 		Post savedPost = postRepository.save(post);
 
-		if (request.imageFile() != null) {
-			String fileName = getFileNameWithoutExtension(request.imageFile());
-			String finalImageUrl = moveTempImageToPostBucket(fileName, savedPost.getId());
-			savedPost.setImageUrl(finalImageUrl);
+		List<String> imageUrls = new ArrayList<>();
+		if (request.imageFiles() != null && !request.imageFiles().isEmpty()) {
+			for (MultipartFile imageFile : request.imageFiles()) {
+				String fileName = getFileNameWithoutExtension(imageFile);
+				String finalImageUrl = moveTempImageToPostBucket(fileName, savedPost.getId());
+				imageUrls.add(finalImageUrl);
+			}
+			savedPost.setImageUrls(imageUrls);
 		}
 
 		saveHashtags(post, request.hashtags());

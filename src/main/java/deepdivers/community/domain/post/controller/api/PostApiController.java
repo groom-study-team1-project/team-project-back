@@ -25,10 +25,10 @@ public class PostApiController implements PostApiControllerDocs {
 	private final PostService postService;
 
 	@Override
-	@PostMapping("/upload")
+	@PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<API<PostCreateResponse>> createPost(
 		@Auth final Member member,
-		@Valid @RequestBody final PostCreateRequest request
+		@Valid @ModelAttribute final PostCreateRequest request
 	) {
 		final API<PostCreateResponse> response = postService.createPost(request, member);
 		return ResponseEntity.ok(response);

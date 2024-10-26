@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Schema(description = "게시글 생성 요청")
 public record PostCreateRequest(
 	@Schema(description = "게시글 제목", example = "여기에 게시글 제목을 입력하세요.")
@@ -26,5 +28,5 @@ public record PostCreateRequest(
 	String[] hashtags,
 
 	@Schema(description = "게시글 이미지 파일")
-	MultipartFile imageFile
+	List<MultipartFile> imageFiles
 ) {}
