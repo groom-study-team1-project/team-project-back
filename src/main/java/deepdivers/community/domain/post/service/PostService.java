@@ -136,6 +136,23 @@ public class PostService {
 
 		cleanUpUnusedHashtags();
 
+		List<String> newImageUrls = new ArrayList<>();
+
+		if (request.imageFiles() != null && !request.imageFiles().isEmpty()) {
+			for (MultipartFile imageFile : request.imageFiles()) {
+				String fileName = getFileNameWithoutExtension(imageFile);
+
+				if (!s3Uploader.isFileInTempStorage(fileName)) {
+					postImageUpload(imageFile);
+				}
+
+				String finalImageUrl = moveTempImageToPostBucket(fileName, post.getId());
+				newImageUrls.add(finalImageUrl);
+			}
+		}
+
+		post.setImageUrls(newImageUrls);
+
 		postRepository.save(post);
 
 		return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostUpdateResponse.from(post));

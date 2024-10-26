@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Schema(description = "게시글 수정 요청")
 public record PostUpdateRequest(
@@ -22,5 +25,8 @@ public record PostUpdateRequest(
 	Long categoryId,
 
 	@Schema(description = "수정할 해시태그 목록", example = "[\"Java\", \"Spring\"]")
-	String[] hashtags
+	String[] hashtags,
+
+	@Schema(description = "수정할 게시글 이미지 파일")
+	List<MultipartFile> imageFiles
 ) {}

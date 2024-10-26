@@ -58,11 +58,11 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@Override
-	@PostMapping("/update/{postId}")
+	@PostMapping(value = "/update/{postId}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<API<PostUpdateResponse>> updatePost(
 		@Auth final Member member,
 		@PathVariable final Long postId,
-		@Valid @RequestBody final PostUpdateRequest request
+		@Valid @ModelAttribute final PostUpdateRequest request
 	) {
 		final API<PostUpdateResponse> response = postService.updatePost(postId, request, member);
 		return ResponseEntity.ok(response);
