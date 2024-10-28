@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.controller.docs;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
@@ -20,47 +21,78 @@ public interface PostApiControllerDocs {
 
 	@Operation(summary = "게시글 작성", description = "새로운 게시글을 작성하는 기능")
 	@ApiResponse(
-		responseCode = "1201",
-		description = "게시글 작성에 성공하였습니다.",
-		content = @Content(schema = @Schema(implementation = PostSaveResponse.class))
+			responseCode = "1201",
+			description = "게시글 작성에 성공하였습니다.",
+			content = @Content(schema = @Schema(implementation = PostSaveResponse.class))
 	)
 	ResponseEntity<API<PostSaveResponse>> createPost(Member member, PostSaveRequest request);
 
 	@Operation(summary = "게시글 수정", description = "기존 게시글을 수정하는 기능")
 	@ApiResponse(
-		responseCode = "1201",
-		description = "게시글 수정에 성공하였습니다.",
-		content = @Content(schema = @Schema(implementation = PostSaveResponse.class))
+			responseCode = "1201",
+			description = "게시글 수정에 성공하였습니다.",
+			content = @Content(schema = @Schema(implementation = PostSaveResponse.class))
 	)
 	ResponseEntity<API<PostSaveResponse>> updatePost(Member member, Long postId, PostSaveRequest request);
 
 	@Operation(summary = "게시글 삭제", description = "게시글을 삭제하는 기능")
 	@ApiResponse(
-		responseCode = "1202",
-		description = "게시글 삭제에 성공하였습니다.",
-		content = @Content(schema = @Schema(implementation = NoContent.class))
+			responseCode = "1202",
+			description = "게시글 삭제에 성공하였습니다.",
+			content = @Content(schema = @Schema(implementation = NoContent.class))
 	)
 	ResponseEntity<NoContent> deletePost(Member member, Long postId);
 
 	@Operation(summary = "게시글 이미지 업로드", description = "게시글 이미지를 업로드하는 기능")
 	@ApiResponse(
-		responseCode = "1204",
-		description = """
+			responseCode = "1204",
+			description = """
 				1. 게시글 이미지 업로드에 성공하였습니다.
 				"""
 	)
 	@ApiResponse(
-		responseCode = "4002",
-		description = "유효하지 않은 이미지 파일입니다.",
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+			responseCode = "4002",
+			description = "유효하지 않은 이미지 파일입니다.",
+			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
 	@ApiResponse(
-		responseCode = "9000~9005",
-		description = """
+			responseCode = "9000~9005",
+			description = """
 				1. 토큰 관련 예외입니다.
 				""",
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
 	ResponseEntity<API<PostImageUploadResponse>> uploadPostImage(MultipartFile imageFile);
+
+	@Operation(summary = "게시글 좋아요", description = "게시글 좋아요 를 하는 기능")
+	@ApiResponse(
+			responseCode = "1205",
+			description = " 게시글 좋아요에 성공했습니다."
+	)
+	@ApiResponse(
+			responseCode = "2500\n9000~9005",
+			description = """
+            1. 유효하지 않은 접근입니다.
+            2. 토큰 관련 예외입니다.
+            """,
+			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+	)
+	ResponseEntity<NoContent> likePost(Member member, LikeRequest request);
+
+	@Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요 를 취소 하는 기능")
+	@ApiResponse(
+			responseCode = "1206",
+			description = "게시글 좋아요 취소에 성공했습니다."
+	)
+	@ApiResponse(
+			responseCode = "2500\n9000~9005",
+			description = """
+            1. 유효하지 않은 접근입니다.
+            2. 토큰 관련 예외입니다.
+            """,
+			content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+	)
+	ResponseEntity<NoContent> unlikePost(Member member, LikeRequest request);
+
 }
 
