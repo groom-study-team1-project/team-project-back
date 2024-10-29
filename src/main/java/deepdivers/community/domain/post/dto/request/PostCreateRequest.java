@@ -27,6 +27,7 @@ public record PostCreateRequest(
 	@Schema(description = "해시태그 목록", example = "[\"Spring\", \"Boot\"]")
 	String[] hashtags,
 
-	@Schema(description = "게시글 이미지 파일")
-	List<MultipartFile> imageFiles
+	@Schema(description = "게시글 이미지 목록")
+	List<String> imageUrls
+
 ) {}

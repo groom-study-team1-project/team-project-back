@@ -28,5 +28,5 @@ public record PostUpdateRequest(
 	String[] hashtags,
 
 	@Schema(description = "수정할 게시글 이미지 파일")
-	List<MultipartFile> imageFiles
+	List<String> imageUrls
 ) {}

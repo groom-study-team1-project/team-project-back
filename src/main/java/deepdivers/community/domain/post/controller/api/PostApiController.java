@@ -27,8 +27,8 @@ public class PostApiController implements PostApiControllerDocs {
 	@Override
 	@PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<API<PostCreateResponse>> createPost(
-		@Auth final Member member,
-		@Valid @ModelAttribute final PostCreateRequest request
+			@Auth final Member member,
+			@Valid @ModelAttribute final PostCreateRequest request
 	) {
 		final API<PostCreateResponse> response = postService.createPost(request, member);
 		return ResponseEntity.ok(response);
@@ -85,5 +85,6 @@ public class PostApiController implements PostApiControllerDocs {
 		API<PostImageUploadResponse> response = postService.postImageUpload(imageFile);
 		return ResponseEntity.ok(response);
 	}
+
 }
 

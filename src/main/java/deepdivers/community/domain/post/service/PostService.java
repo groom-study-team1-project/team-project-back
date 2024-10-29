@@ -16,19 +16,12 @@ import deepdivers.community.domain.post.dto.response.*;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.post.model.PostContent;
-import deepdivers.community.domain.post.model.PostTitle;
-import deepdivers.community.domain.post.model.PostVisitor;
-import deepdivers.community.domain.post.repository.CategoryRepository;
-import deepdivers.community.domain.post.repository.CommentRepository;
-import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.domain.post.repository.PostRepository;
-import deepdivers.community.domain.post.repository.PostVisitorRepository;
+import deepdivers.community.domain.post.model.*;
+import deepdivers.community.domain.post.repository.*;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.utility.uploader.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +35,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class PostService {
 
 	private final PostRepository postRepository;
+	private final PostFileRepository postFileRepository;
 	private final CategoryRepository categoryRepository;
 	private final HashtagRepository hashtagRepository;
 	private final PostHashtagRepository postHashtagRepository;
@@ -56,19 +51,17 @@ public class PostService {
 
 	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
 		PostCategory postCategory = getCategoryById(request.categoryId());
-		Post post = Post.of(request, postCategory, member);
-		Post savedPost = postRepository.save(post);
+		Post post = postRepository.save(Post.of(request, postCategory, member));
 
-		List<String> imageUrls = new ArrayList<>();
-		if (request.imageFiles() != null && !request.imageFiles().isEmpty()) {
-			for (MultipartFile imageFile : request.imageFiles()) {
-				String fileName = getFileNameWithoutExtension(imageFile);
-				String finalImageUrl = moveTempImageToPostBucket(fileName, savedPost.getId());
-				imageUrls.add(finalImageUrl);
-			}
-			savedPost.setImageUrls(imageUrls);
-		}
+		List<PostFile> postFiles = request.imageUrls()
+				.stream()
+				.map(imageUrl -> {
+					String[] splitResults = imageUrl.split("/temp/");
+					String changedImageUrl = moveTempImageToPostBucket(splitResults[1], post.getId());
+					return new PostFile(post, changedImageUrl);
+				}).toList();
 
+		postFileRepository.saveAll(postFiles);
 		saveHashtags(post, request.hashtags());
 		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
 	}
@@ -135,23 +128,6 @@ public class PostService {
 		saveHashtags(post, request.hashtags());
 
 		cleanUpUnusedHashtags();
-
-		List<String> newImageUrls = new ArrayList<>();
-
-		if (request.imageFiles() != null && !request.imageFiles().isEmpty()) {
-			for (MultipartFile imageFile : request.imageFiles()) {
-				String fileName = getFileNameWithoutExtension(imageFile);
-
-				if (!s3Uploader.isFileInTempStorage(fileName)) {
-					postImageUpload(imageFile);
-				}
-
-				String finalImageUrl = moveTempImageToPostBucket(fileName, post.getId());
-				newImageUrls.add(finalImageUrl);
-			}
-		}
-
-		post.setImageUrls(newImageUrls);
 
 		postRepository.save(post);
 
@@ -255,12 +231,6 @@ public class PostService {
 		}
 	}
 
-	private String getFileNameWithoutExtension(final MultipartFile file) {
-		final String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
-		int lastDotIndex = originalFilename.lastIndexOf('.');
-
-		return originalFilename.substring(0, lastDotIndex);
-	}
 
 	private String moveTempImageToPostBucket(String fileName, Long postId) {
 		String tempKey = String.format("temp/%s", fileName);

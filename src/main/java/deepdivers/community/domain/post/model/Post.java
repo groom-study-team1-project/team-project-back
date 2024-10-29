@@ -9,6 +9,7 @@ import deepdivers.community.domain.post.model.vo.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,11 +58,11 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private PostStatus status;
 
-    @Column(name = "image_urls")
-    private List<String> imageUrls;
-
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags = new HashSet<>();
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostFile> postFiles = new ArrayList<>();
 
     public List<String> getHashtags() {
         return postHashtags.stream()

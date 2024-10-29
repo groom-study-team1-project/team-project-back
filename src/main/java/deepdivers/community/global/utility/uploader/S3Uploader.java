@@ -60,7 +60,7 @@ public class S3Uploader {
     public String postImageUpload(final MultipartFile file) {
         validateImageFile(file);
 
-        final String fileName = getFileNameWithoutExtension(file);
+        final String fileName = parseSaveFileName(file);
         final String key = String.format("temp/%s", fileName);
         uploadToS3(getPutObjectRequest(file, key), file);
 
@@ -96,13 +96,6 @@ public class S3Uploader {
         return originalFilename.substring(originalFilename.lastIndexOf("."));
     }
 
-    private String getFileNameWithoutExtension(final MultipartFile file) {
-        final String originalFilename = Objects.requireNonNull(file.getOriginalFilename());
-        int lastDotIndex = originalFilename.lastIndexOf('.');
-
-        return originalFilename.substring(0, lastDotIndex);
-    }
-
     private String parseSaveFileName(final MultipartFile file) {
         final String fileExtension = getExtension(file);
         final String fileBaseName = UUID.randomUUID().toString().substring(0, 8);
@@ -130,18 +123,4 @@ public class S3Uploader {
         return String.format("%s/%s", baseUrl, destinationKey);
     }
 
-    public boolean isFileInTempStorage(String fileName) {
-        String key = String.format("temp/%s", fileName);
-        HeadObjectRequest headObjectRequest = HeadObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .build();
-
-        try {
-            s3Client.headObject(headObjectRequest);
-            return true;
-        } catch (NoSuchKeyException e) {
-            return false;
-        }
-    }
 }
