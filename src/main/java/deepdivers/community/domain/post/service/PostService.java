@@ -107,7 +107,13 @@ public class PostService {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
 		increaseViewCount(post, ipAddr);
-		return PostReadResponse.from(post);
+
+		List<String> imageUrls = postFileRepository.findByPostId(postId)
+		.stream()
+		.map(PostFile::getImageUrl)
+		.toList();
+
+		return PostReadResponse.from(post, imageUrls);
 	}
 
 	@Transactional

@@ -21,4 +21,5 @@ public class PostAllReadResponse {
 	private CountInfo countInfo;
 	private List<String> hashtags;
 	private String createdAt;
+	private List<String> imageUrls;
 }

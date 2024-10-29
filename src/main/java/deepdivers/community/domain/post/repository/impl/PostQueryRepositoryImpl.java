@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import deepdivers.community.domain.post.model.QPostFile;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.group.GroupBy;
@@ -112,6 +113,13 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 .where(postHashtag.post.id.eq(postResponse.getPostId()))
                 .fetch();
             postResponse.setHashtags(hashtags);
+
+            List<String> imageUrls = queryFactory
+                    .select(QPostFile.postFile.imageUrl)
+                    .from(QPostFile.postFile)
+                    .where(QPostFile.postFile.post.id.eq(postResponse.getPostId()))
+                    .fetch();
+            postResponse.setImageUrls(imageUrls);
         }
 
         return posts;  // 게시글 리스트만 반환
