@@ -2,7 +2,7 @@ spring:
   application:
     name: backend
   profiles:
-    active: product
+    active: local
   jpa:
     database-platform: ${JPA_DATABASE_PLATFORM}
     show-sql: true

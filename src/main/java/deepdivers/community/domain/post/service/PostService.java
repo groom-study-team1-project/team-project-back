@@ -108,15 +108,9 @@ public class PostService {
 			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
 		increaseViewCount(post, ipAddr);
 
-		List<String> imageUrls = postFileRepository.findByPostId(postId)
-		.stream()
-		.map(PostFile::getImageUrl)
-		.toList();
-
-		return PostReadResponse.from(post, imageUrls);
+		return PostReadResponse.from(post);
 	}
 
-	@Transactional
 	public API<PostUpdateResponse> updatePost(Long postId, PostUpdateRequest request, Member member) {
 		Post post = postRepository.findById(postId)
 			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
@@ -129,11 +123,28 @@ public class PostService {
 
 		post.updatePost(PostTitle.of(request.title()), PostContent.of(request.content()), postCategory);
 
-		removeExistingHashtags(post);
+		removeExistingHashtags(postId);
 
 		saveHashtags(post, request.hashtags());
 
 		cleanUpUnusedHashtags();
+
+		List<PostFile> postFiles = request.imageUrls()
+			.stream()
+			.map(imageUrl -> {
+				if (imageUrl.contains("/temp/")) {
+					String[] splitResults = imageUrl.split("/temp/");
+					String changedImageUrl = moveTempImageToPostBucket(splitResults[1], post.getId());
+					return new PostFile(post, changedImageUrl);
+				} else if (imageUrl.contains("/posts/")) {
+					return new PostFile(post, imageUrl);
+				} else {
+					throw new IllegalArgumentException("Invalid image URL format: " + imageUrl);
+				}
+			})
+			.toList();
+
+		postFileRepository.saveAll(postFiles);
 
 		postRepository.save(post);
 
@@ -149,7 +160,7 @@ public class PostService {
 		}
 
 		deleteComments(post);
-		removeExistingHashtags(post);
+		removeExistingHashtags(postId);
 		cleanUpCategory(post.getCategory());
 
 		deleteVisitors(post);
@@ -166,8 +177,9 @@ public class PostService {
 	}
 
 
-	private void removeExistingHashtags(Post post) {
-		postHashtagRepository.deleteAllByPost(post);
+	private void removeExistingHashtags(Long postId) {
+		List<PostHashtag> postHashtags = postHashtagRepository.findAllByPostId(postId);
+		postHashtagRepository.deleteAll(postHashtags);
 	}
 
 	private void deleteComments(Post post) {

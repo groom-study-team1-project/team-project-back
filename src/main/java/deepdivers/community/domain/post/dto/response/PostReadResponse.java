@@ -19,7 +19,8 @@ public record PostReadResponse(
 	String createdAt,
 	List<String> imageUrls
 ) {
-	public static PostReadResponse from(Post post,  List<String> imageUrls) {
+	public static PostReadResponse from(Post post) {
+
 		return new PostReadResponse(
 			post.getId(),
 			post.getTitle().getTitle(),
@@ -38,7 +39,7 @@ public record PostReadResponse(
 			),
 			post.getHashtags(),
 			post.getCreatedAt().toString(),
-			imageUrls
+			post.getImageUrl()
 		);
 	}
 }

@@ -58,16 +58,22 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private PostStatus status;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostFile> postFiles = new ArrayList<>();
 
     public List<String> getHashtags() {
         return postHashtags.stream()
             .map(postHashtag -> postHashtag.getHashtag().getName())
             .collect(Collectors.toList());
+    }
+
+    public List<String> getImageUrl() {
+        return postFiles.stream()
+                .map(PostFile::getImageUrl)
+                .toList();
     }
 
     @Builder
