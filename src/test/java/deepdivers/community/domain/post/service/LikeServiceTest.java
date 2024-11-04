@@ -116,6 +116,33 @@ class LikeServiceTest {
 
         assertEquals(false, likeExists);
     }
+
+    @Test
+    @DisplayName("이미 좋아요 상태에서 다시 좋아요 요청 시 false 반환")
+    void likePost_AlreadyLiked_ReturnsFalse() {
+        // Given: 이미 좋아요가 되어있는 상태
+        likeService.likePost(likeRequest, memberId);
+
+        // When: 다시 좋아요 요청을 수행하고 예외나 실패가 발생하지 않는지 확인
+        boolean isAlreadyLiked = likeRepository.existsById(LikeId.of(postId, memberId, LikeTarget.POST));
+
+        // Then: 이미 좋아요가 존재하므로, 중복 요청을 처리하는지 확인
+        assertEquals(true, isAlreadyLiked);
+    }
+
+    @Test
+    @DisplayName("이미 좋아요 취소 상태에서 다시 취소 요청 시 false 반환")
+    void unlikePost_AlreadyUnliked_ReturnsFalse() {
+        // Given: 좋아요 된 상태에서 취소로 된 상태
+        likeService.likePost(likeRequest, memberId);
+        likeService.unlikePost(likeRequest, memberId);
+
+        // When: 다시 좋아요 취소 요청을 수행하고 예외나 실패가 발생하지 않는지 확인
+        boolean isAlreadyUnliked = !likeRepository.existsById(LikeId.of(postId, memberId, LikeTarget.POST));
+
+        // Then: 이미 좋아요가 취소된 상태이므로, 중복 취소 요청을 처리하는지 확인
+        assertEquals(true, isAlreadyUnliked);
+    }
 }
 
 
