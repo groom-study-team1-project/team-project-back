@@ -123,28 +123,13 @@ public class PostService {
 
 		post.updatePost(PostTitle.of(request.title()), PostContent.of(request.content()), postCategory);
 
-		removeExistingHashtags(postId);
+		// removeExistingHashtags(postId);
 
 		saveHashtags(post, request.hashtags());
 
 		cleanUpUnusedHashtags();
 
-		List<PostFile> postFiles = request.imageUrls()
-			.stream()
-			.map(imageUrl -> {
-				if (imageUrl.contains("/temp/")) {
-					String[] splitResults = imageUrl.split("/temp/");
-					String changedImageUrl = moveTempImageToPostBucket(splitResults[1], post.getId());
-					return new PostFile(post, changedImageUrl);
-				} else if (imageUrl.contains("/posts/")) {
-					return new PostFile(post, imageUrl);
-				} else {
-					throw new IllegalArgumentException("Invalid image URL format: " + imageUrl);
-				}
-			})
-			.toList();
-
-		postFileRepository.saveAll(postFiles);
+		updatePostImages(post, request.imageUrls());
 
 		postRepository.save(post);
 
@@ -249,11 +234,36 @@ public class PostService {
 		}
 	}
 
-
 	private String moveTempImageToPostBucket(String fileName, Long postId) {
 		String tempKey = String.format("temp/%s", fileName);
 		String finalKey = String.format("posts/%d/%s", postId, fileName);
 
 		return s3Uploader.moveImage(tempKey, finalKey);
+	}
+
+	private void updatePostImages(Post post, List<String> newImageUrls) {
+		List<String> existingImageUrls = post.getPostFiles()
+				.stream()
+				.map(PostFile::getImageUrl)
+				.toList();
+
+		List<String> imagesToDelete = existingImageUrls.stream()
+				.filter(url -> url.contains("/posts/") && !newImageUrls.contains(url))
+				.toList();
+
+		if(!imagesToDelete.isEmpty()){
+			imagesToDelete.forEach(imageUrl -> postFileRepository.deleteByImageUrlAndPostId(imageUrl, post.getId()));
+		}
+
+		List<PostFile> postFilesToAdd = newImageUrls.stream()
+			.filter(url -> url.contains("/temp/"))
+			.map(imageUrl -> {
+				String[] splitResults = imageUrl.split("/temp/");
+				String changedImageUrl = moveTempImageToPostBucket(splitResults[1], post.getId());
+				return new PostFile(post, changedImageUrl);
+			})
+			.toList();
+
+		postFileRepository.saveAll(postFilesToAdd);
 	}
 }

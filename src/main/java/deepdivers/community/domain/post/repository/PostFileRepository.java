@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface PostFileRepository extends JpaRepository<PostFile, Long> {
     List<PostFile> findByPostId(Long postId);
+
+    void deleteByImageUrlAndPostId(String imageUrl, Long postId);
 }

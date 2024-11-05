@@ -25,10 +25,10 @@ public class PostApiController implements PostApiControllerDocs {
 	private final PostService postService;
 
 	@Override
-	@PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	@PostMapping(value = "/upload")
 	public ResponseEntity<API<PostCreateResponse>> createPost(
 			@Auth final Member member,
-			@Valid @ModelAttribute final PostCreateRequest request
+			@Valid @RequestBody final PostCreateRequest request
 	) {
 		final API<PostCreateResponse> response = postService.createPost(request, member);
 		return ResponseEntity.ok(response);
@@ -58,11 +58,11 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@Override
-	@PostMapping(value = "/update/{postId}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	@PostMapping("/update/{postId}")
 	public ResponseEntity<API<PostUpdateResponse>> updatePost(
 		@Auth final Member member,
 		@PathVariable final Long postId,
-		@Valid @ModelAttribute final PostUpdateRequest request
+		@Valid @RequestBody final PostUpdateRequest request
 	) {
 		final API<PostUpdateResponse> response = postService.updatePost(postId, request, member);
 		return ResponseEntity.ok(response);
