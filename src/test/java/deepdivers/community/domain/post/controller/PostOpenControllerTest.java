@@ -57,7 +57,8 @@ class PostOpenControllerTest extends ControllerTest {
 			new MemberInfo(1L, "작성자 닉네임", "이미지 URL", "개발자"), // memberJob 추가
 			new CountInfo(100, 50, 10), // countInfo
 			Arrays.asList("해시태그1", "해시태그2"), // 해시태그 추가
-			"2024-09-26T12:00:00" // createdAt (예시)
+			"2024-09-26T12:00:00", // createdAt (예시)
+			List.of("1")
 		);
 	}
 
@@ -160,7 +161,8 @@ class PostOpenControllerTest extends ControllerTest {
 			new MemberInfo(postId, nickname, imageUrl, "개발자"), // memberJob 추가
 			countInfo,
 			hashtags,
-			createdAt
+			createdAt,
+			List.of("1")
 		);
 	}
 }
