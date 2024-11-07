@@ -57,11 +57,14 @@ public class PostService {
 	private final PostQueryRepository postQueryRepository;
 	private final JPAQueryFactory queryFactory;
 
-	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
-		PostCategory postCategory = getCategoryById(request.categoryId());
-		Post post = Post.of(request, postCategory, member);
+
+	public API<PostCreateResponse> createPost(final PostCreateRequest request, final Member member) {
+		final PostCategory postCategory = getCategoryById(request.categoryId());
+		final Post post = Post.of(request, postCategory, member);
+
+		post.setPostHashtags(request.hashtags());
 		postRepository.save(post);
-		saveHashtags(post, request.hashtags());
+
 		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
 	}
 

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
+
 @Schema(description = "게시글 생성 요청")
 public record PostCreateRequest(
 	@Schema(description = "게시글 제목", example = "여기에 게시글 제목을 입력하세요.")
@@ -22,5 +24,5 @@ public record PostCreateRequest(
 	Long categoryId,
 
 	@Schema(description = "해시태그 목록", example = "[\"Spring\", \"Boot\"]")
-	String[] hashtags
+	List<String> hashtags
 ) {}

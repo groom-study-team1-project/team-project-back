@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
 
+@Slf4j
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = false, of = {"id"})
@@ -60,12 +62,6 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
-    public List<String> getHashtags() {
-        return postHashtags.stream()
-            .map(postHashtag -> postHashtag.getHashtag().getName())
-            .collect(Collectors.toList());
-    }
-
     @Builder
     public Post(PostTitle title, PostContent content, PostCategory category, Member member, PostStatus status) {
         this.title = title;
@@ -86,6 +82,20 @@ public class Post extends BaseEntity {
             member,
             PostStatus.ACTIVE
         );
+    }
+
+    public List<String> getHashtags() {
+        return postHashtags.stream()
+                .map(postHashtag -> postHashtag.getHashtag().getName())
+                .collect(Collectors.toList());
+    }
+
+    public void setPostHashtags(List<String> hashtags){
+        Set<PostHashtag> distinctHashtag = hashtags.stream()
+                .map(hashtagName -> new PostHashtag(this, new Hashtag(hashtagName)))
+                .collect(Collectors.toSet());
+
+        this.postHashtags.addAll(distinctHashtag);
     }
 
     public void updatePost(PostTitle title, PostContent content, PostCategory category) {

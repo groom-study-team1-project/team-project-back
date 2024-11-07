@@ -16,7 +16,7 @@ import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 
 @Entity
 @Getter
-@EqualsAndHashCode(callSuper = false, of = {"id"})
+@EqualsAndHashCode(callSuper = false, of = {"id", "hashtag"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	uniqueConstraints = @UniqueConstraint(
