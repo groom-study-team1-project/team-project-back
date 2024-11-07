@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.*;
 import java.util.Arrays;
 import java.util.List;
 
+import deepdivers.community.domain.post.dto.response.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,19 +31,13 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.api.PostApiController;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
-import deepdivers.community.domain.post.dto.response.CountInfo;
-import deepdivers.community.domain.post.dto.response.MemberInfo;
-import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
-import deepdivers.community.domain.post.dto.response.PostCountResponse;
-import deepdivers.community.domain.post.dto.response.PostCreateResponse;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
-import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.domain.post.service.PostService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = PostApiController.class)
 class PostApiControllerTest extends ControllerTest {
@@ -66,17 +61,44 @@ class PostApiControllerTest extends ControllerTest {
 
 		// 게시글 조회 시 사용할 mock 데이터 생성
 		mockPostResponse = new PostReadResponse(
-				1L,
-				"게시글 제목",  // 제목은 테스트에서 기대하는 값과 일치
-				"Test Content",
-				1L,
-				new MemberInfo(1L, "작성자 닉네임", "profile.jpg", "개발자"),  // job 추가
-				new CountInfo(100, 50, 20), // CountInfo 객체로 전달
-				List.of("hashtag1", "hashtag2"),
-				"2024-09-26T12:00:00",  // 날짜를 테스트에서 기대하는 값으로 수정
-				List.of("1")
+			1L,
+			"게시글 제목",  // 제목은 테스트에서 기대하는 값과 일치
+			"Test Content",
+			1L,
+			new MemberInfo(1L, "작성자 닉네임", "profile.jpg", "개발자"),  // job 추가
+			new CountInfo(100, 50, 20), // CountInfo 객체로 전달
+			List.of("hashtag1", "hashtag2"),
+			"2024-09-26T12:00:00",  // 날짜를 테스트에서 기대하는 값으로 수정
+			List.of("1")
 		);
 	}
+
+	@Test
+	@DisplayName("게시글 이미지 업로드 성공 시 200 OK와 응답 반환")
+	void postImageUploadSuccessfullyReturns200OK() {
+		// given
+		String imageUrl = "http://example.com/uploaded-image.png";
+		PostImageUploadResponse uploadResponse = PostImageUploadResponse.of(imageUrl);
+		API<PostImageUploadResponse> mockResponse = API.of(PostStatusType.POST_UPLOAD_IMAGE_SUCCESS, uploadResponse);
+
+		given(postService.postImageUpload(any(MultipartFile.class))).willReturn(mockResponse);
+
+		// when
+		API<PostImageUploadResponse> response = RestAssuredMockMvc.given().log().all()
+			.contentType(MediaType.MULTIPART_FORM_DATA)
+			.multiPart("imageFile", "image", MediaType.IMAGE_PNG_VALUE)
+			.when()
+			.post("/api/posts/upload/image")
+			.then().log().all()
+			.status(HttpStatus.OK)
+			.extract()
+			.as(new TypeRef<>() {});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
 
 	@Test
 	@DisplayName("게시글 작성이 성공적으로 처리되면 200 OK를 반환한다")
@@ -167,6 +189,34 @@ class PostApiControllerTest extends ControllerTest {
 	@Test
 	@DisplayName("게시글 작성 시 해시태그 없이 작성해도 200 OK를 반환한다")
 	void createPostWithoutHashtagsReturns200OK() {
+		// given
+		String[] hashtags = {"#Spring", "#Boot"};
+		PostCreateRequest request = new PostCreateRequest("게시글 제목", "게시글 내용입니다.", 1L, hashtags, List.of());
+
+		PostCreateResponse createResponse = new PostCreateResponse(1L);
+		API<PostCreateResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, createResponse);
+
+		given(postService.createPost(any(PostCreateRequest.class), any(Member.class))).willReturn(mockResponse);
+
+		// when
+		API<PostCreateResponse> response = RestAssuredMockMvc
+				.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/upload")
+				.then().log().all()
+				.status(HttpStatus.OK) // 성공적으로 게시글이 작성될 때200 OK 반환
+				.extract()
+				.as(new TypeRef<>() {});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
+	@Test
+	@DisplayName("게시글 작성 시 이미지 없이 작성해도 200 OK를 반환한다")
+	void createPostWithoutImageReturns200OK() {
 		// given
 		String[] emptyHashtags = {}; // 빈 배열로 설정
 		PostCreateRequest request = new PostCreateRequest("게시글 제목", "게시글 내용입니다.", 1L, emptyHashtags, List.of("1")); // 빈 해시태그 배열로 요청

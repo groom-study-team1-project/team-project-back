@@ -35,29 +35,6 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@Override
-	@GetMapping("/{postId}")
-	public ResponseEntity<API<PostReadResponse>> getPostById(
-		@Auth Member member,
-		@PathVariable Long postId
-	) {
-		PostReadResponse response = postService.getPostById(postId, "");
-		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
-	}
-
-	@GetMapping
-	public ResponseEntity<API<PostCountResponse>> getAllPosts(
-		@Auth final Member member,
-		@RequestParam(required = false) Long categoryId,
-		@RequestParam(required = false) Long lastPostId
-	) {
-		if (lastPostId == null) {
-			lastPostId = Long.MAX_VALUE;  // lastPostId가 없으면 Long.MAX_VALUE 사용
-		}
-		API<PostCountResponse> response = postService.getAllPosts(lastPostId, categoryId);
-		return ResponseEntity.ok(response);
-	}
-
-	@Override
 	@PostMapping("/update/{postId}")
 	public ResponseEntity<API<PostUpdateResponse>> updatePost(
 		@Auth final Member member,

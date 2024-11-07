@@ -22,6 +22,7 @@ import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.utility.uploader.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,21 +50,25 @@ public class PostService {
 	private final JPAQueryFactory queryFactory;
 	private final S3Uploader s3Uploader;
 
-	public API<PostCreateResponse> createPost(PostCreateRequest request, Member member) {
-		PostCategory postCategory = getCategoryById(request.categoryId());
-		Post post = postRepository.save(Post.of(request, postCategory, member));
+	public API<PostCreateResponse> createPost(final PostCreateRequest request, Member member) {
+		final PostCategory postCategory = getCategoryById(request.categoryId());
+		final Post post = Post.of(request, postCategory, member);
+		post.setPostHashtags(request.hashtags());
+		post.setPostFiles(getPostFiles(request, post));
 
-		List<PostFile> postFiles = request.imageUrls()
+		final Post postEntity = postRepository.save(post);
+
+		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
+	}
+
+	private @NotNull List<PostFile> getPostFiles(PostCreateRequest request, Post post) {
+		return request.imageUrls()
 				.stream()
 				.map(imageUrl -> {
 					String[] splitResults = imageUrl.split("/temp/");
 					String changedImageUrl = moveTempImageToPostBucket(splitResults[1], post.getId());
 					return new PostFile(post, changedImageUrl);
 				}).toList();
-
-		postFileRepository.saveAll(postFiles);
-		saveHashtags(post, request.hashtags());
-		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
 	}
 
 	public API<PostImageUploadResponse> postImageUpload(final MultipartFile imageFile) {
