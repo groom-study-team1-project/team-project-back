@@ -21,8 +21,7 @@ public class LocalStackTestConfig {
     static {
         // LocalStack 컨테이너 시작
         localStack = new LocalStackContainer(DockerImageName.parse("localstack/localstack:latest"))
-            .withServices(S3)
-            .withExposedPorts(4566);
+            .withServices(S3);
         localStack.start();
 
         // S3 클라이언트 생성
@@ -38,7 +37,7 @@ public class LocalStackTestConfig {
         s3Client.createBucket(b -> b.bucket("test-bucket"));
     }
 
-    @Bean
+    @Bean(destroyMethod = "")
     @Primary
     public S3Client s3Client() {
         return s3Client;
