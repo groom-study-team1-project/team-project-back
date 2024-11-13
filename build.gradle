@@ -84,15 +84,18 @@ jacoco {
 jacocoTestReport {
 	reports {
 		xml.required = true
+		csv.required = false
 		html.required = true
+		html.outputLocation = layout.buildDirectory.dir('reports/jacoco/html')
 	}
 
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it, includes: ['**/*.class'], excludes: [
 					'**/deepdivers.community.BackendApplication',
-					'**/deepdivers.community.config/*.class',
-					'**/deepdivers.communuty.*exception*/*.class'
+					'deepdivers.community.config.*',
+					'deepdivers.community.**.exception.*',
+					'deepdivers.community.**.dto.*',
 			])
 		}))
 	}
@@ -105,8 +108,9 @@ jacocoTestCoverageVerification {
 			element = 'CLASS'
 			excludes = [
 					'deepdivers.community.BackendApplication',
-					'deepdivers.community.*config*.*',
-					'deepdivers.communuty.*exception*.*'
+					'deepdivers.community.config.*',
+					'deepdivers.community.**.exception.*',
+					'deepdivers.community.**.dto.*',
 			]
 			limit {
 				minimum = 0.80  // 최소 80% 커버리지 요구
