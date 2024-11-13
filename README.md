@@ -1,4 +1,4 @@
-# deepdivers 
+# deepdivers - cicd
 <img src="https://github.com/user-attachments/assets/5047d9ec-ba9d-449a-80a0-6642e022403a" alt="deepDivers_logo" width="400"/>
 
 [구름톤 딥다이브 풀스택 개발자 10회차 1차 스터디 프로젝트](https://deepdive.goorm.io/)
