@@ -11,6 +11,7 @@ import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.dto.TokenStatusType;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
+import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
@@ -23,8 +24,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
+@Import(LocalStackTestConfig.class)
 class TokenServiceTest {
 
     @Autowired

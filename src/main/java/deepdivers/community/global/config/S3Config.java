@@ -10,7 +10,6 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
-@Profile("product")
 public class S3Config {
 
     @Value("${spring.cloud.aws.credentials.access-key}")
