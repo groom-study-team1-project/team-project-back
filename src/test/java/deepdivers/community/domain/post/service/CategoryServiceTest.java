@@ -2,6 +2,7 @@ package deepdivers.community.domain.post.service;
 
 import static org.assertj.core.api.Assertions.*;
 
+import deepdivers.community.global.config.LocalStackTestConfig;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -9,15 +10,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
 import deepdivers.community.domain.post.model.PostCategory;
 import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import deepdivers.community.domain.post.repository.CategoryRepository;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
 @Transactional
+@Import(LocalStackTestConfig.class)
 class CategoryServiceTest {
 
 	@Autowired
