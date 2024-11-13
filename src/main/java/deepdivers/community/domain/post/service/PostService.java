@@ -62,7 +62,7 @@ public class PostService {
 		final PostCategory postCategory = getCategoryById(request.categoryId());
 		final Post post = Post.of(request, postCategory, member);
 
-		post.setPostHashtags(request.hashtags());
+		post.setPostHashtags(request.hashtags(), hashtagRepository);
 		postRepository.save(post);
 
 		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
@@ -121,7 +121,7 @@ public class PostService {
 
 		removeExistingHashtags(post);
 
-		saveHashtags(post, request.hashtags());
+		//saveHashtags(post, request.hashtags());
 
 		cleanUpUnusedHashtags();
 
@@ -178,29 +178,6 @@ public class PostService {
 		}
 	}
 
-	private void saveHashtags(Post post, String[] hashtags) {
-		if (hashtags == null || hashtags.length == 0) return;
-
-		Arrays.stream(hashtags)
-			.filter(hashtag -> !isValidHashtag(hashtag))
-			.findFirst()
-			.ifPresent(invalidHashtag -> {
-				throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
-			});
-
-		Set<PostHashtag> postHashtags = Arrays.stream(hashtags)
-			.filter(this::isValidHashtag)
-			.map(Hashtag::validate)
-			.map(hashtag -> hashtagRepository.findByHashtag(hashtag)
-				.orElseGet(() -> hashtagRepository.save(new Hashtag(hashtag))))
-			.map(hashtag -> PostHashtag.builder()
-				.post(post)
-				.hashtag(hashtag)
-				.build())
-			.collect(Collectors.toSet());
-
-		postHashtagRepository.saveAll(postHashtags);
-	}
 
 	private boolean isValidHashtag(String hashtag) {
 		return hashtag.matches("^[\\p{L}\\p{N}]{1,10}$");

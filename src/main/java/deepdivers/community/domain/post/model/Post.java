@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.model;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.hashtag.model.Hashtag;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
+import deepdivers.community.domain.hashtag.repository.HashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
 import deepdivers.community.domain.post.model.vo.PostStatus;
@@ -90,9 +91,14 @@ public class Post extends BaseEntity {
                 .collect(Collectors.toList());
     }
 
-    public void setPostHashtags(List<String> hashtags){
+    public void setPostHashtags(List<String> hashtags, HashtagRepository hashtagRepository){
         Set<PostHashtag> distinctHashtag = hashtags.stream()
-                .map(hashtagName -> new PostHashtag(this, new Hashtag(hashtagName)))
+                .map(hashtag -> {
+                    Hashtag existingHashtag = hashtagRepository.findByHashtag(hashtag)
+                            .orElseGet(() -> new Hashtag(hashtag));
+
+                    return new PostHashtag(this, existingHashtag);
+                })
                 .collect(Collectors.toSet());
 
         this.postHashtags.addAll(distinctHashtag);

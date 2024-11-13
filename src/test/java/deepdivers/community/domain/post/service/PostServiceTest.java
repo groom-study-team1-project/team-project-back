@@ -45,7 +45,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 class PostServiceTest {
 
 	@Autowired
-	private deepdivers.community.domain.post.service.PostService postService;
+	private PostService postService;
 
 	@Autowired
 	private PostRepository postRepository;
