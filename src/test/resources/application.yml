@@ -1,8 +1,16 @@
 spring:
+  cloud:
+    aws:
+      s3:
+        endpoint: http://localhost:4566
+        bucket: test-bucket
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: test
+        secret-key: test
   application:
     name: backend
-  profiles:
-    active: local
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:test;MODE=MySQL;DATABASE_TO_LOWER=TRUE
@@ -19,7 +27,6 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-    show-sql: true
     properties:
       hibernate:
         format_sql: true

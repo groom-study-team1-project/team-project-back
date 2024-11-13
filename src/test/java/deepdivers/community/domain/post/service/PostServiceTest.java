@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import deepdivers.community.global.config.LocalStackTestConfig;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
 import deepdivers.community.domain.common.API;
@@ -35,9 +37,11 @@ import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import jakarta.persistence.EntityManager;
+import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
 @Transactional
+@Import(LocalStackTestConfig.class)
 class PostServiceTest {
 
 	@Autowired
