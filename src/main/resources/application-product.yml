@@ -3,7 +3,6 @@ spring:
     activate:
       on-profile: product
   datasource:
-    driver-class-name: ${DATASOURCE_DRIVER}
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
@@ -23,4 +22,4 @@ spring:
       s3:
         region: ${AWS_S3_REGION}
         endpoint: ${AWS_S3_ENDPOINT}
-        bucket: deepdivers
+        bucket: deepdiver-community-files-dev

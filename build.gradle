@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.2'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id 'jacoco'
 }
 
 group = 'DeepDivers'
@@ -16,14 +17,6 @@ java {
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
-	}
-}
-
-tasks.test {
-	doFirst {
-		filter {
-			excludeTestsMatching "S3UploaderIntTest"
-		}
 	}
 }
 
@@ -81,4 +74,43 @@ clean {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	finalizedBy jacocoTestReport  // 테스트 후 Jacoco 리포트 생성
+}
+
+jacoco {
+	toolVersion = "0.8.9"  // Jacoco 버전 지정
+}
+
+jacocoTestReport {
+	reports {
+		xml.required = true
+		html.required = true
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it, includes: ['**/*.class'], excludes: [
+					'**/deepdivers.community.BackendApplication',
+					'**/deepdivers.community.config/*.class',
+					'**/deepdivers.communuty.*exception*/*.class'
+			])
+		}))
+	}
+}
+
+// 커버리지 체크 규칙
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			excludes = [
+					'deepdivers.community.BackendApplication',
+					'deepdivers.community.*config*.*',
+					'deepdivers.communuty.*exception*.*'
+			]
+			limit {
+				minimum = 0.80  // 최소 80% 커버리지 요구
+			}
+		}
+	}
 }
