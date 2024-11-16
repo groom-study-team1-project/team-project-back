@@ -5,11 +5,8 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
@@ -31,29 +28,6 @@ public class PostApiController implements PostApiControllerDocs {
 		@Valid @RequestBody final PostCreateRequest request
 	) {
 		final API<PostCreateResponse> response = postService.createPost(request, member);
-		return ResponseEntity.ok(response);
-	}
-
-	@Override
-	@GetMapping("/{postId}")
-	public ResponseEntity<API<PostReadResponse>> getPostById(
-		@Auth Member member,
-		@PathVariable Long postId
-	) {
-		PostReadResponse response = postService.getPostById(postId, "");
-		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
-	}
-
-	@GetMapping
-	public ResponseEntity<API<PostCountResponse>> getAllPosts(
-		@Auth final Member member,
-		@RequestParam(required = false) Long categoryId,
-		@RequestParam(required = false) Long lastPostId
-	) {
-		if (lastPostId == null) {
-			lastPostId = Long.MAX_VALUE;  // lastPostId가 없으면 Long.MAX_VALUE 사용
-		}
-		API<PostCountResponse> response = postService.getAllPosts(lastPostId, categoryId);
 		return ResponseEntity.ok(response);
 	}
 

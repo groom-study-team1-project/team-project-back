@@ -36,50 +36,12 @@ public class PostService {
 	private final PostHashtagRepository postHashtagRepository;
 	private final PostVisitorRepository postVisitorRepository;
 	private final CommentRepository commentRepository;
-	private final PostQueryRepository postQueryRepository;
 	private final HashtagService hashtagService;
-	private final JPAQueryFactory queryFactory;
 
 
 	public API<PostCreateResponse> createPost(final PostCreateRequest request, final Member member) {
 		final Post post = createOrUpdatePost(request, member, null);
 		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
-	}
-
-	@Transactional(readOnly = true)
-	public API<PostCountResponse> getAllPosts(Long lastContentId, Long categoryId) {
-		Long totalPostCount = getTotalPostCount(categoryId);
-		List<PostAllReadResponse> posts = postQueryRepository.findAllPosts(lastContentId, categoryId);
-
-		PostCountResponse response = new PostCountResponse(totalPostCount, posts);
-		return API.of(PostStatusType.POST_VIEW_SUCCESS, response);
-	}
-
-	private Long getTotalPostCount(Long categoryId) {
-		BooleanBuilder whereClause = buildWhereClause(categoryId);
-
-		Long totalPostCount = queryFactory.select(post.count())
-			.from(post)
-			.where(whereClause)
-			.fetchOne();
-
-		return totalPostCount != null ? totalPostCount : 0L;
-	}
-
-	private BooleanBuilder buildWhereClause(Long categoryId) {
-		BooleanBuilder whereClause = new BooleanBuilder();
-		if (categoryId != null) {
-			whereClause.and(post.category.id.eq(categoryId));
-		}
-		return whereClause;
-	}
-
-	@Transactional
-	public PostReadResponse getPostById(Long postId, String ipAddr) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
-		increaseViewCount(post, ipAddr);
-		return PostReadResponse.from(post);
 	}
 
 	@Transactional
@@ -89,6 +51,14 @@ public class PostService {
 
 		final Post updatedPost = createOrUpdatePost(request, member, post);
 		return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostUpdateResponse.from(updatedPost));
+	}
+
+	@Transactional
+	public PostReadResponse getPostById(Long postId, String ipAddr) {
+		Post post = postRepository.findById(postId)
+			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+		increaseViewCount(post, ipAddr);
+		return PostReadResponse.from(post);
 	}
 
 	public NoContent deletePost(Long postId, Member member) {
@@ -106,7 +76,6 @@ public class PostService {
 		deleteVisitors(post);
 
 		postRepository.delete(post);
-
 
 		return NoContent.from(PostStatusType.POST_DELETE_SUCCESS);
 	}
@@ -129,12 +98,6 @@ public class PostService {
 			category.deactivate();
 			categoryRepository.save(category);
 		}
-	}
-
-
-
-	private boolean isValidHashtag(String hashtag) {
-		return hashtag.matches("^[\\p{L}\\p{N}]{1,10}$");
 	}
 
 	private PostCategory getCategoryById(Long categoryId) {

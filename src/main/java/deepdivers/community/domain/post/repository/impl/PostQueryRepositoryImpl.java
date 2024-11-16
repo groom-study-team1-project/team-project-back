@@ -114,7 +114,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             postResponse.setHashtags(hashtags);
         }
 
-        return posts;  // 게시글 리스트만 반환
+        return posts;
     }
 
 }
