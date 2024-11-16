@@ -4,7 +4,6 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
@@ -55,7 +54,7 @@ public interface PostApiControllerDocs {
 		description = "게시글 수정에 성공하였습니다.",
 		content = @Content(schema = @Schema(implementation = PostUpdateResponse.class))
 	)
-	ResponseEntity<API<PostUpdateResponse>> updatePost(Member member, Long postId, PostUpdateRequest request);
+	ResponseEntity<API<PostUpdateResponse>> updatePost(Member member, Long postId, PostCreateRequest request);
 
 	@Operation(summary = "게시글 삭제", description = "게시글을 삭제하는 기능")
 	@ApiResponse(

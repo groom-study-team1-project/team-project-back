@@ -1,47 +1,30 @@
 package deepdivers.community.domain.post.service;
 
-import static deepdivers.community.domain.post.model.QPost.*;
-
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
-import deepdivers.community.domain.hashtag.model.Hashtag;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.hashtag.repository.HashtagRepository;
 import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
+import deepdivers.community.domain.hashtag.service.HashtagService;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
-import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
-import deepdivers.community.domain.post.dto.response.PostCountResponse;
-import deepdivers.community.domain.post.dto.response.PostCreateResponse;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
-import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
+import deepdivers.community.domain.post.dto.response.*;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.post.model.PostContent;
-import deepdivers.community.domain.post.model.PostTitle;
-import deepdivers.community.domain.post.model.PostVisitor;
-import deepdivers.community.domain.post.repository.CategoryRepository;
-import deepdivers.community.domain.post.repository.CommentRepository;
-import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.domain.post.repository.PostRepository;
-import deepdivers.community.domain.post.repository.PostVisitorRepository;
+import deepdivers.community.domain.post.model.*;
+import deepdivers.community.domain.post.repository.*;
 import deepdivers.community.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQueryFactory;
+import static deepdivers.community.domain.post.model.QPost.post;
 
 @Service
 @RequiredArgsConstructor
@@ -50,29 +33,22 @@ public class PostService {
 
 	private final PostRepository postRepository;
 	private final CategoryRepository categoryRepository;
-	private final HashtagRepository hashtagRepository;
 	private final PostHashtagRepository postHashtagRepository;
 	private final PostVisitorRepository postVisitorRepository;
 	private final CommentRepository commentRepository;
 	private final PostQueryRepository postQueryRepository;
+	private final HashtagService hashtagService;
 	private final JPAQueryFactory queryFactory;
 
 
 	public API<PostCreateResponse> createPost(final PostCreateRequest request, final Member member) {
-		final PostCategory postCategory = getCategoryById(request.categoryId());
-		final Post post = Post.of(request, postCategory, member);
-
-		post.setPostHashtags(request.hashtags(), hashtagRepository);
-		postRepository.save(post);
-
+		final Post post = createOrUpdatePost(request, member, null);
 		return API.of(PostStatusType.POST_CREATE_SUCCESS, PostCreateResponse.from(post));
 	}
 
 	@Transactional(readOnly = true)
 	public API<PostCountResponse> getAllPosts(Long lastContentId, Long categoryId) {
-
 		Long totalPostCount = getTotalPostCount(categoryId);
-
 		List<PostAllReadResponse> posts = postQueryRepository.findAllPosts(lastContentId, categoryId);
 
 		PostCountResponse response = new PostCountResponse(totalPostCount, posts);
@@ -107,27 +83,12 @@ public class PostService {
 	}
 
 	@Transactional
-	public API<PostUpdateResponse> updatePost(Long postId, PostUpdateRequest request, Member member) {
-		Post post = postRepository.findById(postId)
-			.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+	public API<PostUpdateResponse> updatePost(Long postId, final PostCreateRequest request, final Member member) {
+		final Post post = postRepository.findByIdAndMemberId(postId, member.getId())
+				.orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
 
-		if (!post.getMember().getId().equals(member.getId())) {
-			throw new BadRequestException(PostExceptionType.NOT_POST_AUTHOR);
-		}
-
-		PostCategory postCategory = getCategoryById(request.categoryId());
-
-		post.updatePost(PostTitle.of(request.title()), PostContent.of(request.content()), postCategory);
-
-		removeExistingHashtags(post);
-
-		//saveHashtags(post, request.hashtags());
-
-		cleanUpUnusedHashtags();
-
-		postRepository.save(post);
-
-		return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostUpdateResponse.from(post));
+		final Post updatedPost = createOrUpdatePost(request, member, post);
+		return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostUpdateResponse.from(updatedPost));
 	}
 
 	public NoContent deletePost(Long postId, Member member) {
@@ -146,7 +107,6 @@ public class PostService {
 
 		postRepository.delete(post);
 
-		cleanUpUnusedHashtags();
 
 		return NoContent.from(PostStatusType.POST_DELETE_SUCCESS);
 	}
@@ -171,12 +131,6 @@ public class PostService {
 		}
 	}
 
-	private void cleanUpUnusedHashtags() {
-		List<Hashtag> unusedHashtags = hashtagRepository.findUnusedHashtags();
-		if (!unusedHashtags.isEmpty()) {
-			hashtagRepository.deleteAll(unusedHashtags);
-		}
-	}
 
 
 	private boolean isValidHashtag(String hashtag) {
@@ -202,5 +156,24 @@ public class PostService {
 			postVisitorRepository.save(postVisitor);
 			postRepository.save(post);
 		}
+	}
+
+	private Post createOrUpdatePost(final PostCreateRequest request, final Member member, final Post existingPost) {
+		final PostCategory postCategory = getCategoryById(request.categoryId());
+		final Post post;
+
+		if (existingPost == null) {
+			post = Post.of(request, postCategory, member);
+		} else {
+			existingPost.updatePost(
+					PostTitle.of(request.title()),
+					PostContent.of(request.content()),
+					postCategory
+			);
+			post = existingPost;
+		}
+
+		final Set<PostHashtag> hashtags = hashtagService.connectPostWithHashtag(post, request.hashtags());
+		return postRepository.save(post.connectHashtags(hashtags));
 	}
 }

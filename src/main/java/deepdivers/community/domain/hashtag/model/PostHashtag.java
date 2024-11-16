@@ -38,5 +38,10 @@ public class PostHashtag extends BaseEntity {
 		this.post = post;
 		this.hashtag = hashtag;
 	}
+
+	public static PostHashtag of(final Post post, final Hashtag hashtag) {
+		return new PostHashtag(post, hashtag);
+	}
+
 }
 

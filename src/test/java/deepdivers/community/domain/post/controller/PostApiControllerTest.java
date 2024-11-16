@@ -29,7 +29,6 @@ import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.api.PostApiController;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.CountInfo;
 import deepdivers.community.domain.post.dto.response.MemberInfo;
 import deepdivers.community.domain.post.dto.response.PostAllReadResponse;

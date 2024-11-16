@@ -81,9 +81,10 @@ public class MemberApiController implements MemberApiControllerDocs {
         @RequestParam final Long categoryId,
         @RequestParam final Long lastPostId
     ) {
-        final List<AllMyPostsResponse> response =
-            postQueryRepository.findAllMyPosts(member.getId(), lastPostId, categoryId);
-        return ResponseEntity.ok(API.of(MemberStatusType.GET_MY_POSTS_SUCCESS, response));
+        return ResponseEntity.ok(API.of(
+                MemberStatusType.GET_MY_POSTS_SUCCESS,
+                postQueryRepository.findAllMyPosts(member.getId(), lastPostId, categoryId)
+        ));
     }
 
 }

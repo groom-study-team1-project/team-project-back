@@ -5,7 +5,6 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.request.PostUpdateRequest;
 import deepdivers.community.domain.post.dto.response.PostCountResponse;
 import deepdivers.community.domain.post.dto.response.PostCreateResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
@@ -63,7 +62,7 @@ public class PostApiController implements PostApiControllerDocs {
 	public ResponseEntity<API<PostUpdateResponse>> updatePost(
 		@Auth final Member member,
 		@PathVariable final Long postId,
-		@Valid @RequestBody final PostUpdateRequest request
+		@Valid @RequestBody final PostCreateRequest request
 	) {
 		final API<PostUpdateResponse> response = postService.updatePost(postId, request, member);
 		return ResponseEntity.ok(response);

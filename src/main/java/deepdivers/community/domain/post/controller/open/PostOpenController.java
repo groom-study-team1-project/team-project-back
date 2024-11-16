@@ -1,5 +1,6 @@
 package deepdivers.community.domain.post.controller.open;
 
+import deepdivers.community.domain.post.repository.PostQueryRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/open/posts")
 public class PostOpenController implements PostOpenControllerDocs {
 
+	private final PostQueryRepository postQueryRepository;
 	private final PostService postService;
 
 	@Override
