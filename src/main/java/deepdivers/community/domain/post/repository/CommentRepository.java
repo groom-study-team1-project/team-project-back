@@ -1,6 +1,5 @@
 package deepdivers.community.domain.post.repository;
 
-import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.comment.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -30,7 +29,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     void decrementLikeCount(Long commentId);
 
     @Modifying
-    @Query("DELETE FROM Comment c WHERE c.post = :post")
-    void deleteAllByPost(Post post);  // 게시글에 연결된 모든 댓글 삭제
-
+    @Query("""
+        DELETE FROM Comment c
+        WHERE c.post.id = :postId
+        """)
+    void deleteAllByPostId(Long postId);
 }

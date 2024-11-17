@@ -88,4 +88,9 @@ public class CommentService {
         return NoContent.from(CommentStatusType.COMMENT_REMOVE_SUCCESS);
     }
 
+    public void removeAllCommentsByPostId(Long postId) {
+        commentRepository.deleteAllByPostId(postId);
+    }
+
+
 }
