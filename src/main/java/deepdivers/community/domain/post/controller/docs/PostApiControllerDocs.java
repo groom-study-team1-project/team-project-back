@@ -3,9 +3,8 @@ package deepdivers.community.domain.post.controller.docs;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.response.PostCreateResponse;
-import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -20,17 +19,17 @@ public interface PostApiControllerDocs {
 	@ApiResponse(
 		responseCode = "1201",
 		description = "게시글 작성에 성공하였습니다.",
-		content = @Content(schema = @Schema(implementation = PostCreateResponse.class))
+		content = @Content(schema = @Schema(implementation = PostSaveResponse.class))
 	)
-	ResponseEntity<API<PostCreateResponse>> createPost(Member member, PostCreateRequest request);
+	ResponseEntity<API<PostSaveResponse>> createPost(Member member, PostSaveRequest request);
 
 	@Operation(summary = "게시글 수정", description = "기존 게시글을 수정하는 기능")
 	@ApiResponse(
 		responseCode = "1201",
 		description = "게시글 수정에 성공하였습니다.",
-		content = @Content(schema = @Schema(implementation = PostUpdateResponse.class))
+		content = @Content(schema = @Schema(implementation = PostSaveResponse.class))
 	)
-	ResponseEntity<API<PostUpdateResponse>> updatePost(Member member, Long postId, PostCreateRequest request);
+	ResponseEntity<API<PostSaveResponse>> updatePost(Member member, Long postId, PostSaveRequest request);
 
 	@Operation(summary = "게시글 삭제", description = "게시글을 삭제하는 기능")
 	@ApiResponse(

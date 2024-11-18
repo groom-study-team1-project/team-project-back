@@ -33,7 +33,7 @@ public class PostTitle {
 		}
 	}
 
-	public static PostTitle of(final String title) {
+	protected static PostTitle of(final String title) {
 		validator(title);
 		return new PostTitle(title);
 	}

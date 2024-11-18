@@ -20,12 +20,11 @@ import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostAllReadResponse;
 import deepdivers.community.domain.post.dto.response.PostCountResponse;
-import deepdivers.community.domain.post.dto.response.PostCreateResponse;
+import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
-import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
@@ -36,7 +35,6 @@ import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import jakarta.persistence.EntityManager;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
 @Transactional
@@ -98,14 +96,14 @@ class PostServiceTest {
 	@DisplayName("게시물 생성 성공 통합 테스트")
 	void createPostSuccessIntegrationTest() {
 		// Given
-		PostCreateRequest request = new PostCreateRequest("통합 테스트 제목", "통합 테스트 내용", category.getId(), new String[]{"hashtag"});
+		PostSaveRequest request = new PostSaveRequest("통합 테스트 제목", "통합 테스트 내용", category.getId(), new String[]{"hashtag"});
 
 		// When
-		API<PostCreateResponse> response = postService.createPost(request, member);
+		API<PostSaveResponse> response = postService.createPost(request, member);
 
 		// Then
 		assertThat(response).isNotNull();
-		PostCreateResponse result = response.result();
+		PostSaveResponse result = response.result();
 		assertThat(result.postId()).isNotNull();  // postId 검증
 
 		// DB에 저장된 게시물 검증
@@ -119,7 +117,7 @@ class PostServiceTest {
 	@DisplayName("존재하지 않는 카테고리로 게시물 생성 시 예외 발생 통합 테스트")
 	void createPostWithInvalidCategoryIntegrationTest() {
 		// Given
-		PostCreateRequest request = new PostCreateRequest("유효한 제목", "유효한 내용", 999L, new String[]{"hashtag"});
+		PostSaveRequest request = new PostSaveRequest("유효한 제목", "유효한 내용", 999L, new String[]{"hashtag"});
 
 		// When & Then
 		assertThatThrownBy(() -> postService.createPost(request, member))
@@ -131,7 +129,7 @@ class PostServiceTest {
 	@DisplayName("유효하지 않은 해시태그로 게시물 생성 시 예외 발생 통합 테스트")
 	void createPostWithInvalidHashtagIntegrationTest() {
 		// Given
-		PostCreateRequest request = new PostCreateRequest("유효한 제목", "유효한 내용", category.getId(), new String[]{"invalid#hashtag"});
+		PostSaveRequest request = new PostSaveRequest("유효한 제목", "유효한 내용", category.getId(), new String[]{"invalid#hashtag"});
 
 		// When & Then
 		assertThatThrownBy(() -> postService.createPost(request, member))
@@ -143,12 +141,12 @@ class PostServiceTest {
 	@DisplayName("게시글 조회 성공 통합 테스트")
 	void getPostByIdSuccessIntegrationTest() {
 		// Given
-		PostCreateRequest createRequest = new PostCreateRequest("조회 테스트 제목", "조회 테스트 내용", category.getId(), new String[]{"hashtag"});
-		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		PostSaveRequest createRequest = new PostSaveRequest("조회 테스트 제목", "조회 테스트 내용", category.getId(), new String[]{"hashtag"});
+		API<PostSaveResponse> createResponse = postService.createPost(createRequest, member);
 		Long postId = createResponse.result().postId(); // 생성된 게시물 ID
 
 		// When
-		PostReadResponse readResponse = postService.getPostById(postId, "127.0.0.1"); // IP 주소는 임의로 설정
+		PostReadResponse readResponse = postService.readPostDetail(postId, "127.0.0.1"); // IP 주소는 임의로 설정
 
 		// Then
 		assertThat(readResponse).isNotNull();
@@ -161,9 +159,9 @@ class PostServiceTest {
 	@DisplayName("전체 게시글 조회 성공 통합 테스트")
 	void getAllPostsSuccessIntegrationTest() {
 		// Given: 테스트에 사용할 게시글을 미리 생성
-		PostCreateRequest createRequest1 = new PostCreateRequest("게시글 제목 1", "게시글 내용 1", category.getId(), new String[]{"hashtag1", "hashtag2"});
-		PostCreateRequest createRequest2 = new PostCreateRequest("게시글 제목 2", "게시글 내용 2", category.getId(), new String[]{"hashtag3", "hashtag4"});
-		PostCreateRequest createRequest3 = new PostCreateRequest("게시글 제목 3", "게시글 내용 3", category.getId(), new String[]{"hashtag5", "hashtag6"});
+		PostSaveRequest createRequest1 = new PostSaveRequest("게시글 제목 1", "게시글 내용 1", category.getId(), new String[]{"hashtag1", "hashtag2"});
+		PostSaveRequest createRequest2 = new PostSaveRequest("게시글 제목 2", "게시글 내용 2", category.getId(), new String[]{"hashtag3", "hashtag4"});
+		PostSaveRequest createRequest3 = new PostSaveRequest("게시글 제목 3", "게시글 내용 3", category.getId(), new String[]{"hashtag5", "hashtag6"});
 
 		// 각 게시글을 생성
 		postService.createPost(createRequest1, member);
@@ -195,8 +193,8 @@ class PostServiceTest {
 	@DisplayName("게시물 수정 성공 통합 테스트")
 	void updatePostSuccessIntegrationTest() {
 		// Given: 게시글을 먼저 생성
-		PostCreateRequest createRequest = new PostCreateRequest("원래 제목", "원래 내용", category.getId(), new String[]{"hashtag1"});
-		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		PostSaveRequest createRequest = new PostSaveRequest("원래 제목", "원래 내용", category.getId(), new String[]{"hashtag1"});
+		API<PostSaveResponse> createResponse = postService.createPost(createRequest, member);
 		Long postId = createResponse.result().postId();
 
 		// 수정 요청 데이터 준비
@@ -235,8 +233,8 @@ class PostServiceTest {
 	@DisplayName("게시물 수정 시 작성자가 아닌 경우 예외 발생 통합 테스트")
 	void updatePostByNonAuthorThrowsExceptionIntegrationTest() {
 		// Given: 게시글을 먼저 생성
-		PostCreateRequest createRequest = new PostCreateRequest("원래 제목", "원래 내용", category.getId(), new String[]{"hashtag1"});
-		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		PostSaveRequest createRequest = new PostSaveRequest("원래 제목", "원래 내용", category.getId(), new String[]{"hashtag1"});
+		API<PostSaveResponse> createResponse = postService.createPost(createRequest, member);
 		Long postId = createResponse.result().postId();
 
 		// 새로운 작성자 생성 (비밀번호를 유효성 검사를 통과하도록 수정)
@@ -257,8 +255,8 @@ class PostServiceTest {
 	@DisplayName("게시물 삭제 성공 통합 테스트")
 	void deletePostSuccessIntegrationTest() {
 		// Given: 게시글을 먼저 생성
-		PostCreateRequest createRequest = new PostCreateRequest("삭제 테스트 제목", "삭제 테스트 내용", category.getId(), new String[]{"hashtag"});
-		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		PostSaveRequest createRequest = new PostSaveRequest("삭제 테스트 제목", "삭제 테스트 내용", category.getId(), new String[]{"hashtag"});
+		API<PostSaveResponse> createResponse = postService.createPost(createRequest, member);
 		Long postId = createResponse.result().postId();
 
 		// When: 게시글 삭제
@@ -273,8 +271,8 @@ class PostServiceTest {
 	@DisplayName("게시글 삭제 시 작성자가 아닌 경우 예외 발생 통합 테스트")
 	void deletePostByNonAuthorThrowsExceptionIntegrationTest() {
 		// Given: 게시글을 먼저 생성
-		PostCreateRequest createRequest = new PostCreateRequest("삭제 테스트 제목", "삭제 테스트 내용", category.getId(), new String[]{"hashtag"});
-		API<PostCreateResponse> createResponse = postService.createPost(createRequest, member);
+		PostSaveRequest createRequest = new PostSaveRequest("삭제 테스트 제목", "삭제 테스트 내용", category.getId(), new String[]{"hashtag"});
+		API<PostSaveResponse> createResponse = postService.createPost(createRequest, member);
 		Long postId = createResponse.result().postId();
 
 		// 새로운 작성자 생성 (비밀번호 유효성 검사를 통과하도록 수정)

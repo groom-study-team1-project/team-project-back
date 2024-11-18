@@ -4,9 +4,8 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
-import deepdivers.community.domain.post.dto.response.PostCreateResponse;
-import deepdivers.community.domain.post.dto.response.PostUpdateResponse;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
@@ -23,27 +22,27 @@ public class PostApiController implements PostApiControllerDocs {
 
 	@Override
 	@PostMapping("/upload")
-	public ResponseEntity<API<PostCreateResponse>> createPost(
+	public ResponseEntity<API<PostSaveResponse>> createPost(
 		@Auth final Member member,
-		@Valid @RequestBody final PostCreateRequest request
+		@Valid @RequestBody final PostSaveRequest request
 	) {
-		final API<PostCreateResponse> response = postService.createPost(request, member);
+		final API<PostSaveResponse> response = postService.createPost(request, member);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
 	@PostMapping("/update/{postId}")
-	public ResponseEntity<API<PostUpdateResponse>> updatePost(
+	public ResponseEntity<API<PostSaveResponse>> updatePost(
 		@Auth final Member member,
 		@PathVariable final Long postId,
-		@Valid @RequestBody final PostCreateRequest request
+		@Valid @RequestBody final PostSaveRequest request
 	) {
-		final API<PostUpdateResponse> response = postService.updatePost(postId, request, member);
+		final API<PostSaveResponse> response = postService.updatePost(postId, request, member);
 		return ResponseEntity.ok(response);
 	}
 
 	@Override
-	@DeleteMapping("/delete/{postId}")
+	@PatchMapping("/delete/{postId}")
 	public ResponseEntity<NoContent> deletePost(
 		@Auth final Member member,
 		@PathVariable final Long postId
@@ -51,5 +50,6 @@ public class PostApiController implements PostApiControllerDocs {
 		final NoContent response = postService.deletePost(postId, member);
 		return ResponseEntity.ok(response);
 	}
+
 }
 

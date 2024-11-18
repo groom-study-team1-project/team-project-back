@@ -66,7 +66,7 @@ class PostOpenControllerTest extends ControllerTest {
 	@DisplayName("비회원 게시글 조회가 성공적으로 처리되면 200 OK와 게시글 정보를 반환한다")
 	void getPostByIdSuccessfullyReturns200OKForOpen() {
 		// given
-		given(postService.getPostById(anyLong(), anyString())).willReturn(mockPostResponse);
+		given(postService.readPostDetail(anyLong(), anyString())).willReturn(mockPostResponse);
 
 		// when
 		API<PostReadResponse> response = RestAssuredMockMvc
@@ -97,7 +97,7 @@ class PostOpenControllerTest extends ControllerTest {
 	@DisplayName("존재하지 않는 게시글 조회 시 400 Bad Request를 반환한다")
 	void getPostByIdNotFoundReturns400ForOpen() {
 		// given
-		given(postService.getPostById(anyLong(), anyString()))
+		given(postService.readPostDetail(anyLong(), anyString()))
 			.willThrow(new BadRequestException(PostExceptionType.POST_NOT_FOUND));
 
 		// when, then

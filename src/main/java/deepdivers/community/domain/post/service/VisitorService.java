@@ -14,7 +14,7 @@ public class VisitorService {
     private final PostVisitorRepository postVisitorRepository;
     private final PostRepository postRepository;
 
-    public void increaseViewCount(Post post, String ipAddr) {
+    public void increaseViewCount(final Post post, final String ipAddr) {
         PostVisitor postVisitor = postVisitorRepository.findByPostAndIpAddr(post, ipAddr)
                 .orElseGet(() -> createNewPostVisitor(post, ipAddr));
 
@@ -32,9 +32,5 @@ public class VisitorService {
         postVisitorRepository.save(newVisitor);
         postRepository.save(post);
         return newVisitor;
-    }
-
-    public void deleteVisitorsByPostId(Long postId) {
-        postVisitorRepository.deleteAllByPostId(postId);
     }
 }

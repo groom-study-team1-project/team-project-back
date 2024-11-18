@@ -3,12 +3,13 @@ package deepdivers.community.domain.post.model;
 import deepdivers.community.domain.common.BaseEntity;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@DynamicUpdate
 public class Post extends BaseEntity {
 
     @Id
@@ -54,6 +56,7 @@ public class Post extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Setter
     private PostStatus status;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
@@ -71,7 +74,7 @@ public class Post extends BaseEntity {
         this.status = status != null ? status : PostStatus.ACTIVE;
     }
 
-    public static Post of(final PostCreateRequest request, final PostCategory category, final Member member) {
+    public static Post of(final PostSaveRequest request, final PostCategory category, final Member member) {
         return new Post(
                 PostTitle.of(request.title()),
                 PostContent.of(request.content()),
@@ -92,9 +95,9 @@ public class Post extends BaseEntity {
         return this;
     }
 
-    public void updatePost(PostTitle title, PostContent content, PostCategory category) {
-        this.title = title;
-        this.content = content;
+    public void updatePost(PostSaveRequest request, PostCategory category) {
+        this.title = PostTitle.of(request.title());
+        this.content = PostContent.of(request.content());
         this.category = category;
     }
 

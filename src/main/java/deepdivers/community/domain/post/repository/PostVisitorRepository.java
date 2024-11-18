@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface PostVisitorRepository extends JpaRepository<PostVisitor, Long> {
+
 	Optional<PostVisitor> findByPostAndIpAddr(Post post, String ipAddr);
 
 	@Modifying
@@ -18,4 +19,5 @@ public interface PostVisitorRepository extends JpaRepository<PostVisitor, Long> 
         WHERE pv.post.id = :postId
         """)
 	void deleteAllByPostId(@Param("postId") Long postId);
+
 }

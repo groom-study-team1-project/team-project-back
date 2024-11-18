@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +24,7 @@ class PostTest {
 		String title = "유효한 제목";
 		String content = "이것은 테스트를 위한 유효한 내용입니다.";
 		Long categoryId = 1L;
-		PostCreateRequest request = new PostCreateRequest(title, content, categoryId, null);
+		PostSaveRequest request = new PostSaveRequest(title, content, categoryId, null);
 		PostCategory category = PostCategory.createCategory("카테고리", null, null);
 
 		// Mocking the Member object
@@ -48,7 +48,7 @@ class PostTest {
 		// given
 		String title = "a".repeat(51); // 50자를 초과하는 제목
 		String content = "이것은 유효한 내용입니다.";
-		PostCreateRequest request = new PostCreateRequest(title, content, 1L, null);
+		PostSaveRequest request = new PostSaveRequest(title, content, 1L, null);
 		PostCategory category = PostCategory.createCategory("카테고리", null, null);
 
 		// Mocking the Member object
@@ -67,7 +67,7 @@ class PostTest {
 		// given
 		String title = "유효한 제목";
 		String content = "a".repeat(101); // 100자를 초과하는 내용
-		PostCreateRequest request = new PostCreateRequest(title, content, 1L, null);
+		PostSaveRequest request = new PostSaveRequest(title, content, 1L, null);
 		PostCategory category = PostCategory.createCategory("카테고리", null, null);
 
 		// Mocking the Member object
@@ -95,7 +95,7 @@ class PostTest {
 		when(member.getImageUrl()).thenReturn("imageUrl");
 
 		// when
-		Post post = Post.of(new PostCreateRequest(title, content, category.getId(), null), category, member);
+		Post post = Post.of(new PostSaveRequest(title, content, category.getId(), null), category, member);
 
 		// then
 		assertThat(post.getTitle().getTitle()).isEqualTo(title);
@@ -133,7 +133,7 @@ class PostTest {
 		// 여러 개의 Post 객체 생성
 		List<Post> posts = new ArrayList<>();
 		for (int i = 1; i <= 3; i++) {
-			PostCreateRequest request = new PostCreateRequest("제목" + i, "내용내용내용" + i, category.getId(), null);
+			PostSaveRequest request = new PostSaveRequest("제목" + i, "내용내용내용" + i, category.getId(), null);
 			Post post = Post.of(request, category, member);
 			posts.add(post);
 		}
@@ -162,7 +162,7 @@ class PostTest {
 		String originalTitle = "원래 제목";
 		String originalContent = "원래 내용";
 		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
-		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
+		PostSaveRequest createRequest = new PostSaveRequest(originalTitle, originalContent, originalCategory.getId(), null);
 
 		// Mocking the Member object
 		Member member = mock(Member.class);
@@ -192,7 +192,7 @@ class PostTest {
 		String originalTitle = "원래 제목";
 		String originalContent = "원래 내용";
 		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
-		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
+		PostSaveRequest createRequest = new PostSaveRequest(originalTitle, originalContent, originalCategory.getId(), null);
 
 		// Mocking the Member object
 		Member member = mock(Member.class);
@@ -219,7 +219,7 @@ class PostTest {
 		String originalTitle = "원래 제목";
 		String originalContent = "원래 내용";
 		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
-		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
+		PostSaveRequest createRequest = new PostSaveRequest(originalTitle, originalContent, originalCategory.getId(), null);
 
 		// Mocking the Member object
 		Member member = mock(Member.class);
