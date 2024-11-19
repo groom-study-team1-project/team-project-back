@@ -3,9 +3,13 @@ package deepdivers.community.domain.post.controller;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
+import static org.hamcrest.Matchers.containsString;
 
 import java.util.List;
 
+import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +39,7 @@ class PostApiControllerTest extends ControllerTest {
 	@BeforeEach
 	void setUp(WebApplicationContext webApplicationContext) {
 		RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-		mockingAuthArgumentResolver(); // Auth Argument Resolver 모킹
+		mockingAuthArgumentResolver();
 	}
 
 	@Test
@@ -48,7 +52,7 @@ class PostApiControllerTest extends ControllerTest {
 				1L,
 				List.of("tag1", "tag2")
 		);
-		PostSaveResponse responseBody = new PostSaveResponse(1L, "Post Title", "Post Content");
+		PostSaveResponse responseBody = new PostSaveResponse(1L);
 		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
 
 		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
@@ -68,5 +72,247 @@ class PostApiControllerTest extends ControllerTest {
 		assertThat(response).isNotNull();
 		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
 	}
+
+	@Test
+	@DisplayName("게시글 생성 요청에서 제목이 없으면 400 BadRequest를 반환한다")
+	void createPostWithoutTitleReturns400BadRequest() {
+		// given
+		PostSaveRequest request = new PostSaveRequest(
+				null,
+				"Post Content",
+				1L,
+				List.of("tag1", "tag2")
+		);
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/upload")
+				.then().log().all()
+				.status(HttpStatus.BAD_REQUEST)
+				.body("message", containsString("제목은 필수 항목입니다."));
+	}
+
+	@Test
+	@DisplayName("게시글 생성 요청에서 내용이 없으면 400 BadRequest를 반환한다")
+	void createPostWithoutContentReturns400BadRequest() {
+		// given
+		PostSaveRequest request = new PostSaveRequest(
+				"Post Title",
+				null,
+				1L,
+				List.of("tag1", "tag2")
+		);
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/upload")
+				.then().log().all()
+				.status(HttpStatus.BAD_REQUEST)
+				.body("message", containsString("내용은 필수 항목입니다."));
+	}
+
+	@Test
+	@DisplayName("게시글 생성 요청에서 카테고리 ID가 없으면 400 BadRequest를 반환한다")
+	void createPostWithoutCategoryIdReturns400BadRequest() {
+		// given
+		PostSaveRequest request = new PostSaveRequest(
+				"Post Title",
+				"Post Content",
+				null,
+				List.of("tag1", "tag2")
+		);
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/upload")
+				.then().log().all()
+				.status(HttpStatus.BAD_REQUEST)
+				.body("message", containsString("카테고리 ID는 필수 항목입니다."));
+	}
+
+	@Test
+	@DisplayName("게시글 생성 요청에서 해시태그가 없으면 400 BadRequest를 반환한다")
+	void createPostWithoutHashtagsReturns400BadRequest() {
+		// given
+		PostSaveRequest request = new PostSaveRequest(
+				"Post Title",
+				"Post Content",
+				1L,
+				null // 해시태그 누락
+		);
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/upload")
+				.then().log().all()
+				.status(HttpStatus.BAD_REQUEST)
+				.body("message", containsString("해시태그는 필수 항목입니다."));
+	}
+
+	@Test
+	@DisplayName("게시글 수정 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+	void updatePostSuccessfullyReturns200OK() {
+		// given
+		Long postId = 1L;
+		PostSaveRequest request = new PostSaveRequest(
+				"Updated Title",
+				"Updated Content",
+				1L,
+				List.of("tag1", "tag2")
+		);
+		PostSaveResponse responseBody = new PostSaveResponse(postId);
+		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_UPDATE_SUCCESS, responseBody);
+
+		given(postService.updatePost(eq(postId), any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
+
+		// when
+		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/update/{postId}", postId)
+				.then().log().all()
+				.status(HttpStatus.OK)
+				.extract()
+				.as(new TypeRef<>() {
+				});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
+	@Test
+	@DisplayName("게시글 수정 요청에서 제목이 없으면 400 BadRequest를 반환한다")
+	void updatePostWithoutTitleReturns400BadRequest() {
+		// given
+		Long postId = 1L;
+		PostSaveRequest request = new PostSaveRequest(
+				null,
+				"Updated Content",
+				1L,
+				List.of("tag1", "tag2")
+		);
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/update/{postId}", postId)
+				.then().log().all()
+				.status(HttpStatus.BAD_REQUEST)
+				.body("message", containsString("제목은 필수 항목입니다."));
+	}
+
+	@Test
+	@DisplayName("게시글 수정 요청에서 카테고리 ID가 없으면 400 BadRequest를 반환한다")
+	void updatePostWithoutCategoryIdReturns400BadRequest() {
+		// given
+		Long postId = 1L;
+		PostSaveRequest request = new PostSaveRequest(
+				"Updated Title",
+				"Updated Content",
+				null,
+				List.of("tag1", "tag2")
+		);
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/update/{postId}", postId)
+				.then().log().all()
+				.status(HttpStatus.BAD_REQUEST)
+				.body("message", containsString("카테고리 ID는 필수 항목입니다."));
+	}
+
+	@Test
+	@DisplayName("게시글 수정 요청에서 유효하지 않은 ID가 주어지면 404 NotFound를 반환한다")
+	void updatePostWithInvalidPostIdReturns404NotFound() {
+		// given
+		Long invalidPostId = 999L;
+		PostSaveRequest request = new PostSaveRequest(
+				"Updated Title",
+				"Updated Content",
+				1L,
+				List.of("tag1", "tag2")
+		);
+
+		given(postService.updatePost(eq(invalidPostId), any(PostSaveRequest.class), any(Member.class)))
+				.willThrow(new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/update/{postId}", invalidPostId)
+				.then().log().all()
+				.status(HttpStatus.NOT_FOUND)
+				.body("message", containsString("게시글을 찾을 수 없습니다."));
+	}
+
+	@Test
+	@DisplayName("게시글 삭제 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+	void deletePostSuccessfullyReturns200OK() {
+		// given
+		Long postId = 1L;
+		NoContent mockResponse = NoContent.from(PostStatusType.POST_DELETE_SUCCESS);
+
+		given(postService.deletePost(eq(postId), any(Member.class))).willReturn(mockResponse);
+
+		// when
+		NoContent response = RestAssuredMockMvc.given().log().all()
+				.when().patch("/api/posts/delete/{postId}", postId)
+				.then().log().all()
+				.status(HttpStatus.OK)
+				.extract()
+				.as(NoContent.class);
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
+	@Test
+	@DisplayName("존재하지 않는 게시글 ID로 삭제 요청을 하면 404 Not Found를 반환한다")
+	void deletePostWithInvalidPostIdReturns404NotFound() {
+		// given
+		Long invalidPostId = 999L;
+
+		given(postService.deletePost(eq(invalidPostId), any(Member.class)))
+				.willThrow(new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.when().patch("/api/posts/delete/{postId}", invalidPostId)
+				.then().log().all()
+				.status(HttpStatus.NOT_FOUND)
+				.body("message", containsString("게시글을 찾을 수 없습니다."));
+	}
+
+	@Test
+	@DisplayName("권한이 없는 사용자가 게시글 삭제 요청을 하면 403 Forbidden을 반환한다")
+	void deletePostWithoutPermissionReturns403Forbidden() {
+		// given
+		Long postId = 1L;
+
+		given(postService.deletePost(eq(postId), any(Member.class)))
+				.willThrow(new BadRequestException(PostExceptionType.NOT_POST_AUTHOR));
+
+		// when, then
+		RestAssuredMockMvc.given().log().all()
+				.when().patch("/api/posts/delete/{postId}", postId)
+				.then().log().all()
+				.status(HttpStatus.FORBIDDEN)
+				.body("message", containsString("게시글 작성자가 아닙니다."));
+	}
+
 }
 
