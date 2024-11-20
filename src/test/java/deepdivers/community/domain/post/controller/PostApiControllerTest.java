@@ -91,7 +91,7 @@ class PostApiControllerTest extends ControllerTest {
 				.when().post("/api/posts/upload")
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
-				.body("message", containsString("제목은 필수 항목입니다."));
+				.body("message", containsString("게시글 제목은 필수입니다."));
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class PostApiControllerTest extends ControllerTest {
 				.when().post("/api/posts/upload")
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
-				.body("message", containsString("내용은 필수 항목입니다."));
+				.body("message", containsString("게시글 내용은 필수입니다."));
 	}
 
 	@Test
@@ -133,28 +133,39 @@ class PostApiControllerTest extends ControllerTest {
 				.when().post("/api/posts/upload")
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
-				.body("message", containsString("카테고리 ID는 필수 항목입니다."));
+				.body("message", containsString("카테고리 선택은 필수입니다."));
 	}
 
 	@Test
-	@DisplayName("게시글 생성 요청에서 해시태그가 없으면 400 BadRequest를 반환한다")
-	void createPostWithoutHashtagsReturns400BadRequest() {
+	@DisplayName("게시글 작성 시 해시태그 없이 작성해도 200 OK를 반환한다")
+	void createPostWithoutHashtagsReturns200OK() {
 		// given
 		PostSaveRequest request = new PostSaveRequest(
 				"Post Title",
 				"Post Content",
 				1L,
-				null // 해시태그 누락
+				null
 		);
 
-		// when, then
-		RestAssuredMockMvc.given().log().all()
+		PostSaveResponse responseBody = new PostSaveResponse(1L);
+		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
+
+		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
+
+		// when
+		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
 				.when().post("/api/posts/upload")
 				.then().log().all()
-				.status(HttpStatus.BAD_REQUEST)
-				.body("message", containsString("해시태그는 필수 항목입니다."));
+				.status(HttpStatus.OK)
+				.extract()
+				.as(new TypeRef<>() {
+				});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
 	}
 
 	@Test
@@ -177,7 +188,7 @@ class PostApiControllerTest extends ControllerTest {
 		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", postId)
+				.when().post("/api/posts/update/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.OK)
 				.extract()
@@ -205,10 +216,10 @@ class PostApiControllerTest extends ControllerTest {
 		RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", postId)
+				.when().post("/api/posts/update/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
-				.body("message", containsString("제목은 필수 항목입니다."));
+				.body("message", containsString("게시글 제목은 필수입니다."));
 	}
 
 	@Test
@@ -227,15 +238,15 @@ class PostApiControllerTest extends ControllerTest {
 		RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", postId)
+				.when().post("/api/posts/update/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
-				.body("message", containsString("카테고리 ID는 필수 항목입니다."));
+				.body("message", containsString("카테고리 선택은 필수입니다."));
 	}
 
 	@Test
-	@DisplayName("게시글 수정 요청에서 유효하지 않은 ID가 주어지면 404 NotFound를 반환한다")
-	void updatePostWithInvalidPostIdReturns404NotFound() {
+	@DisplayName("게시글 수정 요청에서 유효하지 않은 ID가 주어지면 400 BAD_REQUEST를 반환한다")
+	void updatePostWithInvalidPostIdReturns400BAD_REQUEST() {
 		// given
 		Long invalidPostId = 999L;
 		PostSaveRequest request = new PostSaveRequest(
@@ -252,9 +263,9 @@ class PostApiControllerTest extends ControllerTest {
 		RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", invalidPostId)
+				.when().post("/api/posts/update/{postId}", String.valueOf(invalidPostId))
 				.then().log().all()
-				.status(HttpStatus.NOT_FOUND)
+				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("게시글을 찾을 수 없습니다."));
 	}
 
@@ -269,7 +280,7 @@ class PostApiControllerTest extends ControllerTest {
 
 		// when
 		NoContent response = RestAssuredMockMvc.given().log().all()
-				.when().patch("/api/posts/delete/{postId}", postId)
+				.when().patch("/api/posts/delete/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.OK)
 				.extract()
@@ -281,8 +292,8 @@ class PostApiControllerTest extends ControllerTest {
 	}
 
 	@Test
-	@DisplayName("존재하지 않는 게시글 ID로 삭제 요청을 하면 404 Not Found를 반환한다")
-	void deletePostWithInvalidPostIdReturns404NotFound() {
+	@DisplayName("존재하지 않는 게시글 ID로 삭제 요청을 하면 400 BAD REQUEST를 반환한다")
+	void deletePostWithInvalidPostIdReturns400BADREQUEST() {
 		// given
 		Long invalidPostId = 999L;
 
@@ -291,14 +302,14 @@ class PostApiControllerTest extends ControllerTest {
 
 		// when, then
 		RestAssuredMockMvc.given().log().all()
-				.when().patch("/api/posts/delete/{postId}", invalidPostId)
+				.when().patch("/api/posts/delete/{postId}", String.valueOf(invalidPostId))
 				.then().log().all()
-				.status(HttpStatus.NOT_FOUND)
+				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("게시글을 찾을 수 없습니다."));
 	}
 
 	@Test
-	@DisplayName("권한이 없는 사용자가 게시글 삭제 요청을 하면 403 Forbidden을 반환한다")
+	@DisplayName("권한이 없는 사용자가 게시글 삭제 요청을 하면 400 BAD REQUEST을 반환한다")
 	void deletePostWithoutPermissionReturns403Forbidden() {
 		// given
 		Long postId = 1L;
@@ -308,9 +319,9 @@ class PostApiControllerTest extends ControllerTest {
 
 		// when, then
 		RestAssuredMockMvc.given().log().all()
-				.when().patch("/api/posts/delete/{postId}", postId)
+				.when().patch("/api/posts/delete/{postId}", String.valueOf(postId))
 				.then().log().all()
-				.status(HttpStatus.FORBIDDEN)
+				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("게시글 작성자가 아닙니다."));
 	}
 

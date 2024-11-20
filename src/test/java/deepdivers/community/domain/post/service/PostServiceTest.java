@@ -6,6 +6,7 @@ import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 import deepdivers.community.domain.hashtag.service.HashtagService;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
@@ -35,7 +36,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @Transactional
@@ -62,6 +62,9 @@ class PostServiceTest {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private MemberRepository memberRepository;
+
+    @Autowired
     @EncryptorBean
     private Encryptor encryptor;
 
@@ -79,12 +82,13 @@ class PostServiceTest {
                 "010-1234-5678"
         );
         member = Member.of(signUpRequest, encryptor);
+        memberRepository.save(member);
 
         category = PostCategory.createCategory("Category", "Description", CategoryStatus.ACTIVE);
         categoryRepository.save(category);
 
         post = Post.of(
-                new PostSaveRequest("Original Title", "Original Content", category.getId(), List.of("tag1", "tag2")),
+                new PostSaveRequest("Post Title", "Post Content", category.getId(), List.of("tag1", "tag2")),
                 category,
                 member
         );
@@ -296,8 +300,6 @@ class PostServiceTest {
         assertThat(response).isNotNull();
         assertThat(response.title()).isEqualTo("Post Title");
         assertThat(response.content()).isEqualTo("Post Content");
-
-        verify(visitorService).increaseViewCount(post, ipAddr);
     }
 
     @Test

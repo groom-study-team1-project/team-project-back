@@ -10,8 +10,6 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-	Optional<Post> findByIdAndMemberId(Long postId, Long memberId);
-
 	@Modifying
 	@Query("""
         update Post p set p.commentCount = p.commentCount + 1

@@ -1,10 +1,14 @@
 package deepdivers.community.domain.hashtag.service;
 
+import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 import deepdivers.community.domain.hashtag.model.Hashtag;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.hashtag.repository.HashtagRepository;
 import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
+import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.post.model.Post;
+import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -57,6 +61,7 @@ public class HashtagService {
 
     private Set<PostHashtag> createPostHashtags(Post post, Set<String> hashtagsToAdd) {
         return hashtagsToAdd.stream()
+                .peek(this::validateHashtag)
                 .map(this::getOrCreateHashtag)
                 .map(hashtag -> PostHashtag.of(post, hashtag))
                 .collect(Collectors.toSet());
@@ -66,4 +71,11 @@ public class HashtagService {
         return hashtagRepository.findByHashtag(hashtag)
                 .orElseGet(() -> hashtagRepository.save(new Hashtag(hashtag)));
     }
+
+    private void validateHashtag(String hashtag) {
+        if (!hashtag.matches("^[\\p{L}\\p{N}]{1,10}$")) {
+            throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
+        }
+    }
+
 }

@@ -43,7 +43,9 @@ public class PostService {
 
     public API<PostSaveResponse> updatePost(final Long postId, final PostSaveRequest request, final Member member) {
         final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
-        final Post post = getPostByMember(postId, member);
+        final Post post = getPostByIdWithThrow(postId);
+        validateAuthor(member, post);
+
         post.updatePost(request, postCategory);
 
         final Set<PostHashtag> hashtags = hashtagService.connectPostWithHashtag(post, request.hashtags());
@@ -69,11 +71,6 @@ public class PostService {
         visitorService.increaseViewCount(post, ipAddr);
 
         return PostReadResponse.from(post);
-    }
-
-    private Post getPostByMember(final Long postId, final Member member) {
-        return postRepository.findByIdAndMemberId(postId, member.getId())
-                .orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
     }
 
     private Post getPostByIdWithThrow(final Long postId) {

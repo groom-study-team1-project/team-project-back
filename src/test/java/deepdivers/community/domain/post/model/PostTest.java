@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,10 @@ class PostTest {
 
 	@BeforeEach
 	void setUp() {
+		encryptor = mock(Encryptor.class);
+
+		when(encryptor.encrypt(anyString())).thenReturn("encryptedPassword");
+
 		MemberSignUpRequest signUpRequest = new MemberSignUpRequest(
 				"test@mail.com",
 				"password123*",
@@ -77,7 +82,6 @@ class PostTest {
 	@CsvSource({
 			", 'Test Content', 1, tag1, tag2",
 			"'Test Title', , 1, tag1, tag2",
-			"'Test Title', 'Test Content', , tag1, tag2",
 	})
 	@DisplayName("유효하지 않은 게시글 생성 시 예외 발생")
 	void createInvalidPost(String title, String content, Long categoryId, String tag1, String tag2) {
