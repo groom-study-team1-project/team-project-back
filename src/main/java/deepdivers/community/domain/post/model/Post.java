@@ -1,26 +1,27 @@
 package deepdivers.community.domain.post.model;
 
 import deepdivers.community.domain.common.BaseEntity;
-import deepdivers.community.domain.hashtag.model.Hashtag;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.ColumnDefault;
-
+@Slf4j
 @Getter
-@Setter
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
+@DynamicUpdate
 public class Post extends BaseEntity {
 
     @Id
@@ -55,16 +56,11 @@ public class Post extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Setter
     private PostStatus status;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<PostHashtag> postHashtags = new HashSet<>();
-
-    public List<String> getHashtags() {
-        return postHashtags.stream()
-            .map(postHashtag -> postHashtag.getHashtag().getName())
-            .collect(Collectors.toList());
-    }
 
     @Builder
     public Post(PostTitle title, PostContent content, PostCategory category, Member member, PostStatus status) {
@@ -78,36 +74,35 @@ public class Post extends BaseEntity {
         this.status = status != null ? status : PostStatus.ACTIVE;
     }
 
-    public static Post of(final PostCreateRequest request, final PostCategory category, final Member member) {
+    public static Post of(final PostSaveRequest request, final PostCategory category, final Member member) {
         return new Post(
-            PostTitle.of(request.title()),
-            PostContent.of(request.content()),
-            category,
-            member,
-            PostStatus.ACTIVE
+                PostTitle.of(request.title()),
+                PostContent.of(request.content()),
+                category,
+                member,
+                PostStatus.ACTIVE
         );
     }
 
-    public void updatePost(PostTitle title, PostContent content, PostCategory category) {
-        this.title = title;
-        this.content = content;
+    public List<String> getHashtags() {
+        return postHashtags.stream()
+                .map(postHashtag -> postHashtag.getHashtag().getName())
+                .collect(Collectors.toList());
+    }
+
+    public Post connectHashtags(final Set<PostHashtag> postHashtags) {
+        this.postHashtags = postHashtags;
+        return this;
+    }
+
+    public void updatePost(PostSaveRequest request, PostCategory category) {
+        this.title = PostTitle.of(request.title());
+        this.content = PostContent.of(request.content());
         this.category = category;
     }
 
     public void increaseViewCount() {
         this.viewCount += 1;
-    }
-
-    public boolean isActive() {
-        return this.status == PostStatus.ACTIVE;
-    }
-
-    public boolean isDeleted() {
-        return this.status == PostStatus.DELETED;
-    }
-
-    public void delete() {
-        this.status = PostStatus.DELETED;
     }
 
     public void decrementCommentCount() {

@@ -16,16 +16,11 @@ class PostVisitorTest {
 
 	@BeforeEach
 	void setUp() {
-		// Mock Post 객체 생성
-		post = new Post(); // Post 객체를 실제로 구현해야 합니다.
-		post.setId(1L); // ID 설정 (가정)
+		post = new Post();
 
-		// PostVisitor 객체 생성
 		postVisitor = new PostVisitor(post, "192.168.0.1");
 
-		// visitedAt를 현재 시간으로 설정
-		// 이렇게 초기화하면 canIncreaseViewCount가 true를 반환할 것입니다.
-		setVisitedAt(postVisitor, LocalDateTime.now().minusMinutes(31)); // 31분 전으로 설정
+		setVisitedAt(postVisitor, LocalDateTime.now().minusMinutes(31));
 	}
 
 	@Test
@@ -35,7 +30,7 @@ class PostVisitorTest {
 		assertThat(postVisitor).isNotNull();
 		assertThat(postVisitor.getPost()).isEqualTo(post);
 		assertThat(postVisitor.getIpAddr()).isEqualTo("192.168.0.1");
-		assertThat(postVisitor.getVisitedAt()).isNotNull(); // visitedAt이 null이 아님을 확인
+		assertThat(postVisitor.getVisitedAt()).isNotNull();
 	}
 
 	@Test
@@ -45,35 +40,30 @@ class PostVisitorTest {
 		boolean result = postVisitor.canIncreaseViewCount();
 
 		// then
-		System.out.println("초기 방문에서 canIncreaseViewCount 결과: " + result);
-		assertThat(result).isTrue(); // true 반환을 기대
+		assertThat(result).isTrue();
 	}
 
 	@Test
 	@DisplayName("방문 시간이 30분 이내일 때 canIncreaseViewCount가 false를 반환하는지 확인한다.")
 	void canIncreaseViewCountShouldReturnFalseWithin30Minutes() {
-		// visitedAt를 현재 시간으로 설정
 		postVisitor.updateVisitedAt();
 
 		// when
 		boolean result = postVisitor.canIncreaseViewCount();
 
 		// then
-		System.out.println("30분 이내 방문에서 canIncreaseViewCount 결과: " + result);
 		assertThat(result).isFalse();
 	}
 
 	@Test
 	@DisplayName("방문 시간이 30분 이상 경과했을 때 canIncreaseViewCount가 true를 반환하는지 확인한다.")
 	void canIncreaseViewCountShouldReturnTrueAfter30Minutes() throws NoSuchFieldException, IllegalAccessException {
-		// visitedAt를 31분 전으로 설정
 		setVisitedAt(postVisitor, LocalDateTime.now().minusMinutes(31));
 
 		// when
 		boolean result = postVisitor.canIncreaseViewCount();
 
 		// then
-		System.out.println("30분 경과 후 방문에서 canIncreaseViewCount 결과: " + result);
 		assertThat(result).isTrue();
 	}
 

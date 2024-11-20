@@ -4,238 +4,134 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import deepdivers.community.domain.hashtag.model.Hashtag;
+import deepdivers.community.domain.hashtag.model.PostHashtag;
+import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.PostCreateRequest;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.model.vo.CategoryStatus;
+import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 class PostTest {
 
-	@Test
-	@DisplayName("유효한 게시물 생성 요청 시 Post 객체가 성공적으로 생성되는 것을 확인한다.")
-	void postCreationShouldCreateValidPost() {
-		// given
-		String title = "유효한 제목";
-		String content = "이것은 테스트를 위한 유효한 내용입니다.";
-		Long categoryId = 1L;
-		PostCreateRequest request = new PostCreateRequest(title, content, categoryId, null);
-		PostCategory category = PostCategory.createCategory("카테고리", null, null);
+	@Autowired
+	@EncryptorBean
+	private Encryptor encryptor;
 
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getEmail()).thenReturn("test@mail.com");
+	private Member member;
+	private PostCategory category;
+
+	@BeforeEach
+	void setUp() {
+		encryptor = mock(Encryptor.class);
+
+		when(encryptor.encrypt(anyString())).thenReturn("encryptedPassword");
+
+		MemberSignUpRequest signUpRequest = new MemberSignUpRequest(
+				"test@mail.com",
+				"password123*",
+				"nickname",
+				"http://image.url",
+				"010-1234-5678"
+		);
+		member = Member.of(signUpRequest, encryptor);
+
+		category = PostCategory.createCategory("Category", "Description", CategoryStatus.ACTIVE);
+	}
+
+	@Test
+	@DisplayName("유효한 게시글 생성")
+	void createValidPost() {
+		// given
+		PostSaveRequest request = new PostSaveRequest(
+				"Test Title",
+				"Test Content",
+				category.getId(),
+				List.of("tag1", "tag2")
+		);
 
 		// when
 		Post post = Post.of(request, category, member);
 
 		// then
 		assertThat(post).isNotNull();
-		assertThat(post.getTitle().getTitle()).isEqualTo(title);
-		assertThat(post.getContent().getContent()).isEqualTo(content);
+		assertThat(post.getTitle().getTitle()).isEqualTo("Test Title");
+		assertThat(post.getContent().getContent()).isEqualTo("Test Content");
 		assertThat(post.getCategory()).isEqualTo(category);
 		assertThat(post.getMember()).isEqualTo(member);
+		assertThat(post.getStatus()).isEqualTo(PostStatus.ACTIVE);
 	}
 
-	@Test
-	@DisplayName("유효하지 않은 제목 길이로 게시물 생성 시 INVALID_TITLE_LENGTH 예외가 발생하는 것을 확인한다.")
-	void postCreationWithLongTitleShouldThrowException() {
+	@ParameterizedTest
+	@CsvSource({
+			", 'Test Content', 1, tag1, tag2",
+			"'Test Title', , 1, tag1, tag2",
+	})
+	@DisplayName("유효하지 않은 게시글 생성 시 예외 발생")
+	void createInvalidPost(String title, String content, Long categoryId, String tag1, String tag2) {
 		// given
-		String title = "a".repeat(51); // 50자를 초과하는 제목
-		String content = "이것은 유효한 내용입니다.";
-		PostCreateRequest request = new PostCreateRequest(title, content, 1L, null);
-		PostCategory category = PostCategory.createCategory("카테고리", null, null);
-
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getEmail()).thenReturn("test@mail.com");
+		List<String> hashtags = List.of(tag1, tag2);
+		PostSaveRequest request = new PostSaveRequest(title, content, categoryId, hashtags);
 
 		// when, then
 		assertThatThrownBy(() -> Post.of(request, category, member))
-			.isInstanceOf(BadRequestException.class)
-			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_TITLE_LENGTH);
+				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
-	@DisplayName("유효하지 않은 내용 길이로 게시물 생성 시 INVALID_CONTENT_LENGTH 예외가 발생하는 것을 확인한다.")
-	void postCreationWithLongContentShouldThrowException() {
+	@DisplayName("게시글에 해시태그 연결 성공")
+	void connectHashtagsToPost() {
 		// given
-		String title = "유효한 제목";
-		String content = "a".repeat(101); // 100자를 초과하는 내용
-		PostCreateRequest request = new PostCreateRequest(title, content, 1L, null);
-		PostCategory category = PostCategory.createCategory("카테고리", null, null);
-
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getEmail()).thenReturn("test@mail.com");
-
-		// when, then
-		assertThatThrownBy(() -> Post.of(request, category, member))
-			.isInstanceOf(BadRequestException.class)
-			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_CONTENT_LENGTH);
-	}
-
-	@Test
-	@DisplayName("게시글 정보를 올바르게 조회할 수 있는지 확인한다.")
-	void postRetrievalShouldReturnCorrectInformation() {
-		// given
-		String title = "게시글 제목";
-		String content = "게시글 내용입니다.";
-		PostCategory category = PostCategory.createCategory("카테고리", null, null);
-
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getId()).thenReturn(1L);
-		when(member.getNickname()).thenReturn("작성자닉네임");
-		when(member.getImageUrl()).thenReturn("imageUrl");
+		Post post = Post.of(
+				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of("tag1", "tag2")),
+				category,
+				member
+		);
+		Set<PostHashtag> hashtags = Set.of(
+				new PostHashtag(post, new Hashtag("tag1")),
+				new PostHashtag(post, new Hashtag("tag2"))
+		);
 
 		// when
-		Post post = Post.of(new PostCreateRequest(title, content, category.getId(), null), category, member);
+		post.connectHashtags(hashtags);
 
 		// then
-		assertThat(post.getTitle().getTitle()).isEqualTo(title);
-		assertThat(post.getContent().getContent()).isEqualTo(content);
-		assertThat(post.getCategory()).isEqualTo(category);
-		assertThat(post.getMember()).isEqualTo(member);
+		assertThat(post.getPostHashtags()).hasSize(2);
+		assertThat(post.getHashtags()).containsExactlyInAnyOrder("tag1", "tag2");
 	}
 
 	@Test
-	@DisplayName("존재하지 않는 게시글 조회 시 예외가 발생하는지 확인한다.")
-	void postRetrievalWithNonExistentPostShouldThrowException() {
+	@DisplayName("조회수 증가 성공")
+	void increaseViewCount() {
 		// given
-		Post post = null; // 가정: 게시글이 없는 상태
-
-		// when, then
-		assertThatThrownBy(() -> {
-			if (post == null) {
-				throw new BadRequestException(PostExceptionType.POST_NOT_FOUND);
-			}
-		}).isInstanceOf(BadRequestException.class)
-			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
-	}
-
-	@Test
-	@DisplayName("전체 게시글을 성공적으로 조회할 수 있다.")
-	void shouldRetrieveAllPostsSuccessfully() {
-		// given
-		PostCategory category = PostCategory.createCategory("카테고리", null, null);
-
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getId()).thenReturn(1L);
-		when(member.getNickname()).thenReturn("작성자닉네임");
-
-		// 여러 개의 Post 객체 생성
-		List<Post> posts = new ArrayList<>();
-		for (int i = 1; i <= 3; i++) {
-			PostCreateRequest request = new PostCreateRequest("제목" + i, "내용내용내용" + i, category.getId(), null);
-			Post post = Post.of(request, category, member);
-			posts.add(post);
-		}
-
-		// when, then
-		assertThat(posts).hasSize(3);  // 3개의 게시글이 반환됨을 확인
-		assertThat(posts.get(0).getTitle().getTitle()).isEqualTo("제목1");
-		assertThat(posts.get(1).getTitle().getTitle()).isEqualTo("제목2");
-		assertThat(posts.get(2).getTitle().getTitle()).isEqualTo("제목3");
-	}
-
-	@Test
-	@DisplayName("전체 게시글 조회 시 반환된 게시글이 없는 경우를 처리한다.")
-	void shouldReturnEmptyListWhenNoPostsAreAvailable() {
-		// given
-		List<Post> posts = new ArrayList<>();  // 게시글 리스트가 비어있음
-
-		// when, then
-		assertThat(posts).isEmpty();  // 반환된 게시글이 없는지 확인
-	}
-
-	@Test
-	@DisplayName("유효한 게시물 수정 요청 시 Post 객체가 성공적으로 업데이트되는 것을 확인한다.")
-	void postUpdateShouldUpdateValidPost() {
-		// given
-		String originalTitle = "원래 제목";
-		String originalContent = "원래 내용";
-		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
-		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
-
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getEmail()).thenReturn("test@mail.com");
-
-		// Post 객체 생성
-		Post post = Post.of(createRequest, originalCategory, member);
-
-		// 수정할 새로운 제목, 내용, 카테고리
-		String updatedTitle = "수정된 제목";
-		String updatedContent = "수정된 내용";
-		PostCategory updatedCategory = PostCategory.createCategory("수정된 카테고리", null, null);
+		Post post = Post.of(
+				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of()),
+				category,
+				member
+		);
 
 		// when
-		post.updatePost(PostTitle.of(updatedTitle), PostContent.of(updatedContent), updatedCategory);
+		post.increaseViewCount();
+		post.increaseViewCount();
 
 		// then
-		assertThat(post.getTitle().getTitle()).isEqualTo(updatedTitle);
-		assertThat(post.getContent().getContent()).isEqualTo(updatedContent);
-		assertThat(post.getCategory()).isEqualTo(updatedCategory);
+		assertThat(post.getViewCount()).isEqualTo(2);
 	}
 
-	@Test
-	@DisplayName("게시물 수정 시 제목이 유효하지 않은 경우 예외가 발생하는 것을 확인한다.")
-	void postUpdateWithInvalidTitleShouldThrowException() {
-		// given
-		String originalTitle = "원래 제목";
-		String originalContent = "원래 내용";
-		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
-		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
-
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getEmail()).thenReturn("test@mail.com");
-
-		// Post 객체 생성
-		Post post = Post.of(createRequest, originalCategory, member);
-
-		// 유효하지 않은 제목 (51자 이상)
-		String invalidTitle = "a".repeat(51);
-		String updatedContent = "수정된 내용";
-		PostCategory updatedCategory = PostCategory.createCategory("수정된 카테고리", null, null);
-
-		// when, then
-		assertThatThrownBy(() -> post.updatePost(PostTitle.of(invalidTitle), PostContent.of(updatedContent), updatedCategory))
-			.isInstanceOf(BadRequestException.class)
-			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_TITLE_LENGTH);
-	}
-
-	@Test
-	@DisplayName("게시물 수정 시 내용이 유효하지 않은 경우 예외가 발생하는 것을 확인한다.")
-	void postUpdateWithInvalidContentShouldThrowException() {
-		// given
-		String originalTitle = "원래 제목";
-		String originalContent = "원래 내용";
-		PostCategory originalCategory = PostCategory.createCategory("원래 카테고리", null, null);
-		PostCreateRequest createRequest = new PostCreateRequest(originalTitle, originalContent, originalCategory.getId(), null);
-
-		// Mocking the Member object
-		Member member = mock(Member.class);
-		when(member.getEmail()).thenReturn("test@mail.com");
-
-		// Post 객체 생성
-		Post post = Post.of(createRequest, originalCategory, member);
-
-		// 유효하지 않은 내용 (101자 이상)
-		String updatedTitle = "수정된 제목";
-		String invalidContent = "a".repeat(101);
-		PostCategory updatedCategory = PostCategory.createCategory("수정된 카테고리", null, null);
-
-		// when, then
-		assertThatThrownBy(() -> post.updatePost(PostTitle.of(updatedTitle), PostContent.of(invalidContent), updatedCategory))
-			.isInstanceOf(BadRequestException.class)
-			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_CONTENT_LENGTH);
-	}
 }

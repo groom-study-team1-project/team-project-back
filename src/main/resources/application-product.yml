@@ -1,7 +1,4 @@
 spring:
-  config:
-    activate:
-      on-profile: product
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
@@ -22,4 +19,4 @@ spring:
       s3:
         region: ${AWS_S3_REGION}
         endpoint: ${AWS_S3_ENDPOINT}
-        bucket: deepdiver-community-files-dev
+        bucket: deepdiver-community-files-product

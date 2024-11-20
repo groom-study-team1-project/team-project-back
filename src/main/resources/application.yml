@@ -1,4 +1,15 @@
 spring:
+  cloud:
+    aws:
+      region:
+        static: ${AWS_STATIC_REGION}
+      credentials:
+        access-key: ${AWS_CREDENTIALS_ACCESS_KEY}
+        secret-key: ${AWS_CREDENTIALS_SECRET_KEY}
+      s3:
+        region: ${AWS_S3_REGION}
+        endpoint: ${AWS_S3_ENDPOINT}
+        bucket: deepdiver-community-files-dev
   application:
     name: backend
   datasource:
@@ -16,7 +27,6 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-  jpa:
     database-platform: ${JPA_DATABASE_PLATFORM}
     show-sql: true
     properties:
@@ -24,6 +34,10 @@ spring:
         format_sql: true
         default_batch_fetch_size: 50
     defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:test.sql
   servlet:
     multipart:
       max-file-size: 5MB

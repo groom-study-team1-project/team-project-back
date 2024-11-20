@@ -28,6 +28,9 @@ public class PostContent {
 	}
 
 	private static void validateContentLength(final String content) {
+		if (content == null) {
+			throw new IllegalArgumentException("content cannot be null");
+		}
 		if (content.length() < MIN_LENGTH || content.length() > MAX_LENGTH) {
 			throw new BadRequestException(PostExceptionType.INVALID_CONTENT_LENGTH);
 		}

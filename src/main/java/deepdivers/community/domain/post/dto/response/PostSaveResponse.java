@@ -4,10 +4,10 @@ import deepdivers.community.domain.post.model.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "게시글 생성 응답")
-public record PostCreateResponse(
+public record PostSaveResponse(
 	Long postId
 ) {
-	public static PostCreateResponse from(Post post) {
-		return new PostCreateResponse(post.getId());
+	public static PostSaveResponse from(Post post) {
+		return new PostSaveResponse(post.getId());
 	}
 }

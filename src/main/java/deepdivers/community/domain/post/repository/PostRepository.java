@@ -1,16 +1,14 @@
 package deepdivers.community.domain.post.repository;
 
-import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.model.Post;
-import java.util.List;
+import deepdivers.community.domain.post.model.vo.PostStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface PostRepository extends JpaRepository<Post, Long> {
+import java.util.Optional;
 
-	List<Post> findByMember(Member member);
-	List<Post> findByCategoryId(Long categoryId);
+public interface PostRepository extends JpaRepository<Post, Long> {
 
 	@Modifying
 	@Query("""
@@ -19,8 +17,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         """)
 	void incrementCommentCount(Long postId);
 
-	@Modifying
-	@Query("DELETE FROM Comment c WHERE c.post.id = :postId")
-	void deleteAllByPost(Post post);
+	Optional<Post> findByIdAndStatus(Long postId, PostStatus status);
 
 }

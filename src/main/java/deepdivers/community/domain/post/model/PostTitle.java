@@ -28,12 +28,15 @@ public class PostTitle {
 	}
 
 	private static void validateTitleLength(final String title) {
+		if (title == null) {
+			throw new IllegalArgumentException("Title cannot be null");
+		}
 		if (title.length() < MIN_LENGTH || title.length() > MAX_LENGTH) {
 			throw new BadRequestException(PostExceptionType.INVALID_TITLE_LENGTH);
 		}
 	}
 
-	public static PostTitle of(final String title) {
+	protected static PostTitle of(final String title) {
 		validator(title);
 		return new PostTitle(title);
 	}
