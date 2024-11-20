@@ -1,23 +1,22 @@
 package deepdivers.community.domain.post.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.model.PostCategory;
 import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import deepdivers.community.domain.post.repository.CategoryRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
-import static org.assertj.core.api.Assertions.*;
-
-import deepdivers.community.global.config.LocalStackTestConfig;
 import java.util.List;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @Transactional
