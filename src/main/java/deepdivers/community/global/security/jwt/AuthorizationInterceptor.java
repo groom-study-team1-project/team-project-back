@@ -24,6 +24,9 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
             final HttpServletResponse response,
             final Object handler
     ) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
         log.info("Authorization Interceptor url : {}", request.getRequestURI());
 
         final String accessTokenReq = request.getHeader(HttpHeaders.AUTHORIZATION);
