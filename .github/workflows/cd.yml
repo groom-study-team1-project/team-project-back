@@ -1,0 +1,54 @@
+name: Dev Branch Push Check - CD
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'corretto'
+
+      - name: Build with Gradle
+        run: ./gradlew clean bootJar
+
+      - name: docker image build
+        run: docker build -t ${{ secrets.DOCKERHUB_USER_NAME }}/${{ secrets.DOCKERHUB_DEV_REPOSITORY }}:${{ github.sha }} .
+
+      - name: docker hub login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USER_NAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: docker image push
+        run: docker push ${{ secrets.DOCKERHUB_USER_NAME }}/${{ secrets.DOCKERHUB_DEV_REPOSITORY }}:${{ github.sha }}
+
+  deploy:
+    runs-on: self-hosted
+    needs: build
+    steps:
+      - name: docker pull
+        run: docker pull ${{ secrets.DOCKERHUB_USER_NAME }}/${{ secrets.DOCKERHUB_DEV_REPOSITORY }}:${{ github.sha }}
+
+      - name: Update docker data info
+        run: |
+          sudo sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USER_NAME }}/${{ secrets.DOCKERHUB_DEV_REPOSITORY }}:${{ github.sha }}|g" ${{ secrets.FILE_NAME }}
+
+      - name: Stop application container
+        run: docker-compose stop app
+
+      - name: Remove application container
+        run: docker-compose rm -f app
+
+      - name: docker app service container start
+        run: docker-compose up -d app
+
+      - name: delete old docker image
+        run: docker system prune -f
