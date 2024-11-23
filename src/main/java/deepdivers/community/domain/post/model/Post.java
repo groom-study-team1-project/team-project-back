@@ -94,8 +94,19 @@ public class Post extends BaseEntity {
                 .collect(Collectors.toList());
     }
 
+    public List<String> getImageUrls() {
+        return postImages.stream()
+                .map(PostImage::getImageUrl)
+                .toList();
+    }
+
     public Post connectHashtags(final Set<PostHashtag> postHashtags) {
         this.postHashtags = postHashtags;
+        return this;
+    }
+
+    public Post connectImages(final List<PostImage> postImages) {
+        this.postImages.addAll(postImages);
         return this;
     }
 

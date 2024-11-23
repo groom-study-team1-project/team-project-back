@@ -13,6 +13,7 @@ import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.model.PostImage;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
@@ -44,7 +45,7 @@ public class PostService {
         final Set<PostHashtag> hashtags = hashtagService.connectPostWithHashtag(post, request.hashtags());
         final Post savedPost = postRepository.save(post.connectHashtags(hashtags));
 
-        return API.of(PostStatusType.POST_CREATE_SUCCESS, PostSaveResponse.from(savedPost));
+        return API.of(PostStatusType.POST_CREATE_SUCCESS, PostSaveResponse.from(addImagesToPost(savedPost, request.imageUrls())));
     }
 
     public API<PostSaveResponse> updatePost(final Long postId, final PostSaveRequest request, final Member member) {
@@ -82,6 +83,11 @@ public class PostService {
     public API<PostImageUploadResponse> postImageUpload(final MultipartFile imageFile) {
         final String uploadUrl = imageService.uploadImageToTemp(imageFile);
         return API.of(PostStatusType.POST_UPLOAD_IMAGE_SUCCESS, PostImageUploadResponse.of(uploadUrl));
+    }
+
+    public Post addImagesToPost(final Post post, final List<String> imageUrls) {
+        final List<PostImage> images = imageService.connectPostWithImage(post, imageUrls);
+        return postRepository.save(post.connectImages(images));
     }
 
     private Post getPostByIdWithThrow(final Long postId) {
