@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
@@ -49,7 +50,17 @@ public class S3Uploader {
 
         final String fileName = parseSaveFileName(file);
         final String key = String.format("profiles/%d/%s", memberId, fileName);
-        profileImageUpload(getPutObjectRequest(file, key), file);
+        uploadToS3(getPutObjectRequest(file, key), file);
+
+        return String.format("%s/%s", baseUrl, key);
+    }
+
+    public String postImageUpload(final MultipartFile file) {
+        validateImageFile(file);
+
+        final String fileName = parseSaveFileName(file);
+        final String key = String.format("temp/%s", fileName);
+        uploadToS3(getPutObjectRequest(file, key), file);
 
         return String.format("%s/%s", baseUrl, key);
     }
@@ -89,7 +100,7 @@ public class S3Uploader {
         return fileBaseName + "_" + System.currentTimeMillis() + fileExtension;
     }
 
-    private void profileImageUpload(final PutObjectRequest putObjectRequest, final MultipartFile file) {
+    private void uploadToS3(final PutObjectRequest putObjectRequest, final MultipartFile file) {
         try (final InputStream inputStream = file.getInputStream()) {
             s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(inputStream, file.getSize()));
         } catch (final IOException e) {
@@ -97,4 +108,16 @@ public class S3Uploader {
         }
     }
 
+    public String moveImage(String sourceKey, String destinationKey) {
+        CopyObjectRequest copyReq = CopyObjectRequest.builder()
+                .sourceBucket(bucket)
+                .sourceKey(sourceKey)
+                .destinationBucket(bucket)
+                .destinationKey(destinationKey)
+                .build();
+
+        s3Client.copyObject(copyReq);
+
+        return String.format("%s/%s", baseUrl, destinationKey);
+    }
 }
