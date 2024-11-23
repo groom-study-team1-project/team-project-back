@@ -8,6 +8,7 @@ import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
@@ -15,6 +16,7 @@ import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostCategory;
+import deepdivers.community.domain.post.model.PostImage;
 import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.CategoryRepository;
@@ -29,8 +31,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
 
 import java.util.List;
 
@@ -54,6 +63,9 @@ class PostServiceTest {
 
     @Autowired
     private VisitorService visitorService;
+
+    @Autowired
+    private ImageService imageService;
 
     @Autowired
     private PostRepository postRepository;
@@ -88,7 +100,7 @@ class PostServiceTest {
         categoryRepository.save(category);
 
         post = Post.of(
-                new PostSaveRequest("Post Title", "Post Content", category.getId(), List.of("tag1", "tag2")),
+                new PostSaveRequest("Post Title", "Post Content", category.getId(), List.of("tag1", "tag2"), List.of("http/temp/f.jpeg")),
                 category,
                 member
         );
@@ -96,14 +108,58 @@ class PostServiceTest {
     }
 
     @Test
+    @DisplayName("이미지 업로드 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+    void postImageUploadSuccessfullyReturns200OK() throws Exception {
+        // given
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "imageFile",
+                "test-image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "Test Image Content".getBytes()
+        );
+
+        // when
+        API<PostImageUploadResponse> response = postService.postImageUpload(imageFile);
+
+        // then
+        assertThat(response).isNotNull();
+        assertThat(response.getResult().imageUrl()).contains("temp/");
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 파일로 업로드 요청 시 예외가 발생한다")
+    void postImageUploadWithInvalidFileThrowsException() throws Exception {
+        // given
+        MockMultipartFile invalidFile = new MockMultipartFile(
+                "imageFile",
+                "invalid.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "Invalid File Content".getBytes()
+        );
+
+        // when & then
+        assertThatThrownBy(() -> postService.postImageUpload(invalidFile))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage("이미지 파일이 아닙니다.");
+    }
+
+    @Test
     @DisplayName("게시글 생성이 성공하면 저장된 게시글 정보를 테스트한다.")
     void createPostSuccessTest() {
         // Given
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "imageFile",
+                "f.jpeg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "Test Image Content".getBytes()
+        );
+        API<PostImageUploadResponse> imageUploadResponse = postService.postImageUpload(imageFile);
         PostSaveRequest request = new PostSaveRequest(
                 "Post Title",
                 "Post Content",
                 category.getId(),
-                List.of("tag1", "tag2")
+                List.of("tag1", "tag2"),
+                List.of(imageUploadResponse.getResult().imageUrl())
         );
 
         // When
@@ -115,6 +171,9 @@ class PostServiceTest {
         assertThat(savedPost.getTitle().getTitle()).isEqualTo("Post Title");
         assertThat(savedPost.getContent().getContent()).isEqualTo("Post Content");
         assertThat(savedPost.getHashtags()).hasSize(2);
+        assertThat(savedPost.getPostImages())
+                .extracting(PostImage::getImageUrl)
+                .anyMatch(url -> url.contains("posts/"));
     }
 
     @Test
@@ -125,7 +184,8 @@ class PostServiceTest {
                 "Post Title",
                 "Post Content",
                 999L,
-                List.of("tag1", "tag2")
+                List.of("tag1", "tag2"),
+                List.of("http/temp/f.jpeg")
         );
 
         // When, Then
@@ -142,7 +202,8 @@ class PostServiceTest {
                 "Post Title",
                 "Post Content",
                 category.getId(),
-                List.of("tag1", "invalid#tag")
+                List.of("tag1", "invalid#tag"),
+                List.of("http/temp/f.jpeg")
         );
 
         // When, Then
@@ -158,11 +219,19 @@ class PostServiceTest {
         PostCategory newCategory = PostCategory.createCategory("Updated Category", "Updated Description", CategoryStatus.ACTIVE);
         categoryRepository.save(newCategory);
 
+        MockMultipartFile imageFile = new MockMultipartFile(
+                "imageFile",
+                "f.jpeg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "Test Image Content".getBytes()
+        );
+        API<PostImageUploadResponse> imageUploadResponse = postService.postImageUpload(imageFile);
         PostSaveRequest request = new PostSaveRequest(
                 "Updated Title",
                 "Updated Content",
                 newCategory.getId(),
-                List.of("newTag1", "newTag2")
+                List.of("newTag1", "newTag2"),
+                List.of(imageUploadResponse.getResult().imageUrl())
         );
 
         // When
@@ -176,6 +245,9 @@ class PostServiceTest {
         assertThat(updatedPost.getContent().getContent()).isEqualTo("Updated Content");
         assertThat(updatedPost.getCategory().getName()).isEqualTo("Updated Category");
         assertThat(updatedPost.getHashtags()).hasSize(2);
+        assertThat(updatedPost.getPostImages())
+                .extracting(PostImage::getImageUrl)
+                .anyMatch(url -> url.contains("posts/"));
     }
 
     @Test
@@ -186,7 +258,8 @@ class PostServiceTest {
                 "Updated Title",
                 "Updated Content",
                 category.getId(),
-                List.of("newTag1", "newTag2")
+                List.of("newTag1", "newTag2"),
+                List.of("http/temp/f.jpeg")
         );
 
         // When & Then
@@ -214,7 +287,8 @@ class PostServiceTest {
                 "Updated Title",
                 "Updated Content",
                 category.getId(),
-                List.of("newTag1", "newTag2")
+                List.of("newTag1", "newTag2"),
+                List.of("http/temp/f.jpeg")
         );
 
         // When & Then
@@ -231,7 +305,8 @@ class PostServiceTest {
                 "Updated Title",
                 "Updated Content",
                 999L,
-                List.of("newTag1", "newTag2")
+                List.of("newTag1", "newTag2"),
+                List.of("http/temp/f.jpeg")
         );
 
         // When & Then

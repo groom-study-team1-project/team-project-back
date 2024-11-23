@@ -13,7 +13,7 @@ public enum PostStatusType implements StatusType {
 	POST_UPDATE_SUCCESS(1201, "게시글 수정에 성공하였습니다."),
 	POST_DELETE_SUCCESS(1202, "게시글 삭제에 성공하였습니다."),
 	POST_VIEW_SUCCESS(1203, "게시글 조회에 성공하였습니다."),
-	POST_UPLOAD_IMAGE_SUCCESS(1204, "게시글 이미지 업로드에 성공하였습니다.");
+	POST_IMAGE_UPLOAD_SUCCESS(1204, "게시글 이미지 업로드에 성공하였습니다.");
 
 	private final int code;
 	private final String message;
