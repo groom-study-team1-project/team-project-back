@@ -24,5 +24,8 @@ public record PostSaveRequest(
 	Long categoryId,
 
 	@Schema(description = "해시태그 목록", example = "[\"Spring\", \"Boot\"]")
-	List<String> hashtags
+	List<String> hashtags,
+
+	@Schema(description = "게시글 이미지 목록")
+	List<String> imageUrls
 ) {}
