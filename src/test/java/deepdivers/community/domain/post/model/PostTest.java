@@ -63,7 +63,8 @@ class PostTest {
 				"Test Title",
 				"Test Content",
 				category.getId(),
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 
 		// when
@@ -80,14 +81,15 @@ class PostTest {
 
 	@ParameterizedTest
 	@CsvSource({
-			", 'Test Content', 1, tag1, tag2",
-			"'Test Title', , 1, tag1, tag2",
+			", 'Test Content', 1, tag1, tag2, http/temp/f.jpeg",
+			"'Test Title', , 1, tag1, tag2, http/temp/f.jpeg",
 	})
 	@DisplayName("유효하지 않은 게시글 생성 시 예외 발생")
-	void createInvalidPost(String title, String content, Long categoryId, String tag1, String tag2) {
+	void createInvalidPost(String title, String content, Long categoryId, String tag1, String tag2, String imageUrl) {
 		// given
 		List<String> hashtags = List.of(tag1, tag2);
-		PostSaveRequest request = new PostSaveRequest(title, content, categoryId, hashtags);
+		List<String> imageUrls = List.of(imageUrl);
+		PostSaveRequest request = new PostSaveRequest(title, content, categoryId, hashtags, imageUrls);
 
 		// when, then
 		assertThatThrownBy(() -> Post.of(request, category, member))
@@ -99,7 +101,7 @@ class PostTest {
 	void connectHashtagsToPost() {
 		// given
 		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of("tag1", "tag2")),
+				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of("tag1", "tag2"), List.of("http/temp/f.jpeg")),
 				category,
 				member
 		);
@@ -117,11 +119,37 @@ class PostTest {
 	}
 
 	@Test
+	@DisplayName("게시글에 이미지 연결 성공")
+	void connectImagesToPost() {
+		// given
+		Post post = Post.of(
+				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of("tag1", "tag2"), null),
+				category,
+				member
+		);
+
+		List<PostImage> images = List.of(
+				new PostImage(post, "http://example.com/image1.jpg"),
+				new PostImage(post, "http://example.com/image2.jpg")
+		);
+
+		// when
+		post.connectImages(images);
+
+		// then
+		assertThat(post.getPostImages()).hasSize(2);
+		assertThat(post.getPostImages().stream()
+				.map(PostImage::getImageUrl)
+				.toList())
+				.containsExactlyInAnyOrder("http://example.com/image1.jpg", "http://example.com/image2.jpg");
+	}
+
+	@Test
 	@DisplayName("조회수 증가 성공")
 	void increaseViewCount() {
 		// given
 		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of()),
+				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of(), List.of("http/temp/f.jpeg")),
 				category,
 				member
 		);
