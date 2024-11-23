@@ -63,9 +63,9 @@ class PostOpenControllerTest extends ControllerTest {
 				new MemberInfo(1L, "작성자 닉네임", "이미지 URL", "개발자"),
 				new CountInfo(100, 50, 10),
 				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg"),
 				"2024-09-26T12:00:00"
 		);
-		API<PostReadResponse> mockResponse = API.of(PostStatusType.POST_VIEW_SUCCESS, responseBody);
 
 		given(postService.readPostDetail(eq(postId), eq(clientIp))).willReturn(responseBody);
 
@@ -88,6 +88,7 @@ class PostOpenControllerTest extends ControllerTest {
 		assertThat(postResponse.countInfo().getLikeCount()).isEqualTo(50);
 		assertThat(postResponse.countInfo().getCommentCount()).isEqualTo(10);
 		assertThat(postResponse.hashtags()).containsExactly("tag1", "tag2");
+		assertThat(postResponse.imageUrls()).containsExactly("http/temp/f.jpeg");
 		assertThat(postResponse.createdAt()).isEqualTo("2024-09-26T12:00:00");
 	}
 
@@ -125,6 +126,7 @@ class PostOpenControllerTest extends ControllerTest {
 						new MemberInfo(1L, "Author 1", "author1.png", "Developer"),
 						new CountInfo(10, 5, 2),
 						List.of("tag1", "tag2"),
+						List.of("http/temp/f.jpeg"),
 						"2023-11-15 12:00:00"
 				),
 				new PostAllReadResponse(
@@ -135,6 +137,7 @@ class PostOpenControllerTest extends ControllerTest {
 						new MemberInfo(2L, "Author 2", "author2.png", "Designer"),
 						new CountInfo(20, 15, 5),
 						List.of("tag3"),
+						List.of("http/temp/f.jpeg"),
 						"2023-11-15 13:00:00"
 				)
 		);
@@ -172,6 +175,7 @@ class PostOpenControllerTest extends ControllerTest {
 						new MemberInfo(1L, "Author 1", "author1.png", "Developer"),
 						new CountInfo(10, 5, 2),
 						List.of("tag1", "tag2"),
+						List.of("http/temp/f.jpeg"),
 						"2024-09-26T12:00:00"
 				)
 		);
@@ -202,6 +206,7 @@ class PostOpenControllerTest extends ControllerTest {
 		assertThat(post.getCountInfo().getLikeCount()).isEqualTo(5);
 		assertThat(post.getCountInfo().getCommentCount()).isEqualTo(2);
 		assertThat(post.getHashtags()).containsExactly("tag1", "tag2");
+		assertThat(post.getImageUrls()).containsExactly("http/temp/f.jpeg");
 		assertThat(post.getCreatedAt()).isEqualTo("2024-09-26T12:00:00");
 	}
 
