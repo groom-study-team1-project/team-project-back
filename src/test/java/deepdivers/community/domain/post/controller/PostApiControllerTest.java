@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.containsString;
 import java.util.List;
 
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.context.WebApplicationContext;
 
 import deepdivers.community.domain.ControllerTest;
@@ -29,6 +31,7 @@ import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.service.PostService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = PostApiController.class)
 class PostApiControllerTest extends ControllerTest {
@@ -43,6 +46,61 @@ class PostApiControllerTest extends ControllerTest {
 	}
 
 	@Test
+	@DisplayName("이미지 업로드 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+	void postImageUploadSuccessfullyReturns200OK() {
+		// given
+		MockMultipartFile imageFile = new MockMultipartFile(
+				"imageFile",
+				"test-image.jpg",
+				MediaType.IMAGE_JPEG_VALUE,
+				"Test Image Content".getBytes()
+		);
+
+		PostImageUploadResponse responseBody = new PostImageUploadResponse("http://example.com/test-image.jpg");
+		API<PostImageUploadResponse> mockResponse = API.of(PostStatusType.POST_IMAGE_UPLOAD_SUCCESS, responseBody);
+
+		given(postService.postImageUpload(any(MultipartFile.class))).willReturn(mockResponse);
+
+		// when
+		API<PostImageUploadResponse> response = RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+				.multiPart("imageFile", "test-image.jpg", "Test Image Content".getBytes(), MediaType.IMAGE_JPEG_VALUE)
+				.when().post("/api/posts/upload/image")
+				.then().log().all()
+				.status(HttpStatus.OK)
+				.extract()
+				.as(new TypeRef<>() {
+				});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
+	@Test
+	@DisplayName("유효하지 않은 파일로 업로드 요청 시 400 Bad Request를 반환한다")
+	void postImageUploadFailsForInvalidFile() {
+		// given
+		MockMultipartFile invalidFile = new MockMultipartFile(
+				"imageFile",
+				"test-file.txt",
+				MediaType.TEXT_PLAIN_VALUE,
+				"Invalid File Content".getBytes()
+		);
+
+		given(postService.postImageUpload(any(MultipartFile.class)))
+				.willThrow(new BadRequestException(PostExceptionType.INVALID_IMAGE_FILE));
+
+		// when & then
+		RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+				.multiPart("imageFile", "test-file.txt", "Invalid File Content".getBytes(), MediaType.TEXT_PLAIN_VALUE)
+				.when().post("/api/posts/upload/image")
+				.then().log().all()
+				.status(HttpStatus.BAD_REQUEST);
+	}
+
+	@Test
 	@DisplayName("게시글 생성 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
 	void createPostSuccessfullyReturns200OK() {
 		// given
@@ -50,7 +108,8 @@ class PostApiControllerTest extends ControllerTest {
 				"Post Title",
 				"Post Content",
 				1L,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 		PostSaveResponse responseBody = new PostSaveResponse(1L);
 		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
@@ -81,7 +140,8 @@ class PostApiControllerTest extends ControllerTest {
 				null,
 				"Post Content",
 				1L,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 
 		// when, then
@@ -102,7 +162,8 @@ class PostApiControllerTest extends ControllerTest {
 				"Post Title",
 				null,
 				1L,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 
 		// when, then
@@ -123,7 +184,8 @@ class PostApiControllerTest extends ControllerTest {
 				"Post Title",
 				"Post Content",
 				null,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 
 		// when, then
@@ -144,7 +206,41 @@ class PostApiControllerTest extends ControllerTest {
 				"Post Title",
 				"Post Content",
 				1L,
-				null
+				null,
+				List.of("http/temp/f.jpeg")
+		);
+
+		PostSaveResponse responseBody = new PostSaveResponse(1L);
+		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
+
+		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
+
+		// when
+		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/upload")
+				.then().log().all()
+				.status(HttpStatus.OK)
+				.extract()
+				.as(new TypeRef<>() {
+				});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
+	@Test
+	@DisplayName("게시글 작성 시 이미지 없이 작성해도 200 OK를 반환한다")
+	void createPostWithoutImagesReturns200OK() {
+		// given
+		PostSaveRequest request = new PostSaveRequest(
+				"Post Title",
+				"Post Content",
+				1L,
+				List.of("tag1", "tag2"),
+				null // 이미지 리스트가 없는 경우
 		);
 
 		PostSaveResponse responseBody = new PostSaveResponse(1L);
@@ -177,7 +273,8 @@ class PostApiControllerTest extends ControllerTest {
 				"Updated Title",
 				"Updated Content",
 				1L,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 		PostSaveResponse responseBody = new PostSaveResponse(postId);
 		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_UPDATE_SUCCESS, responseBody);
@@ -209,7 +306,8 @@ class PostApiControllerTest extends ControllerTest {
 				null,
 				"Updated Content",
 				1L,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 
 		// when, then
@@ -231,7 +329,8 @@ class PostApiControllerTest extends ControllerTest {
 				"Updated Title",
 				"Updated Content",
 				null,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 
 		// when, then
@@ -253,7 +352,8 @@ class PostApiControllerTest extends ControllerTest {
 				"Updated Title",
 				"Updated Content",
 				1L,
-				List.of("tag1", "tag2")
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
 		);
 
 		given(postService.updatePost(eq(invalidPostId), any(PostSaveRequest.class), any(Member.class)))
