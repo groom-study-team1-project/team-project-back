@@ -16,6 +16,7 @@ public record PostReadResponse(
 	MemberInfo memberInfo,
 	CountInfo countInfo,
 	List<String> hashtags,
+	List<String> imageUrls,
 	String createdAt
 ) {
 	public static PostReadResponse from(Post post) {
@@ -36,6 +37,7 @@ public record PostReadResponse(
 				post.getCommentCount()
 			),
 			post.getHashtags(),
+			post.getImageUrls(),
 			post.getCreatedAt().toString()
 		);
 	}
