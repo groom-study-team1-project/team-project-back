@@ -6,8 +6,9 @@ import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.hashtag.service.HashtagService;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostSaveResponse;
+import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
+import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
@@ -16,20 +17,25 @@ import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class PostService {
 
     private final PostRepository postRepository;
     private final CategoryService categoryService;
     private final VisitorService visitorService;
     private final HashtagService hashtagService;
+    private final ImageService imageService;
 
     public API<PostSaveResponse> createPost(final PostSaveRequest request, final Member member) {
         final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
@@ -71,6 +77,11 @@ public class PostService {
         visitorService.increaseViewCount(post, ipAddr);
 
         return PostReadResponse.from(post);
+    }
+
+    public API<PostImageUploadResponse> postImageUpload(final MultipartFile imageFile) {
+        final String uploadUrl = imageService.uploadImageToTemp(imageFile);
+        return API.of(PostStatusType.POST_UPLOAD_IMAGE_SUCCESS, PostImageUploadResponse.of(uploadUrl));
     }
 
     private Post getPostByIdWithThrow(final Long postId) {
