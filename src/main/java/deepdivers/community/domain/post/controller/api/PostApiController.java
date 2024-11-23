@@ -5,13 +5,16 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,5 +54,12 @@ public class PostApiController implements PostApiControllerDocs {
 		return ResponseEntity.ok(response);
 	}
 
+	@PostMapping(value = "/upload/image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+	public ResponseEntity<API<PostImageUploadResponse>> postImageUpload(
+			@RequestParam final MultipartFile imageFile
+	) {
+		API<PostImageUploadResponse> response = postService.postImageUpload(imageFile);
+		return ResponseEntity.ok(response);
+	}
 }
 
