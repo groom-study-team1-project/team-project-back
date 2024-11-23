@@ -56,7 +56,12 @@ public class PostService {
         post.updatePost(request, postCategory);
 
         final Set<PostHashtag> hashtags = hashtagService.connectPostWithHashtag(post, request.hashtags());
-        final Post savedPost = postRepository.save(post.connectHashtags(hashtags));
+        post.connectHashtags(hashtags);
+
+        final List<PostImage> images = imageService.connectPostWithImage(post, request.imageUrls());
+        post.connectImages(images);
+
+        final Post savedPost = postRepository.save(post);
 
         return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostSaveResponse.from(savedPost));
     }
