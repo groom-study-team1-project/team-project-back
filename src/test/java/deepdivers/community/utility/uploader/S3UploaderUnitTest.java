@@ -27,7 +27,7 @@ class S3UploaderUnitTest {
     }
 
     @Test
-    @DisplayName("S3 이미지 업로드를 단위테스트 한다.")
+    @DisplayName("S3 프로필 이미지 업로드를 단위테스트 한다.")
     void profileImageUploadSuccessfully() {
         // Given
         MockMultipartFile file = generateMockMultipartFile();
@@ -46,6 +46,28 @@ class S3UploaderUnitTest {
         assertThat(capturedRequest.key()).endsWith(".jpg");
 
         assertThat(uploadedUrl).startsWith("http://localhost:4566/test-bucket/profiles/1/");
+        assertThat(uploadedUrl).endsWith(".jpg");
+    }
+
+    @Test
+    @DisplayName("S3 게시글 이미지 업로드를 단위테스트 한다.")
+    void postImageUploadSuccessfully() {
+        // Given
+        MockMultipartFile file = generateMockMultipartFile();
+
+        // When
+        String uploadedUrl = s3Uploader.postImageUpload(file);
+
+        // Then
+        ArgumentCaptor<PutObjectRequest> putObjectRequestCaptor = ArgumentCaptor.forClass(PutObjectRequest.class);
+        verify(s3ClientMock).putObject(putObjectRequestCaptor.capture(), any(RequestBody.class));
+
+        PutObjectRequest capturedRequest = putObjectRequestCaptor.getValue();
+        assertThat(capturedRequest.bucket()).isEqualTo("test-bucket");
+        assertThat(capturedRequest.key()).startsWith("temp/");
+        assertThat(capturedRequest.key()).endsWith(".jpg");
+
+        assertThat(uploadedUrl).startsWith("http://localhost:4566/test-bucket/temp/");
         assertThat(uploadedUrl).endsWith(".jpg");
     }
 

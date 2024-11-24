@@ -65,6 +65,19 @@ public class S3Uploader {
         return String.format("%s/%s", baseUrl, key);
     }
 
+    public String moveImage(String sourceKey, String destinationKey) {
+        CopyObjectRequest copyReq = CopyObjectRequest.builder()
+                .sourceBucket(bucket)
+                .sourceKey(sourceKey)
+                .destinationBucket(bucket)
+                .destinationKey(destinationKey)
+                .build();
+
+        s3Client.copyObject(copyReq);
+
+        return String.format("%s/%s", baseUrl, destinationKey);
+    }
+
     private void validateImageFile(final MultipartFile file) {
         if (Objects.isNull(file) || file.isEmpty()) {
             throw new NotFoundException(S3Exception.NOT_FOUND_FILE);
@@ -106,18 +119,5 @@ public class S3Uploader {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public String moveImage(String sourceKey, String destinationKey) {
-        CopyObjectRequest copyReq = CopyObjectRequest.builder()
-                .sourceBucket(bucket)
-                .sourceKey(sourceKey)
-                .destinationBucket(bucket)
-                .destinationKey(destinationKey)
-                .build();
-
-        s3Client.copyObject(copyReq);
-
-        return String.format("%s/%s", baseUrl, destinationKey);
     }
 }
