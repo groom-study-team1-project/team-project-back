@@ -56,18 +56,6 @@ class PostServiceTest {
     private PostService postService;
 
     @Autowired
-    private CategoryService categoryService;
-
-    @Autowired
-    private HashtagService hashtagService;
-
-    @Autowired
-    private VisitorService visitorService;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
     private PostRepository postRepository;
 
     @Autowired
