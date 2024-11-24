@@ -20,6 +20,6 @@ public class PostAllReadResponse {
 	private MemberInfo memberInfo;
 	private CountInfo countInfo;
 	private List<String> hashtags;
-	private List<String> imageUrls;
+	private List<String> imageUrls = List.of();
 	private String createdAt;
 }
