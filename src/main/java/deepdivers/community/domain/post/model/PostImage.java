@@ -3,9 +3,9 @@ package deepdivers.community.domain.post.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Entity
 @Embeddable
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "imageUrl")
 public class PostImage {
