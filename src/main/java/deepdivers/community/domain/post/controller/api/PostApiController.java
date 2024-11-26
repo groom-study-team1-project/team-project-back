@@ -56,7 +56,7 @@ public class PostApiController implements PostApiControllerDocs {
 
 	@PostMapping(value = "/upload/image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
 	public ResponseEntity<API<PostImageUploadResponse>> postImageUpload(
-			@RequestParam final MultipartFile imageFile
+		@RequestParam final MultipartFile imageFile
 	) {
 		API<PostImageUploadResponse> response = postService.postImageUpload(imageFile);
 		return ResponseEntity.ok(response);

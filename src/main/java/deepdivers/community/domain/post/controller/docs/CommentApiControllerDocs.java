@@ -20,10 +20,10 @@ public interface CommentApiControllerDocs {
 
     @Operation(summary = "댓글 작성", description = "게시글 댓글을 작성하는 기능")
     @ApiResponse(
-            responseCode = "1400",
-            description = """
-                    1. 댓글 작성에 성공하였습니다.
-                    """
+        responseCode = "1400",
+        description = """
+                1. 댓글 작성에 성공하였습니다.
+                """
     )
     @ApiResponse(
         responseCode = "2202, 2301 \n9000~9005",
