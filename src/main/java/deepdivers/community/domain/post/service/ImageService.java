@@ -41,7 +41,7 @@ public class ImageService {
 
     private void removeUnusedImages(Long postId, List<String> currentImageUrls, List<String> newImageUrls) {
         List<String> toRemove = currentImageUrls.stream()
-                .filter(url -> url.contains("/posts/") && !newImageUrls.contains(url))
+                .filter(url -> url.contains(String.format("/%s/", S3Uploader.POST_DIRECTORY)) && !newImageUrls.contains(url))
                 .toList();
 
         if (!toRemove.isEmpty()) {
@@ -51,6 +51,7 @@ public class ImageService {
 
     private List<PostImage> createPostImages(Post post, List<String> newImageUrls) {
         return newImageUrls.stream()
+                .filter(url -> url.contains(String.format("/%s/", S3Uploader.TEMP_DIRECTORY)))
                 .map(tempImageUrl -> {
                     String movedImageUrl = moveTempImageToPostBucket(tempImageUrl, post.getId());
                     return new PostImage(post, movedImageUrl);
@@ -59,8 +60,11 @@ public class ImageService {
     }
 
     private String moveTempImageToPostBucket(String tempImageUrl, Long postId) {
+        String[] splitResults = tempImageUrl.split(String.format("/%s/", S3Uploader.TEMP_DIRECTORY));
         String fileName = splitResults[1];
 
+        String tempKey = s3Uploader.buildTempKey(fileName);
+        String finalKey = s3Uploader.buildPostKey(postId, fileName);
 
         return s3Uploader.moveImage(tempKey, finalKey);
     }
