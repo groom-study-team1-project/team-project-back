@@ -30,9 +30,7 @@ public class ImageService {
 
         removeUnusedImages(post.getId(), currentImageUrls, newImageUrls);
 
-        List<String> imageUrlsToAdd = getImageUrlsToAdd(newImageUrls);
-
-        return createPostImages(post, imageUrlsToAdd);
+        return createPostImages(post, newImageUrls);
     }
 
     private List<String> getCurrentImageUrlsForPost(Long postId) {
@@ -51,27 +49,21 @@ public class ImageService {
         }
     }
 
-    private List<String> getImageUrlsToAdd(List<String> newImageUrls) {
+    private List<PostImage> createPostImages(Post post, List<String> newImageUrls) {
         return newImageUrls.stream()
-                .filter(url -> url.contains("/temp/"))
-                .toList();
-    }
-
-    private List<PostImage> createPostImages(Post post, List<String> imageUrlsToAdd) {
-        return imageUrlsToAdd.stream()
                 .map(tempImageUrl -> {
-                    String[] splitResults = tempImageUrl.split("/temp/");
-                    String movedImageUrl = moveTempImageToPostBucket(splitResults[1], post.getId());
+                    String movedImageUrl = moveTempImageToPostBucket(tempImageUrl, post.getId());
                     return new PostImage(post, movedImageUrl);
                 })
                 .toList();
     }
 
-    private String moveTempImageToPostBucket(String fileName, Long postId) {
-        String tempKey = String.format("temp/%s", fileName);
-        String finalKey = String.format("posts/%d/%s", postId, fileName);
+    private String moveTempImageToPostBucket(String tempImageUrl, Long postId) {
+        String fileName = splitResults[1];
+
 
         return s3Uploader.moveImage(tempKey, finalKey);
     }
+
 }
 
