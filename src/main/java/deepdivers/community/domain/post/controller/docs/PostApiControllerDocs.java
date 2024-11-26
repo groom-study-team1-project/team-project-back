@@ -64,7 +64,7 @@ public interface PostApiControllerDocs {
 	)
 	ResponseEntity<API<PostImageUploadResponse>> uploadPostImage(MultipartFile imageFile);
 
-	@Operation(summary = "게시글 좋아요", description = "게시글 좋아요 를 하는 기능")
+	@Operation(summary = "게시글 좋아요", description = "게시글 좋아요를 하는 기능")
 	@ApiResponse(
 			responseCode = "1205",
 			description = " 게시글 좋아요에 성공했습니다."
@@ -79,7 +79,7 @@ public interface PostApiControllerDocs {
 	)
 	ResponseEntity<NoContent> likePost(Member member, LikeRequest request);
 
-	@Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요 를 취소 하는 기능")
+	@Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요를 취소 하는 기능")
 	@ApiResponse(
 			responseCode = "1206",
 			description = "게시글 좋아요 취소에 성공했습니다."

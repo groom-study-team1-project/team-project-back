@@ -71,7 +71,9 @@ public class PostApiController implements PostApiControllerDocs {
 			@RequestBody final LikeRequest request
 	) {
 		final NoContent response = likeService.likePost(request, member.getId());
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(response);
 	}
 
 	@PostMapping("/unlike")
@@ -80,7 +82,9 @@ public class PostApiController implements PostApiControllerDocs {
 			@RequestBody final LikeRequest request
 	) {
 		final NoContent response = likeService.unlikePost(request, member.getId());
-		return ResponseEntity.ok(response);
+		return ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(response);
 	}
 
 }
