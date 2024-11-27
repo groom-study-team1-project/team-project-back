@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -52,11 +53,10 @@ class LikeServiceTest {
     @DisplayName("게시글 좋아요 요청 성공 확인")
     void likePost_Success() {
         // Given: 좋아요가 없는 상태
-        LikeRequest likeRequest = new LikeRequest(postId);
-        when(likeRepository.existsById(any(LikeId.class))).thenReturn(false);
+        mockLikeExistence(false);
 
         // When: 좋아요 요청 수행
-        likeService.likePost(likeRequest, memberId);
+        likeService.likePost(new LikeRequest(postId), memberId);
 
         // Then: 좋아요 저장 및 게시물 카운트 증가 확인
         verify(likeRepository).save(any(Like.class));
@@ -67,29 +67,26 @@ class LikeServiceTest {
     @DisplayName("중복 좋아요 요청 시 예외 발생 확인")
     void likePost_AlreadyLiked_ThrowsException() {
         // Given: 이미 좋아요가 존재하는 상태
-        LikeRequest likeRequest = new LikeRequest(postId);
-        Like existingLike = Like.of(postId, memberId, LikeTarget.POST);
-        when(likeRepository.findById(any(LikeId.class))).thenReturn(Optional.of(existingLike));
+        mockLikeExistence(false);
 
         // When & Then: 중복 요청 시 예외 발생
         BadRequestException exception = assertThrows(
                 BadRequestException.class,
-                () -> likeService.likePost(likeRequest, memberId)
+                () -> likeService.likePost(new LikeRequest(postId), memberId)
         );
 
-        assertEquals("유효하지 않은 접근입니다.", exception.getMessage());
+        assertThat(exception).hasMessage("유효하지 않은 접근입니다.");
     }
 
     @Test
     @DisplayName("게시글 좋아요 취소 요청 성공 확인")
     void unlikePost_Success() {
         // Given: 이미 좋아요가 존재하는 상태
-        LikeRequest likeRequest = new LikeRequest(postId);
-        when(likeRepository.existsById(any(LikeId.class))).thenReturn(true);
+        mockLikeExistence(false);
         when(likeRepository.findById(any(LikeId.class))).thenReturn(Optional.of(Like.of(postId, memberId, LikeTarget.POST)));
 
         // When: 좋아요 취소 요청 수행
-        likeService.unlikePost(likeRequest, memberId);
+        likeService.unlikePost(new LikeRequest(postId), memberId);
 
         // Then: 좋아요 삭제 및 게시물 카운트 감소 확인
         verify(likeRepository).delete(any(Like.class));
@@ -108,6 +105,6 @@ class LikeServiceTest {
                 () -> likeService.unlikePost(new LikeRequest(postId), memberId)
         );
 
-        assertEquals("유효하지 않은 접근입니다.", exception.getMessage());
+        assertThat(exception).hasMessage("유효하지 않은 접근입니다.");
     }
 }
