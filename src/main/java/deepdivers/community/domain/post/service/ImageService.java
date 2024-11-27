@@ -26,21 +26,21 @@ public class ImageService {
     }
 
     public List<PostImage> connectPostWithImage(final Post post, final List<String> newImageUrls) {
-        List<String> currentImageUrls = getCurrentImageUrlsForPost(post.getId());
+        final List<String> currentImageUrls = getCurrentImageUrlsForPost(post.getId());
 
         removeUnusedImages(post.getId(), currentImageUrls, newImageUrls);
 
         return createPostImages(post, newImageUrls);
     }
 
-    private List<String> getCurrentImageUrlsForPost(Long postId) {
+    private List<String> getCurrentImageUrlsForPost(final Long postId) {
         return postImageRepository.findByPostId(postId).stream()
                 .map(PostImage::getImageUrl)
                 .toList();
     }
 
-    private void removeUnusedImages(Long postId, List<String> currentImageUrls, List<String> newImageUrls) {
-        List<String> toRemove = currentImageUrls.stream()
+    private void removeUnusedImages(final Long postId, final List<String> currentImageUrls, final List<String> newImageUrls) {
+        final List<String> toRemove = currentImageUrls.stream()
                 .filter(url -> url.contains(String.format("/%s/", S3Uploader.POST_DIRECTORY)) && !newImageUrls.contains(url))
                 .toList();
 
@@ -49,7 +49,7 @@ public class ImageService {
         }
     }
 
-    private List<PostImage> createPostImages(Post post, List<String> newImageUrls) {
+    private List<PostImage> createPostImages(final Post post, final List<String> newImageUrls) {
         return newImageUrls.stream()
                 .filter(url -> url.contains(String.format("/%s/", S3Uploader.TEMP_DIRECTORY)))
                 .map(tempImageUrl -> {
@@ -59,12 +59,11 @@ public class ImageService {
                 .toList();
     }
 
-    private String moveTempImageToPostBucket(String tempImageUrl, Long postId) {
-        String[] splitResults = tempImageUrl.split(String.format("/%s/", S3Uploader.TEMP_DIRECTORY));
-        String fileName = splitResults[1];
+    private String moveTempImageToPostBucket(final String tempImageUrl, final Long postId) {
+        final String fileName = tempImageUrl.split(String.format("/%s/", S3Uploader.TEMP_DIRECTORY))[1];
 
-        String tempKey = s3Uploader.buildTempKey(fileName);
-        String finalKey = s3Uploader.buildPostKey(postId, fileName);
+        final String tempKey = s3Uploader.buildTempKey(fileName);
+        final String finalKey = s3Uploader.buildPostKey(postId, fileName);
 
         return s3Uploader.moveImage(tempKey, finalKey);
     }

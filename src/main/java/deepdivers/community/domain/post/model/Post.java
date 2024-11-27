@@ -63,7 +63,7 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<PostImage> postImages = new ArrayList<>();
 
     @Builder
@@ -110,7 +110,7 @@ public class Post extends BaseEntity {
         return this;
     }
 
-    public void updatePost(PostSaveRequest request, PostCategory category) {
+    public void updatePost(final PostSaveRequest request, final PostCategory category) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
         this.category = category;

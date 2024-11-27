@@ -21,7 +21,7 @@ public class PostImage {
     @Column(nullable = false)
     private String imageUrl;
 
-    public PostImage(Post post, String imageUrl) {
+    public PostImage(final Post post, final String imageUrl) {
         this.post = post;
         this.imageUrl = imageUrl;
     }

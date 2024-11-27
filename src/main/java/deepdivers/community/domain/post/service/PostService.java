@@ -100,7 +100,7 @@ public class PostService {
                 .orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
     }
 
-    private static void validateAuthor(Member member, Post post) {
+    private static void validateAuthor(final Member member, final Post post) {
         if (!post.getMember().getId().equals(member.getId())) {
             throw new BadRequestException(PostExceptionType.NOT_POST_AUTHOR);
         }
