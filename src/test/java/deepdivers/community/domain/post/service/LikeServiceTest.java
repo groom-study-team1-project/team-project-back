@@ -1,150 +1,113 @@
 package deepdivers.community.domain.post.service;
 
+import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.model.PostContent;
-import deepdivers.community.domain.post.model.PostTitle;
+import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.model.like.Like;
 import deepdivers.community.domain.post.model.like.LikeId;
-import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
-import deepdivers.community.domain.post.repository.CategoryRepository;
+import deepdivers.community.domain.post.repository.CommentRepository;
 import deepdivers.community.domain.post.repository.LikeRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
-import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.model.vo.PostStatus;
+import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
-import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Optional;
 
-@SpringBootTest
-@Transactional
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 class LikeServiceTest {
 
-    @Autowired
     private LikeService likeService;
 
-    @Autowired
+    @Mock
     private LikeRepository likeRepository;
 
-    @Autowired
+    @Mock
     private PostRepository postRepository;
 
-    @Autowired
-    private MemberRepository memberRepository;
+    @Mock
+    private CommentRepository commentRepository;
 
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    private Long memberId;
-    private Long postId;
-    private LikeRequest likeRequest;
-    private Post post;
-    private Member member;
-    private PostCategory category;
+    private final Long memberId = 1L;
+    private final Long postId = 1L;
 
     @BeforeEach
     void setUp() {
-        // Mock 객체 설정
-        Encryptor encryptor = Mockito.mock(Encryptor.class);
-        Mockito.when(encryptor.encrypt(anyString())).thenReturn("encryptedPassword");
+        MockitoAnnotations.openMocks(this);
+        likeService = new LikeService(likeRepository, postRepository, commentRepository);
+    }
 
-        // Member 생성 및 저장
-        MemberSignUpRequest request = new MemberSignUpRequest(
-                "testEmail@gmail.com",
-                "testPassword123!",
-                "testNickname",
-                "http://testImage.url",
-                "010-1234-5678"
-        );
-        member = memberRepository.save(Member.of(request, encryptor));
-        memberId = member.getId();
-
-        // 카테고리 생성 및 저장
-        category = categoryRepository.save(PostCategory.createCategory("test category", "test description", CategoryStatus.ACTIVE));
-
-        // 게시물 생성 및 저장
-        post = postRepository.save(new Post(
-                PostTitle.of("testTitle"),
-                PostContent.of("testContent"),
-                category,
-                member,
-                PostStatus.ACTIVE
-        ));
-        postId = post.getId();
-
-        // LikeRequest 초기화
-        likeRequest = new LikeRequest(postId);
+    private void mockLikeExistence(boolean exists) {
+        when(likeRepository.existsById(any(LikeId.class))).thenReturn(exists);
     }
 
     @Test
-    @DisplayName("게시물 좋아요 성공 테스트")
+    @DisplayName("게시글 좋아요 요청 성공 확인")
     void likePost_Success() {
+        // Given: 좋아요가 없는 상태
+        LikeRequest likeRequest = new LikeRequest(postId);
+        when(likeRepository.existsById(any(LikeId.class))).thenReturn(false);
+
         // When: 좋아요 요청 수행
         likeService.likePost(likeRequest, memberId);
 
-        // Then: 해당 게시물에 좋아요가 되었는지 확인
-        LikeId likeId = LikeId.of(postId, memberId, LikeTarget.POST);
-        Like savedLike = likeRepository.findById(likeId).orElseThrow();
-
-        assertEquals(likeId, savedLike.getId());
+        // Then: 좋아요 저장 및 게시물 카운트 증가 확인
+        verify(likeRepository).save(any(Like.class));
+        verify(postRepository).incrementLikeCount(postId);
     }
 
     @Test
-    @DisplayName("게시물 좋아요 취소 성공 테스트")
+    @DisplayName("중복 좋아요 요청 시 예외 발생 확인")
+    void likePost_AlreadyLiked_ThrowsException() {
+        // Given: 이미 좋아요가 존재하는 상태
+        LikeRequest likeRequest = new LikeRequest(postId);
+        Like existingLike = Like.of(postId, memberId, LikeTarget.POST);
+        when(likeRepository.findById(any(LikeId.class))).thenReturn(Optional.of(existingLike));
+
+        // When & Then: 중복 요청 시 예외 발생
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> likeService.likePost(likeRequest, memberId)
+        );
+
+        assertEquals("유효하지 않은 접근입니다.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("게시글 좋아요 취소 요청 성공 확인")
     void unlikePost_Success() {
-        // Given: 이미 좋아요가 된 상태 설정
-        likeService.likePost(likeRequest, memberId);
+        // Given: 이미 좋아요가 존재하는 상태
+        LikeRequest likeRequest = new LikeRequest(postId);
+        when(likeRepository.existsById(any(LikeId.class))).thenReturn(true);
+        when(likeRepository.findById(any(LikeId.class))).thenReturn(Optional.of(Like.of(postId, memberId, LikeTarget.POST)));
 
         // When: 좋아요 취소 요청 수행
         likeService.unlikePost(likeRequest, memberId);
 
-        // Then: 좋아요가 취소 되었는지 확인
-        LikeId likeId = LikeId.of(postId, memberId, LikeTarget.POST);
-        boolean likeExists = likeRepository.existsById(likeId);
-
-        assertEquals(false, likeExists);
+        // Then: 좋아요 삭제 및 게시물 카운트 감소 확인
+        verify(likeRepository).delete(any(Like.class));
+        verify(postRepository).decrementLikeCount(postId);
     }
 
     @Test
-    @DisplayName("이미 좋아요 상태에서 다시 좋아요 요청 시 false 반환")
-    void likePost_AlreadyLiked_ReturnsFalse() {
-        // Given: 이미 좋아요가 되어있는 상태
-        likeService.likePost(likeRequest, memberId);
+    @DisplayName("중복 좋아요 취소 요청 시 예외 발생 확인")
+    void unlikePost_DuplicateThrowsException() {
+        // Given: 좋아요가 존재하지 않는 상태
+        mockLikeExistence(false);
 
-        // When: 다시 좋아요 요청을 수행하고 예외나 실패가 발생하지 않는지 확인
-        boolean isAlreadyLiked = likeRepository.existsById(LikeId.of(postId, memberId, LikeTarget.POST));
+        // When & Then: 중복 요청 시 예외 발생
+        BadRequestException exception = assertThrows(
+                BadRequestException.class,
+                () -> likeService.unlikePost(new LikeRequest(postId), memberId)
+        );
 
-        // Then: 이미 좋아요가 존재하므로, 중복 요청을 처리하는지 확인
-        assertEquals(true, isAlreadyLiked);
+        assertEquals("유효하지 않은 접근입니다.", exception.getMessage());
     }
-
-    @Test
-    @DisplayName("이미 좋아요 취소 상태에서 다시 취소 요청 시 false 반환")
-    void unlikePost_AlreadyUnliked_ReturnsFalse() {
-        // Given: 좋아요 된 상태에서 취소로 된 상태
-        likeService.likePost(likeRequest, memberId);
-        likeService.unlikePost(likeRequest, memberId);
-
-        // When: 다시 좋아요 취소 요청을 수행하고 예외나 실패가 발생하지 않는지 확인
-        boolean isAlreadyUnliked = !likeRepository.existsById(LikeId.of(postId, memberId, LikeTarget.POST));
-
-        // Then: 이미 좋아요가 취소된 상태이므로, 중복 취소 요청을 처리하는지 확인
-        assertEquals(true, isAlreadyUnliked);
-    }
-
-
 }
-
-
