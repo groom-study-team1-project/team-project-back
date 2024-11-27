@@ -49,6 +49,7 @@ public class LikeService {
 
     public NoContent likePost(final LikeRequest request, final Long memberId)  {
         final Like like = Like.of(request.targetId(), memberId, LikeTarget.POST);
+
         likeRepository.findById(like.getId())
                 .ifPresent(liked -> {throw new BadRequestException(LikeExceptionType.INVALID_ACCESS);});
 

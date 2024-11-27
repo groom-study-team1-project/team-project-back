@@ -143,6 +143,8 @@ class LikeServiceTest {
         // Then: 이미 좋아요가 취소된 상태이므로, 중복 취소 요청을 처리하는지 확인
         assertEquals(true, isAlreadyUnliked);
     }
+
+
 }
 
 
