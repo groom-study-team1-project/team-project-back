@@ -10,6 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.querydsl.core.types.Predicate;
+import deepdivers.community.domain.post.model.QPostImage;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.group.GroupBy;
@@ -73,8 +76,10 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     }
 
     @Override
-    public List<PostAllReadResponse> findAllPosts(Long lastContentId, Long categoryId) {
-        List<PostAllReadResponse> posts = queryFactory.select(
+    public List<PostAllReadResponse> findAllPosts(final Long lastContentId, final Long categoryId) {
+        final QPostImage postImage = QPostImage.postImage;
+
+        final List<PostAllReadResponse> posts = queryFactory.select(
                 Projections.fields(
                     PostAllReadResponse.class,
                     post.id.as("postId"),
@@ -96,13 +101,22 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 ))
             .from(post)
             .join(member).on(post.member.id.eq(member.id))
-            .where(
-                post.id.lt(lastContentId),
-                categoryId != null ? post.category.id.eq(categoryId) : null
-            )
+            .leftJoin(postImage).on(postImage.post.id.eq(post.id))
+            .where(post.id.lt(lastContentId), getPredicate(categoryId))
+            .groupBy(post.id)
             .orderBy(post.id.desc())
             .limit(10)
             .fetch();
+
+        for (PostAllReadResponse postResponse : posts) {
+            List<String> imageUrls = queryFactory
+                    .select(postImage.imageUrl)
+                    .from(postImage)
+                    .where(postImage.post.id.eq(postResponse.getPostId()))
+                    .fetch();
+
+            postResponse.setImageUrls(imageUrls);
+        }
 
         for (PostAllReadResponse postResponse : posts) {
             List<String> hashtags = queryFactory
@@ -115,6 +129,13 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         }
 
         return posts;
+    }
+
+    private static @Nullable Predicate getPredicate(Long categoryId) {
+        if (categoryId == null) {
+            return null;
+        }
+        return post.category.id.eq(categoryId);
     }
 
 }
