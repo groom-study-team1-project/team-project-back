@@ -8,5 +8,5 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PostCountResponse {
 	private Long totalPostCount;  // 게시글 총 개수
-	private List<PostAllReadResponse> posts;  // 게시글 리스트
+	private List<GetAllPostsResponse> posts;  // 게시글 리스트
 }

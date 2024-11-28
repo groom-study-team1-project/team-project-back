@@ -1,11 +1,14 @@
 package deepdivers.community.domain.post.controller;
 
+import static deepdivers.community.domain.post.dto.response.statustype.PostStatusType.POST_VIEW_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
-import java.util.Arrays;
+import deepdivers.community.domain.post.controller.dto.GetAllPostsTestResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import deepdivers.community.domain.post.repository.PostQueryRepository;
@@ -15,9 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import deepdivers.community.domain.ControllerTest;
@@ -25,10 +25,8 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.controller.open.PostOpenController;
 import deepdivers.community.domain.post.dto.response.CountInfo;
 import deepdivers.community.domain.post.dto.response.MemberInfo;
-import deepdivers.community.domain.post.dto.response.PostAllReadResponse; // Ensure this is used
-import deepdivers.community.domain.post.dto.response.PostCountResponse;
+import deepdivers.community.domain.post.dto.response.GetAllPostsResponse; // Ensure this is used
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.exception.model.BadRequestException;
@@ -117,35 +115,17 @@ class PostOpenControllerTest extends ControllerTest {
 		Long lastPostId = 10L;
 		Long categoryId = 1L;
 
-		List<PostAllReadResponse> responseList = List.of(
-				new PostAllReadResponse(
-						1L,
-						"Title 1",
-						"Content 1",
-						categoryId,
-						new MemberInfo(1L, "Author 1", "author1.png", "Developer"),
-						new CountInfo(10, 5, 2),
-						List.of("tag1", "tag2"),
-						List.of("http/temp/f.jpeg"),
-						"2023-11-15 12:00:00"
-				),
-				new PostAllReadResponse(
-						2L,
-						"Title 2",
-						"Content 2",
-						categoryId,
-						new MemberInfo(2L, "Author 2", "author2.png", "Designer"),
-						new CountInfo(20, 15, 5),
-						List.of("tag3"),
-						List.of("http/temp/f.jpeg"),
-						"2023-11-15 13:00:00"
-				)
+		List<GetAllPostsResponse> mockQueryResult = List.of(
+			new GetAllPostsResponse(
+				1L, "Title 1", "Content 1", categoryId,
+				new MemberInfo(1L, "Author 1", "author1.png", "Developer"), new CountInfo(10, 5, 2),
+				"tag1,tag2", "http/temp/f.jpeg", LocalDateTime.now())
 		);
 
-		given(postQueryRepository.findAllPosts(eq(lastPostId), eq(categoryId))).willReturn(responseList);
+		given(postQueryRepository.findAllPosts(lastPostId, categoryId)).willReturn(mockQueryResult);
 
 		// when
-		API<List<PostAllReadResponse>> response = RestAssuredMockMvc.given().log().all()
+		API<List<GetAllPostsTestResponse>> response = RestAssuredMockMvc.given().log().all()
 				.queryParam("categoryId", categoryId)
 				.queryParam("lastPostId", lastPostId)
 				.when().get("/open/posts")
@@ -156,9 +136,10 @@ class PostOpenControllerTest extends ControllerTest {
 				});
 
 		// then
-		List<PostAllReadResponse> posts = response.getResult();
-		assertThat(posts).isNotNull();
-		assertThat(posts).hasSize(2);
+		GetAllPostsTestResponse mockTestResponse = GetAllPostsTestResponse.from(mockQueryResult.getFirst());
+		API<List<GetAllPostsTestResponse>> mockResponse = API.of(POST_VIEW_SUCCESS, List.of(mockTestResponse));
+
+		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
 	}
 
 
@@ -166,24 +147,17 @@ class PostOpenControllerTest extends ControllerTest {
 	@DisplayName("카테고리 ID나 마지막 게시글 ID 없이 게시글 조회 요청이 성공적으로 처리되면 200 OK를 반환하고 결과를 검증한다")
 	void getAllPostsWithoutParamsReturns200OK() {
 		// given
-		List<PostAllReadResponse> responseList = List.of(
-				new PostAllReadResponse(
-						1L,
-						"Title 1",
-						"Content 1",
-						1L,
-						new MemberInfo(1L, "Author 1", "author1.png", "Developer"),
-						new CountInfo(10, 5, 2),
-						List.of("tag1", "tag2"),
-						List.of("http/temp/f.jpeg"),
-						"2024-09-26T12:00:00"
-				)
+		List<GetAllPostsResponse> mockQueryResult = List.of(
+			new GetAllPostsResponse(
+				1L, "Title 1", "Content 1", 1L,
+				new MemberInfo(1L, "Author 1", "author1.png", "Developer"), new CountInfo(10, 5, 2),
+				"tag1,tag2", "http/temp/f.jpeg", LocalDateTime.now())
 		);
 
-		given(postQueryRepository.findAllPosts(null, null)).willReturn(responseList);
+		given(postQueryRepository.findAllPosts(null, null)).willReturn(mockQueryResult);
 
 		// when
-		API<List<PostAllReadResponse>> response = RestAssuredMockMvc.given().log().all()
+		API<List<GetAllPostsTestResponse>> response = RestAssuredMockMvc.given().log().all()
 				.when().get("/open/posts")
 				.then().log().all()
 				.status(HttpStatus.OK)
@@ -192,44 +166,18 @@ class PostOpenControllerTest extends ControllerTest {
 				});
 
 		// then
-		List<PostAllReadResponse> posts = response.getResult();
-		assertThat(posts).isNotNull();
-		assertThat(posts).hasSize(1);
+		GetAllPostsTestResponse mockTestResponse = GetAllPostsTestResponse.from(mockQueryResult.getFirst());
+		API<List<GetAllPostsTestResponse>> mockResponse = API.of(POST_VIEW_SUCCESS, List.of(mockTestResponse));
 
-		PostAllReadResponse post = posts.get(0);
-		assertThat(post.getPostId()).isEqualTo(1L);
-		assertThat(post.getTitle()).isEqualTo("Title 1");
-		assertThat(post.getContent()).isEqualTo("Content 1");
-		assertThat(post.getCategoryId()).isEqualTo(1L);
-		assertThat(post.getMemberInfo().getNickname()).isEqualTo("Author 1");
-		assertThat(post.getCountInfo().getViewCount()).isEqualTo(10);
-		assertThat(post.getCountInfo().getLikeCount()).isEqualTo(5);
-		assertThat(post.getCountInfo().getCommentCount()).isEqualTo(2);
-		assertThat(post.getHashtags()).containsExactly("tag1", "tag2");
-		assertThat(post.getImageUrls()).containsExactly("http/temp/f.jpeg");
-		assertThat(post.getCreatedAt()).isEqualTo("2024-09-26T12:00:00");
+		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
 	}
 
-	@Test
-	@DisplayName("게시글 조회 요청 시 데이터베이스에 데이터가 없을 경우 빈 목록을 반환한다")
-	void getAllPostsWithNoDataReturnsEmptyList() {
-		// given
-		given(postQueryRepository.findAllPosts(null, null)).willReturn(List.of());
+	/*
+		게시글 조회 요청 시 데이터베이스에 데이터가 없을 경우 빈 목록을 반환한다 제거
+		Controller Test도 Mock 객체를 사용하므로 단위 테스트임.
+		DB와 연관이 없음.
+	*/
 
-		// when
-		API<List<PostAllReadResponse>> response = RestAssuredMockMvc.given().log().all()
-				.when().get("/open/posts")
-				.then().log().all()
-				.status(HttpStatus.OK)
-				.extract()
-				.as(new TypeRef<>() {
-				});
-
-		// then
-		List<PostAllReadResponse> posts = response.getResult();
-		assertThat(posts).isNotNull();
-		assertThat(posts).isEmpty();
-	}
-
+	// todo categoryId만 있을 경우, lastPostId만 있을 경우 등도 테스트
 }
 
