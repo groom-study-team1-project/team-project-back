@@ -67,31 +67,25 @@ public class Post extends BaseEntity {
     private List<PostImage> postImages = new ArrayList<>();
 
     @Builder
-    public Post(PostTitle title, PostContent content, PostCategory category, Member member, PostStatus status) {
-        this.title = title;
-        this.content = content;
+    public Post(final PostSaveRequest request, final PostCategory category, final Member member) {
+        this.title = PostTitle.of(request.title());
+        this.content = PostContent.of(request.content());
         this.category = category;
         this.member = member;
         this.commentCount = 0;
         this.likeCount = 0;
         this.viewCount = 0;
-        this.status = status != null ? status : PostStatus.ACTIVE;
+        this.status = PostStatus.ACTIVE;
     }
 
     public static Post of(final PostSaveRequest request, final PostCategory category, final Member member) {
-        return new Post(
-                PostTitle.of(request.title()),
-                PostContent.of(request.content()),
-                category,
-                member,
-                PostStatus.ACTIVE
-        );
+        return new Post(request, category, member);
     }
 
     public List<String> getHashtags() {
         return postHashtags.stream()
-                .map(postHashtag -> postHashtag.getHashtag().getName())
-                .collect(Collectors.toList());
+                .map(PostHashtag::getHashtagName)
+                .toList();
     }
 
     public List<String> getImageUrls() {
@@ -110,10 +104,11 @@ public class Post extends BaseEntity {
         return this;
     }
 
-    public void updatePost(final PostSaveRequest request, final PostCategory category) {
+    public Post updatePost(final PostSaveRequest request, final PostCategory category) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
         this.category = category;
+        return this;
     }
 
     public void increaseViewCount() {
@@ -125,4 +120,5 @@ public class Post extends BaseEntity {
             this.commentCount -= 1;
         }
     }
+
 }

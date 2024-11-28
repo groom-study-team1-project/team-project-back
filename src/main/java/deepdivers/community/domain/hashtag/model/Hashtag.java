@@ -1,5 +1,7 @@
 package deepdivers.community.domain.hashtag.model;
 
+import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
+import deepdivers.community.global.exception.model.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,8 +13,6 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
 
 @Entity
 @Getter
@@ -33,19 +33,30 @@ public class Hashtag {
 	@Column(nullable = false, length = 50)
 	private String hashtag;
 
-	public Hashtag(String hashtag) {
-		validate(hashtag); // 생성 시 검증
+	public Hashtag(final String hashtag) {
+		validate(hashtag);
 		this.hashtag = hashtag;
 	}
 
-	public static String validate(String hashtag) {
+	public static Hashtag from(final String hashtag) {
+		return new Hashtag(hashtag);
+	}
+
+	public static void validate(String hashtag) {
+		validateHashtagNullOrBlank(hashtag);
+		validateHashTagFormat(hashtag);
+	}
+
+	private static void validateHashTagFormat(String hashtag) {
+		if (!hashtag.matches("^[\\p{L}\\p{N}]{1,10}$")) {
+			throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
+		}
+	}
+
+	private static void validateHashtagNullOrBlank(String hashtag) {
 		if (hashtag == null || hashtag.isBlank()) {
 			throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
 		}
-		return hashtag;
 	}
 
-	public String getName() {
-		return hashtag;
-	}
 }
