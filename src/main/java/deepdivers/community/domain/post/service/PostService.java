@@ -42,33 +42,37 @@ public class PostService {
         final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
         final Post post = Post.of(request, postCategory, member);
 
-        final Set<PostHashtag> hashtags = hashtagService.connectPostWithHashtag(post, request.hashtags());
+        final Set<PostHashtag> hashtags = hashtagService.createPostHashtags(post, request.hashtags());
         final Post savedPost = postRepository.save(post.connectHashtags(hashtags));
 
-        return API.of(PostStatusType.POST_CREATE_SUCCESS, PostSaveResponse.from(addImagesToPost(savedPost, request.imageUrls())));
+        return API.of(
+            PostStatusType.POST_CREATE_SUCCESS,
+            PostSaveResponse.from(addImagesToPost(savedPost, request.imageUrls()))
+        );
     }
 
     public API<PostSaveResponse> updatePost(final Long postId, final PostSaveRequest request, final Member member) {
         final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
         final Post post = getPostByIdWithThrow(postId);
-        validateAuthor(member, post);
+        validatePostAuthor(member, post);
 
-        post.updatePost(request, postCategory);
+        return API.of(
+            PostStatusType.POST_UPDATE_SUCCESS,
+            PostSaveResponse.from(
+                postRepository.save(updatePost(request, post, postCategory))
+            )
+        );
+    }
 
-        final Set<PostHashtag> hashtags = hashtagService.connectPostWithHashtag(post, request.hashtags());
-        post.connectHashtags(hashtags);
-
-        final List<PostImage> images = imageService.connectPostWithImage(post, request.imageUrls());
-        post.connectImages(images);
-
-        final Post savedPost = postRepository.save(post);
-
-        return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostSaveResponse.from(savedPost));
+    private Post updatePost(final PostSaveRequest request, final Post post, final PostCategory postCategory) {
+        return post.updatePost(request, postCategory)
+            .connectHashtags(hashtagService.updatePostHashtags(post, request.hashtags()))
+            .connectImages(imageService.connectPostWithImage(post, request.imageUrls()));
     }
 
     public NoContent deletePost(final Long postId, final Member member) {
         final Post post = getPostByIdWithThrow(postId);
-        validateAuthor(member, post);
+        validatePostAuthor(member, post);
 
         post.setStatus(PostStatus.DELETED);
         postRepository.save(post);
@@ -79,7 +83,6 @@ public class PostService {
     @Transactional(readOnly = true)
     public PostReadResponse readPostDetail(final Long postId, final String ipAddr) {
         final Post post = getPostByIdWithThrow(postId);
-
         visitorService.increaseViewCount(post, ipAddr);
 
         return PostReadResponse.from(post);
@@ -92,7 +95,9 @@ public class PostService {
 
     public Post addImagesToPost(final Post post, final List<String> imageUrls) {
         final List<PostImage> images = imageService.connectPostWithImage(post, imageUrls);
-        return postRepository.save(post.connectImages(images));
+        return postRepository.save(
+            post.connectImages(images)
+        );
     }
 
     private Post getPostByIdWithThrow(final Long postId) {
@@ -100,8 +105,8 @@ public class PostService {
                 .orElseThrow(() -> new BadRequestException(PostExceptionType.POST_NOT_FOUND));
     }
 
-    private static void validateAuthor(final Member member, final Post post) {
-        if (!post.getMember().getId().equals(member.getId())) {
+    private static void validatePostAuthor(final Member member, final Post post) {
+        if (!post.getMember().equals(member)) {
             throw new BadRequestException(PostExceptionType.NOT_POST_AUTHOR);
         }
     }

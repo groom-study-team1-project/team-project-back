@@ -14,10 +14,8 @@ import deepdivers.community.domain.post.model.Post;
 
 @Transactional
 public interface PostHashtagRepository extends JpaRepository<PostHashtag, Long> {
-	List<PostHashtag> findByPostId(Long postId);
 
-	// 해당 Post와 연관된 모든 PostHashtag 삭제
-	void deleteAllByPost(Post post);
+	List<PostHashtag> findAllByPostId(Long postId);
 
 	@Modifying
 	@Query("DELETE FROM PostHashtag ph WHERE ph.post.id = :postId AND ph.hashtag.id IN :hashtagIds")

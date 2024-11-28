@@ -47,3 +47,9 @@ INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_
 VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니다.', 0, 0, 90, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9, 2);
 INSERT INTO post (id, post_title, post_content, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (10, '열 번째 게시글', '열 번째 게시글의 내용입니다.', 0, 0, 100, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 3);
+
+insert into hashtag (id, hashtag) values (1, '태그입니다');
+insert into post_hashtag (id, post_id, hashtag_id, created_at, updated_at) values (1, 10, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+insert into post_image (id, post_id, image_url) values (1, 10, 'imageUrl1');
+insert into post_image (id, post_id, image_url) values (2, 10, 'imageUrl2');
