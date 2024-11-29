@@ -21,42 +21,42 @@ public class ImageService {
     private final PostImageRepository postImageRepository;
     private final S3Uploader s3Uploader;
 
-    public String uploadImageToTemp(final MultipartFile imageFile){
+    public String uploadImageToTemp(final MultipartFile imageFile) {
         return s3Uploader.postImageUpload(imageFile);
     }
 
-    public List<PostImage> connectPostWithImage(final Post post, final List<String> newImageUrls) {
-        final List<String> currentImageUrls = getCurrentImageUrlsForPost(post.getId());
-
-        removeUnusedImages(post.getId(), currentImageUrls, newImageUrls);
+    public List<PostImage> updatePostImages(final Post post, final List<String> newImageUrls) {
+        final List<PostImage> currentImageUrls = postImageRepository.findAllByPostId(post.getId());
+        postImageRepository.deleteAll(currentImageUrls);
 
         return createPostImages(post, newImageUrls);
     }
 
-    private List<String> getCurrentImageUrlsForPost(final Long postId) {
-        return postImageRepository.findByPostId(postId).stream()
-                .map(PostImage::getImageUrl)
-                .toList();
-    }
-
-    private void removeUnusedImages(final Long postId, final List<String> currentImageUrls, final List<String> newImageUrls) {
-        final List<String> toRemove = currentImageUrls.stream()
-                .filter(url -> url.contains(String.format("/%s/", S3Uploader.POST_DIRECTORY)) && !newImageUrls.contains(url))
-                .toList();
-
-        if (!toRemove.isEmpty()) {
-            toRemove.forEach(imageUrl -> postImageRepository.deleteByPostIdAndImageUrl(postId, imageUrl));
-        }
-    }
-
-    private List<PostImage> createPostImages(final Post post, final List<String> newImageUrls) {
+    public List<PostImage> createPostImages(final Post post, final List<String> newImageUrls) {
         return newImageUrls.stream()
-                .filter(url -> url.contains(String.format("/%s/", S3Uploader.TEMP_DIRECTORY)))
-                .map(tempImageUrl -> {
-                    String movedImageUrl = moveTempImageToPostBucket(tempImageUrl, post.getId());
-                    return new PostImage(post, movedImageUrl);
+                .map(imageUrl -> {
+                    PostImage postImage = createPostDirectoryImage(post, imageUrl);
+                    if (postImage == null) {
+                        postImage = createTempDirectoryImage(post, imageUrl);
+                    }
+                    return postImage;
                 })
                 .toList();
+    }
+
+    private PostImage createPostDirectoryImage(final Post post, final String imageUrl) {
+        if (imageUrl.contains(String.format("/%s/", S3Uploader.POST_DIRECTORY))) {
+            return new PostImage(post, imageUrl);
+        }
+        return null;
+    }
+
+    private PostImage createTempDirectoryImage(final Post post, final String imageUrl) {
+        if (imageUrl.contains(String.format("/%s/", S3Uploader.TEMP_DIRECTORY))) {
+            final String movedImageUrl = moveTempImageToPostBucket(imageUrl, post.getId());
+            return new PostImage(post, movedImageUrl);
+        }
+        return null;
     }
 
     private String moveTempImageToPostBucket(final String tempImageUrl, final Long postId) {

@@ -67,7 +67,7 @@ public class PostService {
     private Post updatePost(final PostSaveRequest request, final Post post, final PostCategory postCategory) {
         return post.updatePost(request, postCategory)
             .connectHashtags(hashtagService.updatePostHashtags(post, request.hashtags()))
-            .connectImages(imageService.connectPostWithImage(post, request.imageUrls()));
+            .connectImages(imageService.updatePostImages(post, request.imageUrls()));
     }
 
     public NoContent deletePost(final Long postId, final Member member) {
@@ -94,7 +94,7 @@ public class PostService {
     }
 
     public Post addImagesToPost(final Post post, final List<String> imageUrls) {
-        final List<PostImage> images = imageService.connectPostWithImage(post, imageUrls);
+        final List<PostImage> images = imageService.createPostImages(post, imageUrls);
         return postRepository.save(
             post.connectImages(images)
         );
