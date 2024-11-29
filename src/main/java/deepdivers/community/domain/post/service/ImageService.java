@@ -46,7 +46,7 @@ public class ImageService {
 
     private PostImage createPostDirectoryImage(final Post post, final String imageUrl) {
         if (imageUrl.contains(String.format("/%s/", S3Uploader.POST_DIRECTORY))) {
-            return new PostImage(post, imageUrl);
+            return PostImage.of(post, imageUrl);
         }
         return null;
     }
@@ -54,7 +54,7 @@ public class ImageService {
     private PostImage createTempDirectoryImage(final Post post, final String imageUrl) {
         if (imageUrl.contains(String.format("/%s/", S3Uploader.TEMP_DIRECTORY))) {
             final String movedImageUrl = moveTempImageToPostBucket(imageUrl, post.getId());
-            return new PostImage(post, movedImageUrl);
+            return PostImage.of(post, movedImageUrl);
         }
         return null;
     }

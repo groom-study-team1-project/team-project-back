@@ -25,4 +25,6 @@ public class PostImage {
         this.post = post;
         this.imageUrl = imageUrl;
     }
+
+    public static PostImage of(final Post post, final String imageUrl) {return new PostImage(post, imageUrl);}
 }
