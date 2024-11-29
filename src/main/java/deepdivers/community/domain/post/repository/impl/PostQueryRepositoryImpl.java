@@ -1,6 +1,5 @@
 package deepdivers.community.domain.post.repository.impl;
 
-import static com.querydsl.core.group.GroupBy.list;
 import static deepdivers.community.domain.hashtag.model.QHashtag.hashtag1;
 import static deepdivers.community.domain.hashtag.model.QPostHashtag.postHashtag;
 import static deepdivers.community.domain.member.model.QMember.member;
@@ -15,9 +14,10 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.post.dto.response.CountInfo;
-import deepdivers.community.domain.post.dto.response.MemberInfo;
 import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
+import deepdivers.community.domain.post.dto.response.MemberInfo;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
+import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -105,7 +105,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .leftJoin(postImage).on(post.id.eq(postImage.post.id))
             .leftJoin(postHashtag).on(post.id.eq(postHashtag.post.id))
             .leftJoin(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
-            .where(getPredicate1(lastContentId), getPredicate(categoryId))
+            .where(getPredicate1(lastContentId), getPredicate(categoryId), post.status.eq(PostStatus.ACTIVE))
             .groupBy(
                 post.id,
                 post.title.title,
