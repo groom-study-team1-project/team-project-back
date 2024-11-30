@@ -203,6 +203,40 @@ class PostApiControllerTest extends ControllerTest {
 	}
 
 	@Test
+	@DisplayName("게시글 작성 시 썸네일 없이 작성해도 200 OK를 반환한다")
+	void createPostWithoutThumbnailReturns200OK() {
+		// given
+		PostSaveRequest request = new PostSaveRequest(
+				"Post Title",
+				"Post Content",
+				null,
+				1L,
+				List.of("tag1", "tag2"),
+				List.of("http/temp/f.jpeg")
+		);
+
+		PostSaveResponse responseBody = new PostSaveResponse(1L);
+		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
+
+		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
+
+		// when
+		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(request)
+				.when().post("/api/posts/upload")
+				.then().log().all()
+				.status(HttpStatus.OK)
+				.extract()
+				.as(new TypeRef<>() {
+				});
+
+		// then
+		assertThat(response).isNotNull();
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
+	@Test
 	@DisplayName("게시글 작성 시 해시태그 없이 작성해도 200 OK를 반환한다")
 	void createPostWithoutHashtagsReturns200OK() {
 		// given
