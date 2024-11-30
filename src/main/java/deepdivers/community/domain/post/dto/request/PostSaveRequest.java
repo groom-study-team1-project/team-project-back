@@ -19,6 +19,9 @@ public record PostSaveRequest(
 	@Size(min = 5, message = "게시글 내용은 최소 5자 이상이어야 합니다.")
 	String content,
 
+	@Schema(description = "게시글 썸네일 URL", example = "https://example.com/temp/thumbnail.jpg")
+	String thumbnail,
+
 	@Schema(description = "카테고리 ID", example = "1")
 	@NotNull(message = "카테고리 선택은 필수입니다.")
 	Long categoryId,

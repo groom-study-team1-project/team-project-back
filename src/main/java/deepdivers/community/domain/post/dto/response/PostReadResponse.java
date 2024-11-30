@@ -12,6 +12,7 @@ public record PostReadResponse(
 	Long postId,
 	String title,
 	String content,
+	String thumbnail,
 	Long categoryId,
 	MemberInfo memberInfo,
 	CountInfo countInfo,
@@ -24,6 +25,7 @@ public record PostReadResponse(
 			post.getId(),
 			post.getTitle().getTitle(),
 			post.getContent().getContent(),
+			post.getThumbnail(),
 			post.getCategory().getId(),
 			new MemberInfo(
 				post.getMember().getId(),

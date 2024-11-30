@@ -39,6 +39,9 @@ public class Post extends BaseEntity {
     @Embedded
     private PostContent content;
 
+    @Column(nullable = false)
+    private String thumbnail;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private PostCategory category;
@@ -70,6 +73,7 @@ public class Post extends BaseEntity {
     public Post(final PostSaveRequest request, final PostCategory category, final Member member) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
+        this.thumbnail = request.thumbnail();
         this.category = category;
         this.member = member;
         this.commentCount = 0;
@@ -107,6 +111,7 @@ public class Post extends BaseEntity {
     public Post updatePost(final PostSaveRequest request, final PostCategory category) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
+        this.thumbnail = request.thumbnail();
         this.category = category;
         return this;
     }
