@@ -18,6 +18,7 @@ public class GetAllPostsResponse {
 	private Long postId;
 	private String title;
 	private String content;
+	private String thumbnail;
 	private Long categoryId;
 	private MemberInfo memberInfo;
 	private CountInfo countInfo;

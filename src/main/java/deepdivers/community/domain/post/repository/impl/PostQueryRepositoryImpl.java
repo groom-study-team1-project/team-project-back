@@ -78,6 +78,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     post.id.as("postId"),
                     post.title.title.as("title"),
                     post.content.content.as("content"),
+                    post.thumbnail.as("thumbnail"),
                     post.category.id.as("categoryId"),
                     post.createdAt.as("createdAt"),
                     Expressions.stringTemplate(
