@@ -57,6 +57,7 @@ class PostOpenControllerTest extends ControllerTest {
 				postId,
 				"Post Title",
 				"Post Content",
+				"",
 				1L,
 				new MemberInfo(1L, "작성자 닉네임", "이미지 URL", "개발자"),
 				new CountInfo(100, 50, 10),
@@ -110,7 +111,7 @@ class PostOpenControllerTest extends ControllerTest {
 
 		List<GetAllPostsResponse> mockQueryResult = List.of(
 			new GetAllPostsResponse(
-				1L, "Title 1", "Content 1", categoryId,
+				1L, "Title 1", "Content 1", "", categoryId,
 				new MemberInfo(1L, "Author 1", "author1.png", "Developer"), new CountInfo(10, 5, 2),
 				"tag1,tag2", "http/temp/f.jpeg", LocalDateTime.now())
 		);
@@ -142,7 +143,7 @@ class PostOpenControllerTest extends ControllerTest {
 		// given
 		List<GetAllPostsResponse> mockQueryResult = List.of(
 			new GetAllPostsResponse(
-				1L, "Title 1", "Content 1", 1L,
+				1L, "Title 1", "Content 1", "", 1L,
 				new MemberInfo(1L, "Author 1", "author1.png", "Developer"), new CountInfo(10, 5, 2),
 				"tag1,tag2", "http/temp/f.jpeg", LocalDateTime.now())
 		);
