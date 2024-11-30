@@ -83,7 +83,6 @@ class PostOpenControllerTest extends ControllerTest {
 		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
 	}
 
-
 	@Test
 	@DisplayName("존재하지 않는 게시글 ID로 조회 요청을 하면 400 BAD REQUEST를 반환한다")
 	void getPostByInvalidIdReturns400BAD_REQUEST() {
@@ -136,9 +135,8 @@ class PostOpenControllerTest extends ControllerTest {
 		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
 	}
 
-
 	@Test
-	@DisplayName("카테고리 ID나 마지막 게시글 ID 없이 게시글 조회 요청이 성공적으로 처리되면 200 OK를 반환하고 결과를 검증한다")
+	@DisplayName("카테고리 ID나 마지막 게시글 ID 없이 모든 게시글 조회 요청이 성공적으로 처리되면 200 OK를 반환하고 결과를 검증한다")
 	void getAllPostsWithoutParamsReturns200OK() {
 		// given
 		List<GetAllPostsResponse> mockQueryResult = List.of(
@@ -166,12 +164,69 @@ class PostOpenControllerTest extends ControllerTest {
 		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
 	}
 
-	/*
-		게시글 조회 요청 시 데이터베이스에 데이터가 없을 경우 빈 목록을 반환한다 제거
-		Controller Test도 Mock 객체를 사용하므로 단위 테스트임.
-		DB와 연관이 없음.
-	*/
+	@Test
+	@DisplayName("카테고리 ID만 제공된 경우 모든 게시글 조회 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+	void getAllPostsWithOnlyCategoryIdReturns200OK() {
+		// given
+		Long categoryId = 1L;
 
-	// todo categoryId만 있을 경우, lastPostId만 있을 경우 등도 테스트
+		List<GetAllPostsResponse> mockQueryResult = List.of(
+				new GetAllPostsResponse(
+						1L, "Title 1", "Content 1", "", categoryId,
+						new MemberInfo(1L, "Author 1", "author1.png", "Developer"), new CountInfo(10, 5, 2),
+						"tag1,tag2", "http/temp/f.jpeg", LocalDateTime.now())
+		);
+
+		given(postQueryRepository.findAllPosts(null, categoryId)).willReturn(mockQueryResult);
+
+		// when
+		API<List<GetAllPostsTestResponse>> response = RestAssuredMockMvc.given().log().all()
+				.queryParam("categoryId", categoryId)
+				.when().get("/open/posts")
+				.then().log().all()
+				.status(HttpStatus.OK)
+				.extract()
+				.as(new TypeRef<>() {
+				});
+
+		// then
+		GetAllPostsTestResponse mockTestResponse = GetAllPostsTestResponse.from(mockQueryResult.getFirst());
+		API<List<GetAllPostsTestResponse>> mockResponse = API.of(POST_VIEW_SUCCESS, List.of(mockTestResponse));
+
+		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
+	}
+
+	@Test
+	@DisplayName("마지막 게시글 ID만 제공된 경우 모든 게시글 조회 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
+	void getAllPostsWithOnlyLastPostIdReturns200OK() {
+		// given
+		Long lastPostId = 10L;
+
+		List<GetAllPostsResponse> mockQueryResult = List.of(
+				new GetAllPostsResponse(
+						1L, "Title 1", "Content 1", "", 1L,
+						new MemberInfo(1L, "Author 1", "author1.png", "Developer"), new CountInfo(10, 5, 2),
+						"tag1,tag2", "http/temp/f.jpeg", LocalDateTime.now())
+		);
+
+		given(postQueryRepository.findAllPosts(lastPostId, null)).willReturn(mockQueryResult);
+
+		// when
+		API<List<GetAllPostsTestResponse>> response = RestAssuredMockMvc.given().log().all()
+				.queryParam("lastPostId", lastPostId)
+				.when().get("/open/posts")
+				.then().log().all()
+				.status(HttpStatus.OK)
+				.extract()
+				.as(new TypeRef<>() {
+				});
+
+		// then
+		GetAllPostsTestResponse mockTestResponse = GetAllPostsTestResponse.from(mockQueryResult.getFirst());
+		API<List<GetAllPostsTestResponse>> mockResponse = API.of(POST_VIEW_SUCCESS, List.of(mockTestResponse));
+
+		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
+	}
+
 }
 
