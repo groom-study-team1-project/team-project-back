@@ -6,9 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
-import deepdivers.community.global.utility.uploader.S3Exception;
-import deepdivers.community.global.utility.uploader.S3Uploader;
-import org.junit.jupiter.api.AfterEach;
+import deepdivers.community.infra.aws.s3.exception.S3Exception;
+import deepdivers.community.infra.aws.s3.S3Uploader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,7 +66,7 @@ class S3UploaderIntTest {
         // When, Then
         assertThatThrownBy(() -> s3Uploader.profileImageUpload(file, memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
+                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE_FORMAT);
     }
 
     @Test
@@ -110,7 +109,7 @@ class S3UploaderIntTest {
         // When, Then
         assertThatThrownBy(() -> s3Uploader.postImageUpload(file))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
+                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE_FORMAT);
     }
 
     @Test

@@ -1,17 +1,27 @@
 package deepdivers.community.domain.post.controller;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
 
-import java.util.List;
-
+import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.post.controller.api.PostApiController;
+import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
+import deepdivers.community.domain.post.dto.response.PostSaveResponse;
+import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.service.LikeService;
+import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.exception.model.BadRequestException;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,18 +30,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.context.WebApplicationContext;
-
-import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.controller.api.PostApiController;
-import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostSaveResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
-import deepdivers.community.domain.post.service.PostService;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = PostApiController.class)
@@ -44,8 +42,7 @@ class PostApiControllerTest extends ControllerTest {
 	private LikeService likeService;
 
 	@BeforeEach
-	void setUp(WebApplicationContext webApplicationContext) {
-		RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+	void init() {
 		mockingAuthArgumentResolver();
 	}
 

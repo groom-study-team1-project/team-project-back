@@ -26,7 +26,7 @@ import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import deepdivers.community.global.utility.encryptor.EncryptorBean;
-import deepdivers.community.global.utility.uploader.S3Exception;
+import deepdivers.community.infra.aws.s3.exception.S3Exception;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +38,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-@Transactional
 @Import(LocalStackTestConfig.class)
+@Transactional
 @DirtiesContext
 class MemberServiceTest {
 
@@ -277,8 +277,8 @@ class MemberServiceTest {
 
         // When, Then
         assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE_FORMAT);
     }
 
     @Test

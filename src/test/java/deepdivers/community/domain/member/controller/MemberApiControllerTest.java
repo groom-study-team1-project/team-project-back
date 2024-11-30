@@ -12,10 +12,8 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.api.MemberApiController;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
-import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberQueryRepository;
@@ -30,7 +28,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = MemberApiController.class)
@@ -43,8 +40,7 @@ class MemberApiControllerTest extends ControllerTest {
     MemberQueryRepository memberQueryRepository;
 
     @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) throws Exception {
-        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+    void init() {
         mockingAuthArgumentResolver();
     }
 

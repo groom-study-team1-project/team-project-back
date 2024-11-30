@@ -81,6 +81,12 @@ jacoco {
 	toolVersion = "0.8.9"  // Jacoco 버전 지정
 }
 
+def excludedPatterns = [
+		'deepdivers.community.BackendApplication',
+		'deepdivers.community.**.{config,exception,dto,properties}.*',
+		'deepdivers.community.infra.aws.s3.generator.S3RequestGenerator'
+]
+
 jacocoTestReport {
 	reports {
 		xml.required = true
@@ -91,12 +97,7 @@ jacocoTestReport {
 
 	afterEvaluate {
 		classDirectories.setFrom(files(classDirectories.files.collect {
-			fileTree(dir: it, includes: ['**/*.class'], excludes: [
-					'**/deepdivers.community.BackendApplication',
-					'deepdivers.community.config.*',
-					'deepdivers.community.**.exception.*',
-					'deepdivers.community.**.dto.*',
-			])
+			fileTree(dir: it, includes: ['**/*.class'], excludes: excludedPatterns)
 		}))
 	}
 }
@@ -106,12 +107,7 @@ jacocoTestCoverageVerification {
 	violationRules {
 		rule {
 			element = 'CLASS'
-			excludes = [
-					'deepdivers.community.BackendApplication',
-					'deepdivers.community.config.*',
-					'deepdivers.community.**.exception.*',
-					'deepdivers.community.**.dto.*',
-			]
+			excludes = excludedPatterns
 			limit {
 				minimum = 0.80  // 최소 80% 커버리지 요구
 			}

@@ -24,6 +24,7 @@ import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.infra.aws.s3.exception.S3Exception;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,8 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
-@Transactional
 @DirtiesContext
+@Transactional
 @Import(LocalStackTestConfig.class)
 class PostServiceTest {
 
@@ -122,7 +123,7 @@ class PostServiceTest {
         // when & then
         assertThatThrownBy(() -> postService.uploadPostImage(invalidFile))
                 .isInstanceOf(BadRequestException.class)
-                .hasMessage("이미지 파일이 아닙니다.");
+                .hasMessage(S3Exception.INVALID_IMAGE_FORMAT.getMessage());
     }
 
     @Test

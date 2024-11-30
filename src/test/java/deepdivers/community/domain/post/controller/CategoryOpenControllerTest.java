@@ -1,12 +1,18 @@
 package deepdivers.community.domain.post.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
 
+import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.post.controller.open.CategoryOpenController;
+import deepdivers.community.domain.post.dto.response.CategoryResponse;
+import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
+import deepdivers.community.domain.post.service.CategoryService;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.Arrays;
 import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,16 +20,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.context.WebApplicationContext;
-
-import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.post.controller.open.CategoryOpenController;
-import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
-import deepdivers.community.domain.post.service.CategoryService;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 @WebMvcTest(controllers = CategoryOpenController.class)
 class CategoryOpenControllerTest extends ControllerTest {
@@ -34,9 +30,7 @@ class CategoryOpenControllerTest extends ControllerTest {
 	private CategoryResponse mockCategoryResponse;
 
 	@BeforeEach
-	void setUp(WebApplicationContext webApplicationContext) throws Exception {
-		RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-
+	void init() {
 		// 카테고리 조회 시 사용할 mock 데이터 생성
 		mockCategoryResponse = new CategoryResponse(
 			1L,              // categoryId

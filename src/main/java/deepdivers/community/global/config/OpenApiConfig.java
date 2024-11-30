@@ -1,5 +1,7 @@
 package deepdivers.community.global.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.core.jackson.ModelResolver;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -25,6 +27,11 @@ public class OpenApiConfig {
 
 	public OpenApiConfig(@Value("${goorm.community.server.url}") final String dveUrl) {
 		this.devUrl = dveUrl;
+	}
+
+	@Bean
+	public ModelResolver modelResolver(final ObjectMapper objectMapper) {
+		return new ModelResolver(objectMapper);
 	}
 
 	@Bean

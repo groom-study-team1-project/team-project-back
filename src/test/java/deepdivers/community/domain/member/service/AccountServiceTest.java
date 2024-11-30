@@ -10,7 +10,7 @@ import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.mail.MailException;
+import deepdivers.community.infra.mail.MailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

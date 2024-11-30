@@ -9,7 +9,7 @@ import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
-import deepdivers.community.global.utility.mail.MailHelper;
+import deepdivers.community.infra.mail.MailHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

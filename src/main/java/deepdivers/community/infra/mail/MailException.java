@@ -1,4 +1,4 @@
-package deepdivers.community.global.utility.mail;
+package deepdivers.community.infra.mail;
 
 import deepdivers.community.global.exception.model.ExceptionType;
 import lombok.AllArgsConstructor;

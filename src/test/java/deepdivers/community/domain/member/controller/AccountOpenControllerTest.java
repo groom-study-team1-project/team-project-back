@@ -16,25 +16,17 @@ import deepdivers.community.domain.member.service.AccountService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(controllers = AccountOpenController.class)
 class AccountOpenControllerTest extends ControllerTest {
 
     @MockBean
     private AccountService accountService;
-
-    @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) throws Exception {
-        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-        mockingAuthArgumentResolver();
-    }
 
     /*
     * 닉네임 중복 검사 컨트롤러 테스트
