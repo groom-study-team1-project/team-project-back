@@ -8,9 +8,7 @@ import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
-import deepdivers.community.domain.post.dto.response.PostSaveResponse;
+import deepdivers.community.domain.post.dto.response.*;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
@@ -355,15 +353,27 @@ class PostServiceTest {
     void readPostDetailSuccessTest() {
         // Given
         String ipAddr = "127.0.0.1";
+        PostReadResponse expectedPostResponse = new PostReadResponse(
+                post.getId(),
+                "Post Title",
+                "Post Content",
+                1L,
+                new MemberInfo(1L, "작성자 닉네임", "이미지 URL", "개발자"),
+                new CountInfo(100, 50, 10),
+                List.of("tag1", "tag2"),
+                List.of("http/temp/f.jpeg"),
+                "2024-09-26T12:00:00"
+        );
+        API<PostReadResponse> expectedResponse = API.of(PostStatusType.POST_VIEW_SUCCESS, expectedPostResponse);
 
         // When
-        PostReadResponse response = postService.readPostDetail(post.getId(), ipAddr);
+        API<PostReadResponse> response = postService.readPostDetail(post.getId(), ipAddr);
 
         // Then
-        assertThat(response).isNotNull();
-        assertThat(response.title()).isEqualTo("Post Title");
-        assertThat(response.content()).isEqualTo("Post Content");
+        assertThat(response).usingRecursiveComparison().isEqualTo(expectedResponse);
     }
+
+
 
     @Test
     @DisplayName("존재하지 않는 게시글 ID로 상세 조회 시 예외가 발생한다")

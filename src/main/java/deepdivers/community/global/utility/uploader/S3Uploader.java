@@ -20,10 +20,14 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 @Component
 public class S3Uploader {
 
+    private static final String TEMP_BUCKET_NAME = "temp";
+    private static final String POST_BUCKET_NAME = "posts";
+
+    public static final String TEMP_DIRECTORY = String.format("/%s/", S3Uploader.TEMP_BUCKET_NAME);
+    public static final String POST_DIRECTORY = String.format("/%s/", S3Uploader.POST_BUCKET_NAME);
+
     private static final List<String> ALLOWED_EXTENSIONS = Arrays.asList("jpg", "jpeg", "png", "gif");
     private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList("image/jpeg", "image/png", "image/gif");
-    public static final String TEMP_DIRECTORY = "temp";
-    public static final String POST_DIRECTORY = "posts";
 
     private final String bucket;
     private final String baseUrl;
@@ -61,7 +65,7 @@ public class S3Uploader {
         validateImageFile(file);
 
         final String fileName = parseSaveFileName(file);
-        final String key = String.format("%s/%s", TEMP_DIRECTORY, fileName);
+        final String key = String.format("%s/%s", TEMP_BUCKET_NAME, fileName);
         uploadToS3(getPutObjectRequest(file, key), file);
 
         return String.format("%s/%s", baseUrl, key);
@@ -81,11 +85,11 @@ public class S3Uploader {
     }
 
     public String buildTempKey(String fileName) {
-        return String.format("%s/%s", TEMP_DIRECTORY, fileName);
+        return String.format("%s/%s", TEMP_BUCKET_NAME, fileName);
     }
 
     public String buildPostKey(Long postId, String fileName) {
-        return String.format("%s/%d/%s", POST_DIRECTORY, postId, fileName);
+        return String.format("%s/%d/%s", POST_BUCKET_NAME, postId, fileName);
     }
 
     private void validateImageFile(final MultipartFile file) {

@@ -12,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static deepdivers.community.global.utility.uploader.S3Uploader.POST_DIRECTORY;
+import static deepdivers.community.global.utility.uploader.S3Uploader.TEMP_DIRECTORY;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,34 +37,25 @@ public class ImageService {
 
     public List<PostImage> createPostImages(final Post post, final List<String> newImageUrls) {
         return newImageUrls.stream()
-                .map(imageUrl -> {
-                    PostImage postImage = createPostDirectoryImage(post, imageUrl);
-                    if (postImage == null) {
-                        postImage = createTempDirectoryImage(post, imageUrl);
-                    }
-                    return postImage;
-                })
+                .filter(this::isValidImageUrl)
+                .map(imageUrl -> moveAndGenereate(post, imageUrl))
                 .toList();
     }
 
-    private PostImage createPostDirectoryImage(final Post post, final String imageUrl) {
-        if (imageUrl.contains(String.format("/%s/", S3Uploader.POST_DIRECTORY))) {
+    private PostImage moveAndGenereate(final Post post, final String imageUrl) {
+        if (imageUrl.contains(POST_DIRECTORY)) {
             return PostImage.of(post, imageUrl);
         }
-        return null;
+
+        return PostImage.of(post, moveTempImageToPostBucket(imageUrl, post.getId()));
     }
 
-    private PostImage createTempDirectoryImage(final Post post, final String imageUrl) {
-        if (imageUrl.contains(String.format("/%s/", S3Uploader.TEMP_DIRECTORY))) {
-            final String movedImageUrl = moveTempImageToPostBucket(imageUrl, post.getId());
-            return PostImage.of(post, movedImageUrl);
-        }
-        return null;
+    private boolean isValidImageUrl(final String imageUrl) {
+        return imageUrl.contains(TEMP_DIRECTORY) || imageUrl.contains(POST_DIRECTORY);
     }
 
     private String moveTempImageToPostBucket(final String tempImageUrl, final Long postId) {
-        final String fileName = tempImageUrl.split(String.format("/%s/", S3Uploader.TEMP_DIRECTORY))[1];
-
+        final String fileName = tempImageUrl.split(TEMP_DIRECTORY)[1];
         final String tempKey = s3Uploader.buildTempKey(fileName);
         final String finalKey = s3Uploader.buildPostKey(postId, fileName);
 
