@@ -11,6 +11,7 @@ public class GetAllPostsTestResponse {
     private Long postId;
     private String title;
     private String content;
+    private String thumbnail;
     private Long categoryId;
     private MemberInfo memberInfo;
     private CountInfo countInfo;
@@ -18,11 +19,12 @@ public class GetAllPostsTestResponse {
     private List<String> imageUrls;
     private LocalDateTime createdAt;
 
-    public GetAllPostsTestResponse(Long postId, String title, String content, Long categoryId, MemberInfo memberInfo,
+    public GetAllPostsTestResponse(Long postId, String title, String content, String thumbnail, Long categoryId, MemberInfo memberInfo,
                                    CountInfo countInfo, List<String> hashtags, List<String> imageUrls,
                                    LocalDateTime createdAt) {
         this.postId = postId;
         this.title = title;
+        this.thumbnail = thumbnail;
         this.content = content;
         this.categoryId = categoryId;
         this.memberInfo = memberInfo;
@@ -37,6 +39,7 @@ public class GetAllPostsTestResponse {
             response.getPostId(),
             response.getTitle(),
             response.getContent(),
+            response.getThumbnail(),
             response.getCategoryId(),
             response.getMemberInfo(),
             response.getCountInfo(),

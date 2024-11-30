@@ -107,6 +107,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Post Title",
 				"Post Content",
+				"",
 				1L,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -139,6 +140,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				null,
 				"Post Content",
+				"",
 				1L,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -161,6 +163,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Post Title",
 				null,
+				"",
 				1L,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -183,6 +186,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Post Title",
 				"Post Content",
+				"",
 				null,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -205,6 +209,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Post Title",
 				"Post Content",
+				"",
 				1L,
 				null,
 				List.of("http/temp/f.jpeg")
@@ -238,6 +243,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Post Title",
 				"Post Content",
+				"",
 				1L,
 				List.of("tag1", "tag2"),
 				null // 이미지 리스트가 없는 경우
@@ -272,6 +278,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Updated Title",
 				"Updated Content",
+				"",
 				1L,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -305,6 +312,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				null,
 				"Updated Content",
+				"",
 				1L,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -328,6 +336,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Updated Title",
 				"Updated Content",
+				"",
 				null,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -351,6 +360,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Updated Title",
 				"Updated Content",
+				"",
 				1L,
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")

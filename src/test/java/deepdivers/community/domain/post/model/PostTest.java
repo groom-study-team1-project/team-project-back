@@ -62,6 +62,7 @@ class PostTest {
 		PostSaveRequest request = new PostSaveRequest(
 				"Test Title",
 				"Test Content",
+				"",
 				category.getId(),
 				List.of("tag1", "tag2"),
 				List.of("http/temp/f.jpeg")
@@ -81,15 +82,15 @@ class PostTest {
 
 	@ParameterizedTest
 	@CsvSource({
-			", 'Test Content', 1, tag1, tag2, http/temp/f.jpeg",
-			"'Test Title', , 1, tag1, tag2, http/temp/f.jpeg",
+			", 'Test Content', http/temp/f.jpeg,1, tag1, tag2, http/temp/f.jpeg",
+			"'Test Title', , http/temp/f.jpeg,  1, tag1, tag2, http/temp/f.jpeg",
 	})
 	@DisplayName("유효하지 않은 게시글 생성 시 예외 발생")
-	void createInvalidPost(String title, String content, Long categoryId, String tag1, String tag2, String imageUrl) {
+	void createInvalidPost(String title, String content, String thumbnail, Long categoryId, String tag1, String tag2, String imageUrl) {
 		// given
 		List<String> hashtags = List.of(tag1, tag2);
 		List<String> imageUrls = List.of(imageUrl);
-		PostSaveRequest request = new PostSaveRequest(title, content, categoryId, hashtags, imageUrls);
+		PostSaveRequest request = new PostSaveRequest(title, content, thumbnail, categoryId, hashtags, imageUrls);
 
 		// when, then
 		assertThatThrownBy(() -> Post.of(request, category, member))
@@ -101,7 +102,7 @@ class PostTest {
 	void connectHashtagsToPost() {
 		// given
 		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of("tag1", "tag2"), List.of("http/temp/f.jpeg")),
+				new PostSaveRequest("Test Title", "Test Content", "",  category.getId(), List.of("tag1", "tag2"), List.of("http/temp/f.jpeg")),
 				category,
 				member
 		);
@@ -123,7 +124,7 @@ class PostTest {
 	void connectImagesToPost() {
 		// given
 		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of("tag1", "tag2"), null),
+				new PostSaveRequest("Test Title", "Test Content", "", category.getId(), List.of("tag1", "tag2"), null),
 				category,
 				member
 		);
@@ -149,7 +150,7 @@ class PostTest {
 	void increaseViewCount() {
 		// given
 		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", category.getId(), List.of(), List.of("http/temp/f.jpeg")),
+				new PostSaveRequest("Test Title", "Test Content", "", category.getId(), List.of(), List.of("http/temp/f.jpeg")),
 				category,
 				member
 		);
