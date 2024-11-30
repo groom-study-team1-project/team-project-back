@@ -31,8 +31,8 @@ public class PostOpenController implements PostOpenControllerDocs {
 		@PathVariable final Long postId,
 		final HttpServletRequest request
 	) {
-		final PostReadResponse response = postService.readPostDetail(postId, request.getRemoteAddr());
-		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, response));
+		final API<PostReadResponse> response = postService.readPostDetail(postId, request.getRemoteAddr());
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping

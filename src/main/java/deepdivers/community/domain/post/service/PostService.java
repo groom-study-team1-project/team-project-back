@@ -81,11 +81,14 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PostReadResponse readPostDetail(final Long postId, final String ipAddr) {
+    public API<PostReadResponse> readPostDetail(final Long postId, final String ipAddr) {
         final Post post = getPostByIdWithThrow(postId);
         visitorService.increaseViewCount(post, ipAddr);
 
-        return PostReadResponse.from(post);
+        return API.of(
+                PostStatusType.POST_VIEW_SUCCESS,
+                PostReadResponse.from(post)
+        );
     }
 
     public API<PostImageUploadResponse> postImageUpload(final MultipartFile imageFile) {

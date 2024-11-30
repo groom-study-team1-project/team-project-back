@@ -65,7 +65,9 @@ class PostOpenControllerTest extends ControllerTest {
 				"2024-09-26T12:00:00"
 		);
 
-		given(postService.readPostDetail(eq(postId), eq(clientIp))).willReturn(responseBody);
+		API<PostReadResponse> mockResponse = API.of(POST_VIEW_SUCCESS, responseBody);
+
+		given(postService.readPostDetail(eq(postId), eq(clientIp))).willReturn(mockResponse);
 
 		// when
 		API<PostReadResponse> response = RestAssuredMockMvc.given().log().all()
@@ -77,18 +79,9 @@ class PostOpenControllerTest extends ControllerTest {
 				});
 
 		// then
-		PostReadResponse postResponse = response.getResult();
-		assertThat(postResponse).isNotNull();
-		assertThat(postResponse.title()).isEqualTo("Post Title");
-		assertThat(postResponse.categoryId()).isEqualTo(1L);
-		assertThat(postResponse.memberInfo().getNickname()).isEqualTo("작성자 닉네임");
-		assertThat(postResponse.countInfo().getViewCount()).isEqualTo(100);
-		assertThat(postResponse.countInfo().getLikeCount()).isEqualTo(50);
-		assertThat(postResponse.countInfo().getCommentCount()).isEqualTo(10);
-		assertThat(postResponse.hashtags()).containsExactly("tag1", "tag2");
-		assertThat(postResponse.imageUrls()).containsExactly("http/temp/f.jpeg");
-		assertThat(postResponse.createdAt()).isEqualTo("2024-09-26T12:00:00");
+		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
 	}
+
 
 	@Test
 	@DisplayName("존재하지 않는 게시글 ID로 조회 요청을 하면 400 BAD REQUEST를 반환한다")
