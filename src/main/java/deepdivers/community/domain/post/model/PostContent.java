@@ -20,24 +20,28 @@ public class PostContent {
 	private static final int MIN_LENGTH = 5;
 
 	@Column(name = "post_content", nullable = false)
-	private String content;  // 필드 이름을 "content"로 변경하여 구체화
+	private String content;
 
-	public static void validator(final String content) {
+	public static PostContent of(final String content) {
+		validateContent(content);
+		return new PostContent(content);
+	}
+
+	public static void validateContent(final String content) {
+		validateContentNotNull(content);
 		validateContentLength(content);
 	}
 
-	private static void validateContentLength(final String content) {
+	private static void validateContentNotNull(final String content) {
 		if (content == null) {
-			throw new IllegalArgumentException("content cannot be null");
-		}
-			throw new BadRequestException(PostExceptionType.INVALID_CONTENT_LENGTH);
+			throw new IllegalArgumentException("Content cannot be null");
 		}
 	}
 
-	public static PostContent of(final String content) {
-		validator(content);
-		return new PostContent(content);
+	private static void validateContentLength(final String content) {
 		if (content.length() < MIN_LENGTH) {
+			throw new BadRequestException(PostExceptionType.INVALID_CONTENT_LENGTH);
+		}
 	}
 
 }

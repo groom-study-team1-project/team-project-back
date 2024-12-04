@@ -3,7 +3,6 @@ package deepdivers.community.domain.post.service;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
-import deepdivers.community.domain.hashtag.service.HashtagService;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
@@ -33,14 +32,9 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.BDDMockito.given;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -97,7 +91,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("이미지 업로드 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
-    void postImageUploadSuccessfullyReturns200OK() throws Exception {
+    void uploadPostImageSuccessfullyReturns200OK() throws Exception {
         // given
         MockMultipartFile imageFile = new MockMultipartFile(
                 "imageFile",
@@ -107,7 +101,7 @@ class PostServiceTest {
         );
 
         // when
-        API<PostImageUploadResponse> response = postService.postImageUpload(imageFile);
+        API<PostImageUploadResponse> response = postService.uploadPostImage(imageFile);
 
         // then
         assertThat(response).isNotNull();
@@ -116,7 +110,7 @@ class PostServiceTest {
 
     @Test
     @DisplayName("유효하지 않은 파일로 업로드 요청 시 예외가 발생한다")
-    void postImageUploadWithInvalidFileThrowsException() throws Exception {
+    void uploadPostImageWithInvalidFileThrowsException() throws Exception {
         // given
         MockMultipartFile invalidFile = new MockMultipartFile(
                 "imageFile",
@@ -126,7 +120,7 @@ class PostServiceTest {
         );
 
         // when & then
-        assertThatThrownBy(() -> postService.postImageUpload(invalidFile))
+        assertThatThrownBy(() -> postService.uploadPostImage(invalidFile))
                 .isInstanceOf(BadRequestException.class)
                 .hasMessage("이미지 파일이 아닙니다.");
     }
@@ -141,7 +135,7 @@ class PostServiceTest {
                 MediaType.IMAGE_JPEG_VALUE,
                 "Test Image Content".getBytes()
         );
-        API<PostImageUploadResponse> imageUploadResponse = postService.postImageUpload(imageFile);
+        API<PostImageUploadResponse> imageUploadResponse = postService.uploadPostImage(imageFile);
         PostSaveRequest request = new PostSaveRequest(
                 "Post Title",
                 "Post Content",
@@ -216,7 +210,7 @@ class PostServiceTest {
                 MediaType.IMAGE_JPEG_VALUE,
                 "Test Image Content".getBytes()
         );
-        API<PostImageUploadResponse> imageUploadResponse = postService.postImageUpload(imageFile);
+        API<PostImageUploadResponse> imageUploadResponse = postService.uploadPostImage(imageFile);
         PostSaveRequest request = new PostSaveRequest(
                 "Updated Title",
                 "Updated Content",

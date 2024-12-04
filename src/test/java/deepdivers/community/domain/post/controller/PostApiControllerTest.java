@@ -59,7 +59,7 @@ class PostApiControllerTest extends ControllerTest {
 		PostImageUploadResponse responseBody = new PostImageUploadResponse("http://example.com/test-image.jpg");
 		API<PostImageUploadResponse> mockResponse = API.of(PostStatusType.POST_IMAGE_UPLOAD_SUCCESS, responseBody);
 
-		given(postService.postImageUpload(any(MultipartFile.class))).willReturn(mockResponse);
+		given(postService.uploadPostImage(any(MultipartFile.class))).willReturn(mockResponse);
 
 		// when
 		API<PostImageUploadResponse> response = RestAssuredMockMvc.given().log().all()
@@ -88,7 +88,7 @@ class PostApiControllerTest extends ControllerTest {
 				"Invalid File Content".getBytes()
 		);
 
-		given(postService.postImageUpload(any(MultipartFile.class)))
+		given(postService.uploadPostImage(any(MultipartFile.class)))
 				.willThrow(new BadRequestException(PostExceptionType.INVALID_IMAGE_FILE));
 
 		// when & then

@@ -91,7 +91,7 @@ public class PostService {
         );
     }
 
-    public API<PostImageUploadResponse> postImageUpload(final MultipartFile imageFile) {
+    public API<PostImageUploadResponse> uploadPostImage(final MultipartFile imageFile) {
         final String uploadUrl = imageService.uploadImageToTemp(imageFile);
         return API.of(PostStatusType.POST_IMAGE_UPLOAD_SUCCESS, PostImageUploadResponse.of(uploadUrl));
     }

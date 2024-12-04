@@ -61,6 +61,6 @@ public interface PostApiControllerDocs {
 				""",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<PostImageUploadResponse>> postImageUpload(MultipartFile imageFile);
+	ResponseEntity<API<PostImageUploadResponse>> uploadPostImage(MultipartFile imageFile);
 }
 
