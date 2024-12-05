@@ -21,24 +21,28 @@ public class PostTitle {
 	private static final int MAX_LENGTH = 50;
 
 	@Column(name = "post_title", nullable = false, length = 50)
-	private String title;  // 필드 이름을 "title"로 변경하여 구체화
+	private String title;
 
-	public static void validator(final String title) {
+	public static PostTitle of(final String title) {
+		validateTitle(title);
+		return new PostTitle(title);
+	}
+
+	public static void validateTitle(final String title) {
+		validateTitleNotNull(title);
 		validateTitleLength(title);
 	}
 
-	private static void validateTitleLength(final String title) {
+	private static void validateTitleNotNull(final String title) {
 		if (title == null) {
 			throw new IllegalArgumentException("Title cannot be null");
 		}
+	}
+
+	private static void validateTitleLength(final String title) {
 		if (title.length() < MIN_LENGTH || title.length() > MAX_LENGTH) {
 			throw new BadRequestException(PostExceptionType.INVALID_TITLE_LENGTH);
 		}
-	}
-
-	protected static PostTitle of(final String title) {
-		validator(title);
-		return new PostTitle(title);
 	}
 
 }
