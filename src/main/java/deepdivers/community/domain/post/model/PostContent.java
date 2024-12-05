@@ -19,7 +19,7 @@ public class PostContent {
 
 	private static final int MIN_LENGTH = 5;
 
-	@Column(name = "post_content", nullable = false)
+	@Column(name = "post_content", nullable = false, columnDefinition = "TEXT")
 	private String content;
 
 	public static PostContent of(final String content) {
