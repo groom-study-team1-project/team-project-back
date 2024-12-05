@@ -35,7 +35,7 @@ public class PostTitle {
 
 	private static void validateTitleNotNull(final String title) {
 		if (title == null) {
-			throw new IllegalArgumentException("Title cannot be null");
+			throw new BadRequestException(PostExceptionType.VALUE_CANNOT_BE_NULL);
 		}
 	}
 

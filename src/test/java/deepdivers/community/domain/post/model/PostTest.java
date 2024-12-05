@@ -94,7 +94,8 @@ class PostTest {
 
 		// when, then
 		assertThatThrownBy(() -> Post.of(request, category, member))
-				.isInstanceOf(IllegalArgumentException.class);
+				.isInstanceOf(BadRequestException.class)
+				.hasMessageContaining(PostExceptionType.VALUE_CANNOT_BE_NULL.getMessage());
 	}
 
 	@Test

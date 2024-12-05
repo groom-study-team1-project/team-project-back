@@ -34,7 +34,7 @@ public class PostContent {
 
 	private static void validateContentNotNull(final String content) {
 		if (content == null) {
-			throw new IllegalArgumentException("Content cannot be null");
+			throw new BadRequestException(PostExceptionType.VALUE_CANNOT_BE_NULL);
 		}
 	}
 
