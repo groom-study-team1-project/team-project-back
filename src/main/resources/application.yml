@@ -8,7 +8,7 @@ spring:
         secret-key: ${AWS_CREDENTIALS_SECRET_KEY}
       s3:
         region: ${AWS_S3_REGION}
-        endpoint: ${AWS_S3_ENDPOINT}
+        endpoint:
         bucket: deepdiver-community-files-dev
   application:
     name: backend
