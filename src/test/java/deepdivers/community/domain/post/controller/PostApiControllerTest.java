@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.*;
 import static org.hamcrest.Matchers.containsString;
 
+import deepdivers.community.domain.post.service.LikeService;
 import java.util.List;
 
 import deepdivers.community.domain.common.NoContent;
@@ -38,6 +39,9 @@ class PostApiControllerTest extends ControllerTest {
 
 	@MockBean
 	private PostService postService;
+
+	@MockBean
+	private LikeService likeService;
 
 	@BeforeEach
 	void setUp(WebApplicationContext webApplicationContext) {

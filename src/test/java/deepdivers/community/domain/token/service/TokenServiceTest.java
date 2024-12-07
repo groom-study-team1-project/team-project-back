@@ -2,8 +2,6 @@ package deepdivers.community.domain.token.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.verify;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
@@ -25,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
 @Import(LocalStackTestConfig.class)
