@@ -13,4 +13,5 @@ public enum S3Exception implements ExceptionType {
 
     private final int code;
     private final String message;
+
 }

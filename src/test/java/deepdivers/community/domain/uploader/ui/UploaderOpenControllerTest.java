@@ -4,15 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.uploader.application.UploaderService;
 import deepdivers.community.domain.uploader.application.dto.request.GetPresignRequest;
 import deepdivers.community.domain.uploader.application.dto.response.GetPresignResponse;
 import deepdivers.community.domain.uploader.application.dto.response.statustype.UploaderStatusType;
 import deepdivers.community.infra.aws.s3.KeyType;
+import deepdivers.community.infra.aws.s3.S3PresignManager;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -27,8 +28,7 @@ import org.springframework.http.HttpStatus;
 @WebMvcTest(controllers = UploaderOpenController.class)
 class UploaderOpenControllerTest extends ControllerTest {
 
-    @MockBean private UploaderService uploaderService;
-
+    @MockBean private S3PresignManager s3PresignManager;
 
     @Test
     @DisplayName("서명 된 URL 생성이 성공하면 200OK를 반환한다.")
@@ -36,7 +36,9 @@ class UploaderOpenControllerTest extends ControllerTest {
         // given
         GetPresignResponse presignResponse = new GetPresignResponse("key", "presign", "access");
         API<GetPresignResponse> mockResponse = API.of(UploaderStatusType.GENERATE_PRESIGN_SUCCESS, presignResponse);
-        given(uploaderService.generatePresignUrl(any(GetPresignRequest.class))).willReturn(mockResponse);
+        given(s3PresignManager.generateKey(anyString(), any(KeyType.class))).willReturn("key");
+        given(s3PresignManager.generatePreSignedUrl(anyString(), anyString())).willReturn("presign");
+        given(s3PresignManager.generateAccessUrl(anyString())).willReturn("access");
 
         // when
         API<GetPresignResponse> response = RestAssuredMockMvc.given().log().all()
