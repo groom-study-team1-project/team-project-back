@@ -30,7 +30,8 @@ public class S3TagManager {
             throw new BadRequestException(NOT_FOUND_FILE);
         }
     }
-    public boolean doesNotObjectExist(final String key) {
+
+    private boolean doesNotObjectExist(final String key) {
         try {
             final HeadObjectRequest headObjectRequest = getHeadObjectRequest(s3Properties.getBucket(), key);
             s3Client.headObject(headObjectRequest);
@@ -48,19 +49,19 @@ public class S3TagManager {
             .build();
     }
 
-    public void markAsUsed(final String key) {
+    public void markAsDeleted(final String key) {
         validateDoesNotObjectExist(key);
 
         final PutObjectTaggingRequest request = PutObjectTaggingRequest.builder()
             .bucket(s3Properties.getBucket())
             .key(key)
-            .tagging(createPermanentTag())
+            .tagging(createDeleteTag())
             .build();
 
         s3Client.putObjectTagging(request);
     }
 
-    public void markAsUnused(final String key) {
+    public void removeDeleteTag(final String key) {
         validateDoesNotObjectExist(key);
 
         final DeleteObjectTaggingRequest request = DeleteObjectTaggingRequest.builder()
@@ -71,7 +72,7 @@ public class S3TagManager {
         s3Client.deleteObjectTagging(request);
     }
 
-    private static Tagging createPermanentTag() {
+    public static Tagging createDeleteTag() {
         return Tagging.builder()
             .tagSet(Tag.builder()
                 .key(LIFECYCLE_TAG_KEY)

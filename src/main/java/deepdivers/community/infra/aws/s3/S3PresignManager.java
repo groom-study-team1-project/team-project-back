@@ -7,6 +7,7 @@ import deepdivers.community.infra.aws.s3.properties.S3Properties;
 import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -14,10 +15,10 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class S3PresignManager {
 
     private static final Duration PRE_SIGNED_URL_EXPIRATION = Duration.ofMinutes(5);
-    private static final String TAG_INITIAL = "Status=Deleted";
 
     private final S3Properties s3Properties;
     private final S3Presigner s3Presigner;
@@ -45,14 +46,14 @@ public class S3PresignManager {
         return String.format("%s/%s", s3Properties.getBaseUrl(), key);
     }
 
-    public static PutObjectPresignRequest generatePresignRequest(final PutObjectRequest objectRequest) {
+    private PutObjectPresignRequest generatePresignRequest(final PutObjectRequest objectRequest) {
         return PutObjectPresignRequest.builder()
             .signatureDuration(PRE_SIGNED_URL_EXPIRATION)
             .putObjectRequest(objectRequest)
             .build();
     }
 
-    public static PutObjectRequest generatePutObjectRequest(
+    private PutObjectRequest generatePutObjectRequest(
         final String key,
         final String contentType,
         final String bucket
@@ -61,7 +62,7 @@ public class S3PresignManager {
             .bucket(bucket)
             .key(key)
             .contentType(contentType)
-            .tagging(TAG_INITIAL)
+            .tagging(S3TagManager.createDeleteTag())
             .build();
     }
 
