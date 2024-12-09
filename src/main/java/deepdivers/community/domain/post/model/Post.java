@@ -94,7 +94,7 @@ public class Post extends BaseEntity {
 
     public List<String> getImageUrls() {
         return postImages.stream()
-                .map(PostImage::getImageUrl)
+                .map(PostImage::getImageKey)
                 .toList();
     }
 

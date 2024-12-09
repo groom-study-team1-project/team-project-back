@@ -7,7 +7,7 @@ import lombok.*;
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = "imageUrl")
+@EqualsAndHashCode(of = "imageKey")
 public class PostImage {
 
     @Id
@@ -19,12 +19,13 @@ public class PostImage {
     private Post post;
 
     @Column(nullable = false)
-    private String imageUrl;
+    private String imageKey;
 
-    public PostImage(final Post post, final String imageUrl) {
+    public PostImage(final Post post, final String imageKey) {
         this.post = post;
-        this.imageUrl = imageUrl;
+        this.imageKey = imageKey;
     }
 
-    public static PostImage of(final Post post, final String imageUrl) {return new PostImage(post, imageUrl);}
+    public static PostImage of(final Post post, final String imageKey) {return new PostImage(post, imageKey);}
+
 }

@@ -21,7 +21,7 @@ class PostImageTest {
         // then
         assertThat(postImage).isNotNull();
         assertThat(postImage.getPost()).isEqualTo(post);
-        assertThat(postImage.getImageUrl()).isEqualTo(imageUrl);
+        assertThat(postImage.getImageKey()).isEqualTo(imageUrl);
     }
 
     @Test

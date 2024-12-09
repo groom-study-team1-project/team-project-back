@@ -26,7 +26,9 @@ import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.infra.aws.s3.S3TagManagerTest;
 import deepdivers.community.infra.aws.s3.exception.S3Exception;
+import deepdivers.community.infra.aws.s3.properties.S3Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,58 +38,48 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @SpringBootTest
 @Import(LocalStackTestConfig.class)
 @Transactional
 @DirtiesContext
-class MemberServiceTest {
+class MemberServiceTest extends S3TagManagerTest {
 
     @Autowired
     private MemberService memberService;
     @Autowired
     private AuthHelper authHelper;
-    @Autowired
-    @EncryptorBean
-    private Encryptor encryptor;
-    @Autowired
-    private MemberRepository memberRepository;
 
     /*
      * 회원 가입 관련 테스트
      * 성공, 예외
      * */
     @Test
-    @DisplayName("회원 가입이 성공했을 경우 저장된 정보를 테스트한다.")
-    void signUpSuccessAfterFindMemberTest() {
-        // Given, test.sql
-        String email = "test@mail.com";
-        String password = "password1234!";
-        String nickname = "test";
-        String img = "test";
-        String tel = "010-1234-5678";
-        MemberSignUpRequest request = new MemberSignUpRequest(email, password, nickname, img, tel);
-        long lastAccountId = 10L;
+    @DisplayName("회원 가입이 성공했을 경우를 테스트한다.")
+    void signUpSuccessTest() {
+        // Given
+        MemberSignUpRequest request = new MemberSignUpRequest(
+            "test@mail.com", "password1234!", "test", "profile/test-image.jpg", "010-1234-5678"
+        );
+        createTestObject("profile/test-image.jpg");
 
         // When
-        memberService.signUp(request);
+        NoContent result = memberService.signUp(request);
 
         // Then
-        Member member = memberRepository.findByEmailValue(email).get();
-        assertThat(member.getId()).isGreaterThan(lastAccountId);
-        assertThat(member.getEmail()).isEqualTo(email);
-        assertThat(encryptor.matches(password, member.getPassword())).isTrue();
-        assertThat(member.getNickname()).isEqualTo(nickname);
-        assertThat(member.getPhoneNumber()).isEqualTo(tel);
+        assertThat(result.status().code()).isEqualTo(MemberStatusType.MEMBER_SIGN_UP_SUCCESS.getCode());
+        assertThat(result.status().message()).isEqualTo(MemberStatusType.MEMBER_SIGN_UP_SUCCESS.getMessage());
     }
 
     @Test
     @DisplayName("소문자 닉네임 정보가 저장되는지 확인한다.")
     void validateSavedLowerCaseNickname() {
         // Given, Test.sql
-        String nickname = "aA안1";
-        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", nickname, "test", "010-1234-5678");
+        createTestObject("profile/test-image.jpg");
+        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", "aA안1", "profile/test-image.jpg", "010-1234-5678");
         memberService.signUp(request);
+
         String expectedNickname = "aa안1";
 
         // When & Then
@@ -97,19 +89,17 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원 가입이 성공했을 경우를 테스트한다.")
-    void signUpSuccessTest() {
+    @DisplayName("업로드 되지 않은 image Key 정보가 주어질 때 회원가입 시 예외가 발생하는지 확인한다.")
+    void givenDoesNotExistingImageKeyWhenSignUpTest() {
         // Given, test.sql
-        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", "test", "test", "010-1234-5678");
+        MemberSignUpRequest request = new MemberSignUpRequest(
+            "test@mail.com", "password1234!", "test", "profile/not-exist-image.jpg", "010-1234-5678"
+        );
 
-        // When
-        NoContent response = memberService.signUp(request);
-
-        // Then
-        StatusType statusType = MemberStatusType.MEMBER_SIGN_UP_SUCCESS;
-        assertThat(response).isNotNull();
-        assertThat(response.status().code()).isEqualTo(statusType.getCode());
-        assertThat(response.status().message()).isEqualTo(statusType.getMessage());
+        // When & then
+        assertThatThrownBy(() -> memberService.signUp(request))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", S3Exception.NOT_FOUND_FILE);
     }
 
     @Test

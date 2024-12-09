@@ -141,7 +141,7 @@ class PostTest {
 		// then
 		assertThat(post.getPostImages()).hasSize(2);
 		assertThat(post.getPostImages().stream()
-				.map(PostImage::getImageUrl)
+				.map(PostImage::getImageKey)
 				.toList())
 				.containsExactlyInAnyOrder("http://example.com/image1.jpg", "http://example.com/image2.jpg");
 	}

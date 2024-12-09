@@ -110,7 +110,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
-            .body("message", containsString("사용자 이미지 정보가 필요합니다."));
+            .body("message", containsString("사용자 이미지 키 정보가 필요합니다."));
     }
 
     @Test

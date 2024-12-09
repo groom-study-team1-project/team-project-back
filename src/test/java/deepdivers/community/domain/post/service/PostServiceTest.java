@@ -156,7 +156,7 @@ class PostServiceTest {
         assertThat(savedPost.getContent().getContent()).isEqualTo("Post Content");
         assertThat(savedPost.getHashtags()).hasSize(2);
         assertThat(savedPost.getPostImages())
-                .extracting(PostImage::getImageUrl)
+                .extracting(PostImage::getImageKey)
                 .anyMatch(url -> url.contains("posts/"));
     }
 
@@ -233,7 +233,7 @@ class PostServiceTest {
         assertThat(updatedPost.getCategory().getName()).isEqualTo("Updated Category");
         assertThat(updatedPost.getHashtags()).hasSize(2);
         assertThat(updatedPost.getPostImages())
-                .extracting(PostImage::getImageUrl)
+                .extracting(PostImage::getImageKey)
                 .anyMatch(url -> url.contains("posts/"));
     }
 

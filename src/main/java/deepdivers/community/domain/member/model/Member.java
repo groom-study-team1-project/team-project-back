@@ -57,7 +57,7 @@ public class Member extends BaseEntity {
     private MemberRole role;
 
     @Column(nullable = false)
-    private String imageUrl;
+    private String imageKey;
 
     @Column(length = 100, nullable = false)
     private String aboutMe;
@@ -93,7 +93,7 @@ public class Member extends BaseEntity {
         this.nickname = new Nickname(request.nickname());
         this.phoneNumber = new PhoneNumber(request.phoneNumber());
         this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
-        this.imageUrl = request.imageUrl();
+        this.imageKey = request.imageKey();
         this.activityStats = ActivityStats.createDefault();
         this.aboutMe = StringUtils.EMPTY;
         this.githubAddr = StringUtils.EMPTY;
@@ -152,7 +152,7 @@ public class Member extends BaseEntity {
 
     private void updateProfileImage(final String imageUrl) {
         if (!(imageUrl == null || imageUrl.isEmpty())) {
-            this.imageUrl = imageUrl;
+            this.imageKey = imageUrl;
         }
     }
 

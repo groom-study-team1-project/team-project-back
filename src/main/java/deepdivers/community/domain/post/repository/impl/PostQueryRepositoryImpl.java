@@ -83,7 +83,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     post.createdAt.as("createdAt"),
                     Expressions.stringTemplate(
                         "IFNULL(GROUP_CONCAT(DISTINCT {0}), '')",
-                        postImage.imageUrl
+                        postImage.imageKey
                     ).as("imageUrls"),
                     Expressions.stringTemplate(
                         "IFNULL(GROUP_CONCAT(DISTINCT {0}), '')",
@@ -92,7 +92,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     Projections.fields(MemberInfo.class,
                         member.id.as("memberId"),
                         member.nickname.value.as("nickname"),
-                        member.imageUrl.as("imageUrl"),
+                        member.imageKey.as("imageKey"),
                         member.job.as("memberJob")
                     ).as("memberInfo"),
                     Projections.fields(CountInfo.class,
@@ -114,7 +114,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 post.category.id,
                 member.id,
                 member.nickname.value,
-                member.imageUrl,
+                member.imageKey,
                 member.job,
                 post.viewCount,
                 post.likeCount,

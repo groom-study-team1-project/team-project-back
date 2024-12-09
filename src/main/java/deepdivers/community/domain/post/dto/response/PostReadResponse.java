@@ -30,7 +30,7 @@ public record PostReadResponse(
 			new MemberInfo(
 				post.getMember().getId(),
 				post.getMember().getNickname(),
-				post.getMember().getImageUrl(),
+				post.getMember().getImageKey(),
 				post.getMember().getJob()
 			),
 			new CountInfo(

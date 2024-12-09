@@ -74,7 +74,7 @@ public class TokenService {
         data.put(KEY_MEMBER_ID, member.getId());
         data.put(KEY_MEMBER_NICKNAME, member.getNickname());
         data.put(KEY_MEMBER_ROLE, member.getRole());
-        data.put(KEY_MEMBER_IMAGE, member.getImageUrl());
+        data.put(KEY_MEMBER_IMAGE, member.getImageKey());
         return data;
     }
 

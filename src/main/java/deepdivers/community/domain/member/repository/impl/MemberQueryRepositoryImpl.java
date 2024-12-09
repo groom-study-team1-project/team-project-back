@@ -23,7 +23,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepository {
                     member.id,
                     member.nickname.value,
                     member.role,
-                    member.imageUrl,
+                    member.imageKey,
                     member.aboutMe,
                     member.phoneNumber.value,
                     member.job,

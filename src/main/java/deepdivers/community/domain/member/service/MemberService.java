@@ -18,6 +18,7 @@ import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.infra.aws.s3.S3TagManager;
 import deepdivers.community.infra.aws.s3.S3Uploader;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
@@ -35,11 +36,13 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
     private final S3Uploader s3Uploader;
+    private final S3TagManager s3TagManager;
 
     public NoContent signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
 
         final Member member = Member.of(request, encryptor);
+        s3TagManager.removeDeleteTag(request.imageKey());
         memberRepository.save(member);
 
         return NoContent.from(MemberStatusType.MEMBER_SIGN_UP_SUCCESS);

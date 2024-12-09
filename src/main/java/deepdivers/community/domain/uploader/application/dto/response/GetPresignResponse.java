@@ -8,7 +8,7 @@ public record GetPresignResponse(
     String fileKey,
     @Schema(description = "서명된 S3 업로드 Url", example = "https://host/bucket/file.extension?presignInfo")
     String presignedUrl,
-    @Schema(description = "파일에 대한 imageUrl", example = "https://host/bucket/file.extension")
+    @Schema(description = "파일에 대한 imageKey", example = "https://host/bucket/file.extension")
     String accessUrl
 ) {
 

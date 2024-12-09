@@ -21,7 +21,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @SpringBootTest
 @Import(LocalStackTestConfig.class)
-class S3TagManagerTest {
+public class S3TagManagerTest {
 
     @Autowired
     private S3TagManager s3TagManager;
@@ -100,7 +100,7 @@ class S3TagManagerTest {
             .hasFieldOrPropertyWithValue("exceptionType", NOT_FOUND_FILE);
     }
 
-    private void createTestObject(String key) {
+    protected void createTestObject(String key) {
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
             .bucket(s3Properties.getBucket())
             .key(key)
