@@ -4,9 +4,11 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
+import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
+import deepdivers.community.domain.post.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
@@ -22,6 +24,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostApiController implements PostApiControllerDocs {
 
 	private final PostService postService;
+	private final LikeService likeService;
+
 
 	@Override
 	@PostMapping("/upload")
