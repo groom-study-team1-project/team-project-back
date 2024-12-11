@@ -61,5 +61,28 @@ public class PostApiController implements PostApiControllerDocs {
 		API<PostImageUploadResponse> response = postService.uploadPostImage(imageFile);
 		return ResponseEntity.ok(response);
 	}
+
+	@PostMapping("/like")
+	public ResponseEntity<NoContent> likePost(
+			@Auth final Member member,
+			@RequestBody final LikeRequest request
+	) {
+		final NoContent response = likeService.likePost(request, member.getId());
+		return ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(response);
+	}
+
+	@PostMapping("/unlike")
+	public ResponseEntity<NoContent> unlikePost(
+			@Auth final Member member,
+			@RequestBody final LikeRequest request
+	) {
+		final NoContent response = likeService.unlikePost(request, member.getId());
+		return ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(response);
+	}
+
 }
 
