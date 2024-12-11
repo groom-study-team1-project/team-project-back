@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.global.config.JpaConfig;
+import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.config.QueryDslConfig;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -19,7 +20,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DataJpaTest
-@Import({JpaConfig.class, QueryDslConfig.class})
+@Import({JpaConfig.class, QueryDslConfig.class, LocalStackTestConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext
 class PostQueryRepositoryImplTest {
