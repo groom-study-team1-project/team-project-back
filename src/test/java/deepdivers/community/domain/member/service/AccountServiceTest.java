@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
 @Import(LocalStackTestConfig.class)
@@ -93,8 +92,8 @@ class AccountServiceTest {
 
         // when, then
         assertThatThrownBy(() -> accountService.verifyEmail(request))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
     }
 
     @Test
@@ -107,8 +106,8 @@ class AccountServiceTest {
 
         // when, then
         assertThatThrownBy(() -> accountService.verifyEmail(request))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
     }
 
     @Test
@@ -120,8 +119,8 @@ class AccountServiceTest {
 
         // when, then
         assertThatThrownBy(() -> accountService.verifyEmail(request))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
     }
 
 }

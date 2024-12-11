@@ -3,7 +3,6 @@ package deepdivers.community.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
@@ -34,14 +33,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.S3Client;
 
 @SpringBootTest
 @Transactional
-@DirtiesContext
 @Import(LocalStackTestConfig.class)
 class MemberServiceTest {
 
@@ -94,8 +90,8 @@ class MemberServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberService.validateUniqueNickname(expectedNickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
     }
 
     @Test
@@ -122,8 +118,8 @@ class MemberServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_EMAIL);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_EMAIL);
     }
 
     @Test
@@ -134,8 +130,8 @@ class MemberServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
     }
 
     /*
@@ -178,8 +174,8 @@ class MemberServiceTest {
 
         // When
         assertThatThrownBy(() -> memberService.login(loginRequest))
-            .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
+                .isInstanceOf(NotFoundException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
     }
 
     @Test
@@ -190,8 +186,8 @@ class MemberServiceTest {
 
         // When
         assertThatThrownBy(() -> memberService.login(loginRequest))
-            .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
+                .isInstanceOf(NotFoundException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
     }
 
     @Test
@@ -202,8 +198,8 @@ class MemberServiceTest {
 
         // When
         assertThatThrownBy(() -> memberService.login(loginRequest))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_DORMANCY);
     }
 
     @Test
@@ -214,8 +210,8 @@ class MemberServiceTest {
 
         // When, Then
         assertThatThrownBy(() -> memberService.login(loginRequest))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
     }
 
     /*
@@ -244,8 +240,8 @@ class MemberServiceTest {
 
         // When, Then
         assertThatThrownBy(() -> memberService.getMemberWithThrow(memberId))
-            .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
+                .isInstanceOf(NotFoundException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
     }
 
     /*
@@ -257,7 +253,7 @@ class MemberServiceTest {
         // Given
         Long memberId = 1L;
         MultipartFile file = new MockMultipartFile(
-            "file", "test.jpg", "image/jpeg", "test image content".getBytes()
+                "file", "test.jpg", "image/jpeg", "test image content".getBytes()
         );
 
         // When
@@ -273,14 +269,14 @@ class MemberServiceTest {
     void InvalidImageUploadShouldBadRequestException() {
         // Given
         MockMultipartFile file = new MockMultipartFile(
-            "file", "test.jpg", "text/plain", "test image content".getBytes()
+                "file", "test.jpg", "text/plain", "test image content".getBytes()
         );
         Long memberId = 1L;
 
         // When, Then
         assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
     }
 
     @Test
@@ -329,8 +325,8 @@ class MemberServiceTest {
 
         // When, then
         assertThatThrownBy(() -> memberService.changePassword(member, request))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_USING_PASSWORD);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_USING_PASSWORD);
     }
 
     @Test
@@ -342,8 +338,8 @@ class MemberServiceTest {
 
         // When, then
         assertThatThrownBy(() -> memberService.changePassword(member, request))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD);
     }
 
     /*
@@ -357,8 +353,8 @@ class MemberServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
     }
 
     @Test
@@ -369,7 +365,7 @@ class MemberServiceTest {
 
         // when
         assertThatCode(() -> memberService.validateUniqueNickname(nickname))
-            .doesNotThrowAnyException();
+                .doesNotThrowAnyException();
     }
 
     @Test
@@ -380,8 +376,8 @@ class MemberServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .isInstanceOf(BadRequestException.class)
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
     }
 
 

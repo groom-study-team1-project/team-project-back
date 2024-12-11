@@ -84,4 +84,5 @@ class CategoryServiceTest {
 				.isInstanceOf(BadRequestException.class)
 				.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionType.CATEGORY_NOT_FOUND);
 	}
+
 }
