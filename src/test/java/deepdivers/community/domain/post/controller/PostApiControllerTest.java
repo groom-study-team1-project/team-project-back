@@ -10,6 +10,7 @@ import java.util.List;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.service.LikeService;
 import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,6 +39,9 @@ class PostApiControllerTest extends ControllerTest {
 
 	@MockBean
 	private PostService postService;
+
+	@MockBean
+	private LikeService likeService;
 
 	@BeforeEach
 	void setUp(WebApplicationContext webApplicationContext) {
