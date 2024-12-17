@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-@Tag(name = "9. 카테고리", description = "카테고리 관련 API")
+@Tag(name = "09. 카테고리", description = "카테고리 관련 API")
 public interface CategoryOpenControllerDocs {
 
 	@Operation(summary = "카테고리 목록 조회", description = "모든 카테고리의 ID, 제목, 설명을 조회하는 API입니다.")

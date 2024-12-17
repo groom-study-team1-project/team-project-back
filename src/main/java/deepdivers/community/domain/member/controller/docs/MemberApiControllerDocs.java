@@ -18,7 +18,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "2. 회원 - 토큰", description = "토큰 정보가 필요한 회원 관련 API")
+@Tag(name = "02. 회원 - 토큰", description = "토큰 정보가 필요한 회원 관련 API")
 public interface MemberApiControllerDocs {
 
     @Operation(summary = "프로필 조회", description = "프로필을 조회하는 기능")

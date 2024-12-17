@@ -5,6 +5,7 @@ import deepdivers.community.domain.member.model.vo.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 @Schema(description = "사용자 프로필 조회 결과")
 @AllArgsConstructor
@@ -18,7 +19,8 @@ public class MemberProfileResponse {
     @Schema(description = "사용자 역할", example = "NORMAL, STUDENT, GRADUATE")
     private final MemberRole role;
     @Schema(description = "사용자 이미지", example = "image.png")
-    private final String imageUrl;
+    @Setter
+    private String imageUrl;
     @Schema(description = "사용자 소개", example = "안녕하세요. 구름톤 딥다이브 수강생입니다.")
     private final String aboutMe;
     @Schema(description = "사용자 전화번호", example = "010-1234-5678")
@@ -34,5 +36,6 @@ public class MemberProfileResponse {
     @Schema(description = "사용자 댓글 수", example = "0")
     private final int commentCount;
     @Schema(description = "본인 식별", example = "false/true")
-    private final boolean isMe;
+    private final boolean me;
+
 }
