@@ -33,7 +33,7 @@ public class S3TagManager {
 
     private boolean doesNotObjectExist(final String key) {
         try {
-            final HeadObjectRequest headObjectRequest = getHeadObjectRequest(s3Properties.getBucket(), key);
+            final HeadObjectRequest headObjectRequest = getHeadObjectRequest(key);
             s3Client.headObject(headObjectRequest);
 
             return false;
@@ -42,9 +42,9 @@ public class S3TagManager {
         }
     }
 
-    private static HeadObjectRequest getHeadObjectRequest(final String bucket, final String key) {
+    private HeadObjectRequest getHeadObjectRequest(final String key) {
         return HeadObjectRequest.builder()
-            .bucket(bucket)
+            .bucket(s3Properties.getBucket())
             .key(key)
             .build();
     }

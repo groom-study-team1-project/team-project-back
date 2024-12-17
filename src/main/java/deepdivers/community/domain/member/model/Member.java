@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -40,6 +41,7 @@ import org.hibernate.annotations.DynamicUpdate;
 )
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
+@ToString
 public class Member extends BaseEntity {
 
     @Id
@@ -123,15 +125,11 @@ public class Member extends BaseEntity {
         return this.email.getValue();
     }
 
-    public String getJob() {
-        return job;
-    }
-
     public void updateProfile(final MemberProfileRequest request) {
         this.nickname.update(request.nickname());
         this.phoneNumber.update(request.phoneNumber());
         this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
-        updateProfileImage(request.imageUrl());
+        updateProfileImage(request.imageKey());
         updateAboutMe(request.aboutMe());
         updateGithub(request.githubUrl());
         updateBlog(request.blogUrl());

@@ -1,6 +1,6 @@
 -- Member 테이블 INSERT 쿼리
 INSERT INTO member (email, password, about_me, comment_count, post_count, blog_addr, github_addr, phone_number, created_at, image_key, nickname, lower_nickname, role, status, updated_at, job)
-VALUES ('email1@test.com', '$2a$10$0CdWONAdJgXJkBSKRY6QbuwhTfFrffR1BGQ/2OPSOfqWR5s1Y2Eu2', 'About me 1', 0, 0, 'http://blog1.com', 'http://github.com/user1', '010-1234-0001', CURRENT_TIMESTAMP, 'http://example.com/image1.jpg', 'User1', 'user1', 'NORMAL', 'REGISTERED', CURRENT_TIMESTAMP, 'EMPTY');
+VALUES ('email1@test.com', '$2a$10$0CdWONAdJgXJkBSKRY6QbuwhTfFrffR1BGQ/2OPSOfqWR5s1Y2Eu2', 'About me 1', 0, 0, 'http://blog1.com', 'http://github.com/user1', '010-1234-0001', CURRENT_TIMESTAMP, 'profile/test-image1.jpg', 'User1', 'user1', 'NORMAL', 'REGISTERED', CURRENT_TIMESTAMP, 'EMPTY');
 INSERT INTO member (email, password, about_me, comment_count, post_count, blog_addr, github_addr, phone_number, created_at, image_key, nickname, lower_nickname, role, status, updated_at, job)
 VALUES ('email2@test.com', '$2a$10$Q/1w7ts2v2d6d/u9a/cFxe0otUYfSW5JGTCUlFBy7t6fPwzozVXA2', 'About me 2', 0, 0, 'http://blog2.com', 'http://github.com/user2', '010-1234-0002', CURRENT_TIMESTAMP, 'http://example.com/image2.jpg', 'User2', 'user2', 'NORMAL', 'REGISTERED', CURRENT_TIMESTAMP, 'EMPTY');
 INSERT INTO member (email, password, about_me, comment_count, post_count, blog_addr, github_addr, phone_number, created_at, image_key, nickname, lower_nickname, role, status, updated_at, job)

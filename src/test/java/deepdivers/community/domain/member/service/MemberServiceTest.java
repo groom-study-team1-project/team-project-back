@@ -276,16 +276,18 @@ class MemberServiceTest extends S3TagManagerTest {
     void profileUpdateSuccessTest() {
         // Given test.sql
         Member member = memberService.getMemberWithThrow(1L);
-        MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "", "EMPTY");
+        System.out.println(member);
+        MemberProfileRequest request =
+            new MemberProfileRequest("test", "profile/test-image2.jpg", "", "010-1234-5678", "", "", "EMPTY");
+        createTestObject("profile/test-image1.jpg");
+        createTestObject("profile/test-image2.jpg");
 
         // When
-        NoContent memberProfileResponseAPI = memberService.updateProfile(member, request);
+        NoContent result = memberService.updateProfile(member, request);
 
         // then
-        StatusResponse responseStatus = memberProfileResponseAPI.status();
-        MemberStatusType status = MemberStatusType.UPDATE_PROFILE_SUCCESS;
-        assertThat(responseStatus.code()).isEqualTo(status.getCode());
-        assertThat(responseStatus.message()).isEqualTo(status.getMessage());
+        assertThat(result.status().code()).isEqualTo(MemberStatusType.UPDATE_PROFILE_SUCCESS.getCode());
+        assertThat(result.status().message()).isEqualTo(MemberStatusType.UPDATE_PROFILE_SUCCESS.getMessage());
     }
 
     /*
