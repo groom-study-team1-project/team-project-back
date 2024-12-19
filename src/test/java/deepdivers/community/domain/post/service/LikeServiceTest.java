@@ -1,10 +1,5 @@
 package deepdivers.community.domain.post.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.exception.LikeExceptionType;
 import deepdivers.community.domain.post.model.like.Like;
@@ -12,7 +7,6 @@ import deepdivers.community.domain.post.model.like.LikeId;
 import deepdivers.community.domain.post.repository.CommentRepository;
 import deepdivers.community.domain.post.repository.LikeRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
-import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,11 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
