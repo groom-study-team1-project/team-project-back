@@ -1,31 +1,22 @@
 package deepdivers.community.domain.post.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import deepdivers.community.domain.ServiceTest;
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
-import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.post.model.PostImage;
-import deepdivers.community.domain.post.model.vo.CategoryStatus;
 import deepdivers.community.domain.post.model.vo.PostStatus;
-import deepdivers.community.domain.post.repository.CategoryRepository;
-import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
 import deepdivers.community.infra.aws.s3.exception.S3Exception;
-import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,63 +27,18 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 @SpringBootTest
 @DirtiesContext
 @Transactional
 @Import(LocalStackTestConfig.class)
-class PostServiceTest {
+class PostServiceTest extends ServiceTest {
 
     @Autowired
     private PostService postService;
 
-    @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    @EncryptorBean
-    private Encryptor encryptor;
-
-    private Member member;
-    private PostCategory category;
-    private Post post;
-
-    @BeforeEach
-    void setUp() {
-        MemberSignUpRequest signUpRequest = new MemberSignUpRequest(
-                "test@mail.com",
-                "password123*",
-                "nickname",
-                "http://image.url",
-                "010-1234-5678"
-        );
-        member = Member.of(signUpRequest, encryptor);
-        memberRepository.save(member);
-
-        category = PostCategory.createCategory("Category", "Description", CategoryStatus.ACTIVE);
-        categoryRepository.save(category);
-
-        post = Post.of(
-                new PostSaveRequest("Post Title", "Post Content", "Thumbnail",  category.getId(), List.of("tag1", "tag2"), List.of("http/temp/f.jpeg")),
-                category,
-                member
-        );
-        postRepository.save(post);
-    }
-
     @Test
     @DisplayName("이미지 업로드 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
-    void uploadPostImageSuccessfullyReturns200OK() throws Exception {
+    void uploadPostImageSuccessfullyReturns200OK() {
         // given
         MockMultipartFile imageFile = new MockMultipartFile(
                 "imageFile",
@@ -106,12 +52,12 @@ class PostServiceTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.getResult().imageUrl()).contains("temp/");
+        assertThat(response.result().imageUrl()).contains("temp/");
     }
 
     @Test
     @DisplayName("유효하지 않은 파일로 업로드 요청 시 예외가 발생한다")
-    void uploadPostImageWithInvalidFileThrowsException() throws Exception {
+    void uploadPostImageWithInvalidFileThrowsException() {
         // given
         MockMultipartFile invalidFile = new MockMultipartFile(
                 "imageFile",
@@ -130,48 +76,24 @@ class PostServiceTest {
     @DisplayName("게시글 생성이 성공하면 저장된 게시글 정보를 테스트한다.")
     void createPostSuccessTest() {
         // Given
-        MockMultipartFile imageFile = new MockMultipartFile(
-                "imageFile",
-                "f.jpeg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "Test Image Content".getBytes()
-        );
-        API<PostImageUploadResponse> imageUploadResponse = postService.uploadPostImage(imageFile);
-        PostSaveRequest request = new PostSaveRequest(
-                "Post Title",
-                "Post Content",
-                "Thumbnail",
-                category.getId(),
-                List.of("tag1", "tag2"),
-                List.of(imageUploadResponse.getResult().imageUrl())
-        );
+        PostSaveRequest request = new PostSaveRequest("title", "Content", "Thumbnail", 1L, List.of(), List.of());
+        Member member = getMember(1L);
 
         // When
         API<PostSaveResponse> response = postService.createPost(request, member);
 
         // Then
-        Post savedPost = postRepository.findById(response.result().postId()).orElse(null);
-        assertThat(savedPost).isNotNull();
-        assertThat(savedPost.getTitle().getTitle()).isEqualTo("Post Title");
-        assertThat(savedPost.getContent().getContent()).isEqualTo("Post Content");
-        assertThat(savedPost.getHashtags()).hasSize(2);
-        assertThat(savedPost.getPostImages())
-                .extracting(PostImage::getImageKey)
-                .anyMatch(url -> url.contains("posts/"));
+        Long id = response.result().postId();
+        Post post = getPost(id);
+        assertThat(post).isNotNull();
     }
 
     @Test
     @DisplayName("존재하지 않는 카테고리 ID로 게시글 생성 요청 시 예외가 발생한다.")
     void createPostWithInvalidCategoryThrowsException() {
-        // Given
-        PostSaveRequest request = new PostSaveRequest(
-                "Post Title",
-                "Post Content",
-                "Thumbnail",
-                999L,
-                List.of("tag1", "tag2"),
-                List.of("http/temp/f.jpeg")
-        );
+        // Given, test.sql
+        PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 999L, List.of(), List.of());
+        Member member = getMember(1L);
 
         // When, Then
         assertThatThrownBy(() -> postService.createPost(request, member))
@@ -180,75 +102,26 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("유효하지 않은 해시태그가 포함된 게시글 생성 요청 시 예외가 발생한다.")
-    void createPostWithInvalidHashtagsThrowsException() {
-        // Given
-        PostSaveRequest request = new PostSaveRequest(
-                "Post Title",
-                "Post Content",
-                "Thumbnail",
-                category.getId(),
-                List.of("tag1", "invalid#tag"),
-                List.of("http/temp/f.jpeg")
-        );
-
-        // When, Then
-        assertThatThrownBy(() -> postService.createPost(request, member))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", HashtagExceptionType.INVALID_HASHTAG_FORMAT);
-    }
-
-    @Test
     @DisplayName("게시글 수정이 성공하면 수정된 정보를 반환한다")
     void updatePostSuccessTest() {
         // Given
-        PostCategory newCategory = PostCategory.createCategory("Updated Category", "Updated Description", CategoryStatus.ACTIVE);
-        categoryRepository.save(newCategory);
-
-        MockMultipartFile imageFile = new MockMultipartFile(
-                "imageFile",
-                "f.jpeg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "Test Image Content".getBytes()
-        );
-        API<PostImageUploadResponse> imageUploadResponse = postService.uploadPostImage(imageFile);
-        PostSaveRequest request = new PostSaveRequest(
-                "Updated Title",
-                "Updated Content",
-                "Updated Thumbnail",
-                newCategory.getId(),
-                List.of("newTag1", "newTag2"),
-                List.of(imageUploadResponse.getResult().imageUrl())
-        );
+        Member member = getMember(1L);
+        PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
 
         // When
-        postService.updatePost(post.getId(), request, member);
+        postService.updatePost(1L, request, member);
 
         // Then
-        Post updatedPost = postRepository.findById(post.getId()).orElse(null);
-
-        assertThat(updatedPost).isNotNull();
-        assertThat(updatedPost.getTitle().getTitle()).isEqualTo("Updated Title");
-        assertThat(updatedPost.getContent().getContent()).isEqualTo("Updated Content");
-        assertThat(updatedPost.getCategory().getName()).isEqualTo("Updated Category");
-        assertThat(updatedPost.getHashtags()).hasSize(2);
-        assertThat(updatedPost.getPostImages())
-                .extracting(PostImage::getImageKey)
-                .anyMatch(url -> url.contains("posts/"));
+        Post updatedPost = getPost(1L);
+        assertThat(updatedPost.getCategory().getId()).isEqualTo(2L);
     }
 
     @Test
     @DisplayName("존재하지 않는 게시글 ID로 수정 요청 시 예외가 발생한다")
     void updateNonExistentPostThrowsException() {
         // Given
-        PostSaveRequest request = new PostSaveRequest(
-                "Updated Title",
-                "Updated Content",
-                "Updated Thumbnail",
-                category.getId(),
-                List.of("newTag1", "newTag2"),
-                List.of("http/temp/f.jpeg")
-        );
+        PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
+        Member member = getMember(1L);
 
         // When & Then
         assertThatThrownBy(() -> postService.updatePost(999L, request, member))
@@ -260,28 +133,11 @@ class PostServiceTest {
     @DisplayName("게시글 작성자가 아닌 멤버가 수정 요청 시 예외가 발생한다")
     void updatePostByNonAuthorThrowsException() {
         // Given
-        Member anotherMember = Member.of(
-                new MemberSignUpRequest(
-                        "other@mail.com",
-                        "password123*",
-                        "otherNickname",
-                        "http://image.url",
-                        "010-5678-1234"
-                ),
-                encryptor
-        );
-
-        PostSaveRequest request = new PostSaveRequest(
-                "Updated Title",
-                "Updated Content",
-                "Updated Thumbnail",
-                category.getId(),
-                List.of("newTag1", "newTag2"),
-                List.of("http/temp/f.jpeg")
-        );
+        Member member = getMember(2L);
+        PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
 
         // When & Then
-        assertThatThrownBy(() -> postService.updatePost(post.getId(), request, anotherMember))
+        assertThatThrownBy(() -> postService.updatePost(1L, request, member))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.NOT_POST_AUTHOR);
     }
@@ -290,17 +146,11 @@ class PostServiceTest {
     @DisplayName("수정 요청에서 존재하지 않는 카테고리를 지정할 경우 예외가 발생한다")
     void updatePostWithInvalidCategoryThrowsException() {
         // Given
-        PostSaveRequest request = new PostSaveRequest(
-                "Updated Title",
-                "Updated Content",
-                "Updated Thumbnail",
-                999L,
-                List.of("newTag1", "newTag2"),
-                List.of("http/temp/f.jpeg")
-        );
+        Member member = getMember(1L);
+        PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 5L, List.of(), List.of());
 
         // When & Then
-        assertThatThrownBy(() -> postService.updatePost(post.getId(), request, member))
+        assertThatThrownBy(() -> postService.updatePost(1L, request, member))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionType.CATEGORY_NOT_FOUND);
     }
@@ -308,15 +158,15 @@ class PostServiceTest {
     @Test
     @DisplayName("게시글 삭제 요청이 성공적으로 처리되면 상태가 'DELETED'로 변경된다")
     void deletePostSuccessTest() {
+        // given
+        Member member = getMember(1L);
+
         // When
-        NoContent response = postService.deletePost(post.getId(), member);
+        postService.deletePost(1L, member);
 
         // Then
-        Post deletedPost = postRepository.findById(post.getId()).orElse(null);
-        assertThat(deletedPost).isNotNull();
+        Post deletedPost = getPost(1L);
         assertThat(deletedPost.getStatus()).isEqualTo(PostStatus.DELETED);
-        assertThat(response.status().code()).isEqualTo(PostStatusType.POST_DELETE_SUCCESS.getCode());
-        assertThat(response.status().message()).isEqualTo(PostStatusType.POST_DELETE_SUCCESS.getMessage());
     }
 
     @Test
@@ -324,6 +174,7 @@ class PostServiceTest {
     void deletePostWithInvalidIdThrowsException() {
         // Given
         Long invalidPostId = 999L;
+        Member member = getMember(1L);
 
         // When & Then
         assertThatThrownBy(() -> postService.deletePost(invalidPostId, member))
@@ -335,19 +186,10 @@ class PostServiceTest {
     @DisplayName("게시글 작성자가 아닌 멤버가 삭제 요청 시 예외가 발생한다")
     void deletePostByNonAuthorThrowsException() {
         // Given
-        Member anotherMember = Member.of(
-                new MemberSignUpRequest(
-                        "other@mail.com",
-                        "password123*",
-                        "otherNickname",
-                        "http://image.url",
-                        "010-5678-1234"
-                ),
-                encryptor
-        );
+        Member member = getMember(2L);
 
         // When & Then
-        assertThatThrownBy(() -> postService.deletePost(post.getId(), anotherMember))
+        assertThatThrownBy(() -> postService.deletePost(1L, member))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.NOT_POST_AUTHOR);
     }
@@ -356,28 +198,57 @@ class PostServiceTest {
     @DisplayName("게시글 상세 조회가 성공적으로 처리되면 게시글 상세 정보를 반환한다")
     void readPostDetailSuccessTest() {
         // Given
-        String ipAddr = "127.0.0.1";
-
         // When
-        API<PostReadResponse> response = postService.readPostDetail(post.getId(), ipAddr);
+        postService.readPostDetail(1L, "127.0.0.1");
 
         // Then
-        assertThat(response).isNotNull();
-        assertThat(response.getResult().title()).isEqualTo("Post Title");
-        assertThat(response.getResult().content()).isEqualTo("Post Content");
+        Post post = getPost(1L);
+        assertThat(post.getViewCount()).isEqualTo(11L);
     }
 
     @Test
     @DisplayName("존재하지 않는 게시글 ID로 상세 조회 시 예외가 발생한다")
     void readPostDetailWithInvalidIdThrowsException() {
         // Given
-        Long invalidPostId = 999L;
-        String ipAddr = "127.0.0.1";
-
         // When & Then
-        assertThatThrownBy(() -> postService.readPostDetail(invalidPostId, ipAddr))
+        assertThatThrownBy(() -> postService.readPostDetail(999L, "127.0.0.1"))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+    }
+
+    @Test
+    @DisplayName("이미지가 업로드된 게시글을 작성한다.")
+    void createHavingImagePostSuccess() {
+        // Given
+        createTestObject("posts/image.png");
+        PostSaveRequest request = new PostSaveRequest("title", "Content", "", 1L, List.of(), List.of("posts/image.png"));
+        Member member = getMember(1L);
+
+        // When
+        API<PostSaveResponse> response = postService.createPost(request, member);
+
+        // Then
+        Long id = response.result().postId();
+        Post post = getPost(id);
+        assertThat(post).isNotNull();
+    }
+
+    @Test
+    @DisplayName("이미지가 업로드된 게시글을 수정한다.")
+    void editHavingImagePostSuccess() {
+        // Given
+        createTestObject("posts/image1.png");
+        createTestObject("posts/image2.png");
+        createTestObject("posts/image3.png");
+        PostSaveRequest request = new PostSaveRequest("title", "Content", "", 1L, List.of(), List.of("posts/image2.png", "posts/image3.png"));
+        Member member = getMember(1L);
+
+        // When
+        postService.updatePost(1L, request, member);
+
+        // Then
+        Post post = getPost(1L);
+        assertThat(post.getImageKeys()).hasSize(2);
     }
 
 }

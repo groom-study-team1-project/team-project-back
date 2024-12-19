@@ -2,6 +2,7 @@ package deepdivers.community.domain.post.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
@@ -241,68 +242,32 @@ class PostApiControllerTest extends ControllerTest {
 	@DisplayName("게시글 작성 시 해시태그 없이 작성해도 200 OK를 반환한다")
 	void createPostWithoutHashtagsReturns200OK() {
 		// given
-		PostSaveRequest request = new PostSaveRequest(
-				"Post Title",
-				"Post Content",
-				"",
-				1L,
-				null,
-				List.of("http/temp/f.jpeg")
-		);
-
-		PostSaveResponse responseBody = new PostSaveResponse(1L);
-		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
-
-		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
+		PostSaveRequest request = new PostSaveRequest("", "", "", 1L, null, List.of());
 
 		// when
-		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(request)
-				.when().post("/api/posts/upload")
-				.then().log().all()
-				.status(HttpStatus.OK)
-				.extract()
-				.as(new TypeRef<>() {
-				});
-
-		// then
-		assertThat(response).isNotNull();
-		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+		RestAssuredMockMvc.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(request)
+			.when().post("/api/posts/upload")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST)
+			.body("code", equalTo(101));
 	}
 
 	@Test
-	@DisplayName("게시글 작성 시 이미지 없이 작성해도 200 OK를 반환한다")
+	@DisplayName("게시글 작성 시 이미지가 null일 경우 예외가 발생한다.")
 	void createPostWithoutImagesReturns200OK() {
 		// given
-		PostSaveRequest request = new PostSaveRequest(
-				"Post Title",
-				"Post Content",
-				"",
-				1L,
-				List.of("tag1", "tag2"),
-				null // 이미지 리스트가 없는 경우
-		);
-
-		PostSaveResponse responseBody = new PostSaveResponse(1L);
-		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
-
-		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
+		PostSaveRequest request = new PostSaveRequest("", "", "", 1L, List.of(), null);
 
 		// when
-		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(request)
-				.when().post("/api/posts/upload")
-				.then().log().all()
-				.status(HttpStatus.OK)
-				.extract()
-				.as(new TypeRef<>() {
-				});
-
-		// then
-		assertThat(response).isNotNull();
-		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+		RestAssuredMockMvc.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(request)
+			.when().post("/api/posts/upload")
+			.then().log().all()
+			.status(HttpStatus.BAD_REQUEST)
+			.body("code", equalTo(101));
 	}
 
 	@Test
@@ -327,7 +292,7 @@ class PostApiControllerTest extends ControllerTest {
 		API<PostSaveResponse> response = RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", String.valueOf(postId))
+				.when().post("/api/posts/edit/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.OK)
 				.extract()
@@ -357,7 +322,7 @@ class PostApiControllerTest extends ControllerTest {
 		RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", String.valueOf(postId))
+				.when().post("/api/posts/edit/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("게시글 제목은 필수입니다."));
@@ -381,7 +346,7 @@ class PostApiControllerTest extends ControllerTest {
 		RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", String.valueOf(postId))
+				.when().post("/api/posts/edit/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("카테고리 선택은 필수입니다."));
@@ -408,7 +373,7 @@ class PostApiControllerTest extends ControllerTest {
 		RestAssuredMockMvc.given().log().all()
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(request)
-				.when().post("/api/posts/update/{postId}", String.valueOf(invalidPostId))
+				.when().post("/api/posts/edit/{postId}", String.valueOf(invalidPostId))
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("게시글을 찾을 수 없습니다."));
@@ -425,7 +390,7 @@ class PostApiControllerTest extends ControllerTest {
 
 		// when
 		NoContent response = RestAssuredMockMvc.given().log().all()
-				.when().patch("/api/posts/delete/{postId}", String.valueOf(postId))
+				.when().patch("/api/posts/remove/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.OK)
 				.extract()
@@ -447,7 +412,7 @@ class PostApiControllerTest extends ControllerTest {
 
 		// when, then
 		RestAssuredMockMvc.given().log().all()
-				.when().patch("/api/posts/delete/{postId}", String.valueOf(invalidPostId))
+				.when().patch("/api/posts/remove/{postId}", String.valueOf(invalidPostId))
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("게시글을 찾을 수 없습니다."));
@@ -464,7 +429,7 @@ class PostApiControllerTest extends ControllerTest {
 
 		// when, then
 		RestAssuredMockMvc.given().log().all()
-				.when().patch("/api/posts/delete/{postId}", String.valueOf(postId))
+				.when().patch("/api/posts/remove/{postId}", String.valueOf(postId))
 				.then().log().all()
 				.status(HttpStatus.BAD_REQUEST)
 				.body("message", containsString("게시글 작성자가 아닙니다."));

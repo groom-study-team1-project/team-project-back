@@ -61,8 +61,8 @@ class CategoryOpenControllerTest extends ControllerTest {
 			.as(new TypeRef<API<List<CategoryResponse>>>() {});  // API<List<CategoryResponse>>로 변환
 
 		// then
-		assertThat(response.getResult()).hasSize(2);  // 2개의 카테고리가 반환됨을 확인
-		assertThat(response.getResult().get(0).title()).isEqualTo("카테고리 제목");
-		assertThat(response.getResult().get(0).description()).isEqualTo("카테고리 설명");
+		assertThat(response.result()).hasSize(2);  // 2개의 카테고리가 반환됨을 확인
+		assertThat(response.result().get(0).title()).isEqualTo("카테고리 제목");
+		assertThat(response.result().get(0).description()).isEqualTo("카테고리 설명");
 	}
 }

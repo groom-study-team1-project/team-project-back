@@ -1,6 +1,8 @@
 package deepdivers.community.domain.post.repository.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
@@ -8,6 +10,7 @@ import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.global.config.JpaConfig;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.config.QueryDslConfig;
+import deepdivers.community.infra.aws.s3.S3PresignManager;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
@@ -27,11 +31,14 @@ class PostQueryRepositoryImplTest {
 
     @Autowired
     private EntityManager em;
+    @MockBean
+    private S3PresignManager s3PresignManager;
     private PostQueryRepository postQueryRepository;
 
     @BeforeEach
     void setUp() {
-        postQueryRepository = new PostQueryRepositoryImpl(new JPAQueryFactory(em));
+        postQueryRepository = new PostQueryRepositoryImpl(new JPAQueryFactory(em), s3PresignManager);
+        when(s3PresignManager.generateAccessUrl(anyString())).thenAnswer(image -> "image");
     }
 
     @Test

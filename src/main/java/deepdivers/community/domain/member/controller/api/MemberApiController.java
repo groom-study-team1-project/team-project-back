@@ -78,8 +78,8 @@ public class MemberApiController implements MemberApiControllerDocs {
     @GetMapping("/me/posts")
     public ResponseEntity<API<List<AllMyPostsResponse>>> allWrittenPosts(
         @Auth final Member member,
-        @RequestParam final Long categoryId,
-        @RequestParam final Long lastPostId
+        @RequestParam(required = false) final Long categoryId,
+        @RequestParam(required = false) final Long lastPostId
     ) {
         return ResponseEntity.ok(API.of(
                 MemberStatusType.GET_MY_POSTS_SUCCESS,

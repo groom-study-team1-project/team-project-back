@@ -39,7 +39,7 @@ public record PostReadResponse(
 				post.getCommentCount()
 			),
 			post.getHashtags(),
-			post.getImageUrls(),
+			post.getImageKeys(),
 			post.getCreatedAt().toString()
 		);
 	}

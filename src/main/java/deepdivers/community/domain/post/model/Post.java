@@ -6,6 +6,7 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import jakarta.persistence.*;
+import java.util.stream.Collectors;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.ColumnDefault;
@@ -15,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Getter
@@ -40,6 +40,7 @@ public class Post extends BaseEntity {
     private PostContent content;
 
     @Column(nullable = false)
+    @ColumnDefault("'posts/thumbnail.png'")
     private String thumbnail;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -66,14 +67,14 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<PostImage> postImages = new ArrayList<>();
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostImage> imageKeys = new ArrayList<>();
 
     @Builder
     public Post(final PostSaveRequest request, final PostCategory category, final Member member) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
-        this.thumbnail = request.thumbnail();
+        this.thumbnail = request.thumbnailImageKey();
         this.category = category;
         this.member = member;
         this.commentCount = 0;
@@ -92,26 +93,21 @@ public class Post extends BaseEntity {
                 .toList();
     }
 
-    public List<String> getImageUrls() {
-        return postImages.stream()
-                .map(PostImage::getImageKey)
-                .toList();
-    }
-
     public Post connectHashtags(final Set<PostHashtag> postHashtags) {
         this.postHashtags = postHashtags;
         return this;
     }
 
-    public Post connectImages(final List<PostImage> postImages) {
-        this.postImages.addAll(postImages);
+    public Post connectImageKey(final List<String> postImageKeys) {
+        imageKeys.removeIf(image -> true);
+        postImageKeys.forEach(imageKey -> imageKeys.add(PostImage.of(this, imageKey)));
         return this;
     }
 
     public Post updatePost(final PostSaveRequest request, final PostCategory category) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
-        this.thumbnail = request.thumbnail();
+        this.thumbnail = request.thumbnailImageKey();
         this.category = category;
         return this;
     }
@@ -126,4 +122,7 @@ public class Post extends BaseEntity {
         }
     }
 
+    public List<String> getImageKeys() {
+        return imageKeys.stream().map(PostImage::getImageKey).toList();
+    }
 }

@@ -19,9 +19,11 @@ import deepdivers.community.domain.post.dto.response.MemberInfo;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
+import deepdivers.community.infra.aws.s3.S3PresignManager;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -29,6 +31,7 @@ import org.springframework.stereotype.Repository;
 public class PostQueryRepositoryImpl implements PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
+    private final S3PresignManager s3PresignManager;
 
     @Override
     public List<AllMyPostsResponse> findAllMyPosts(
@@ -36,11 +39,12 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         final Long lastContentId,
         final Long categoryId
     ) {
-        return queryFactory.select(
+        final List<AllMyPostsResponse> postResponses = queryFactory.select(
                 Projections.fields(
                     AllMyPostsResponse.class,
                     post.id.as("id"),
                     post.title.title.as("title"),
+                    post.thumbnail.as("thumbnail"),
                     post.viewCount.as("viewCount"),
                     post.likeCount.as("likeCount"),
                     post.commentCount.as("commentCount"),
@@ -53,13 +57,19 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .join(member).on(post.member.id.eq(member.id))
             .leftJoin(like).on(hasLike(memberId))
             .where(
-                post.category.id.eq(categoryId),
-                post.member.id.eq(memberId),
-                post.id.lt(lastContentId)
+                deterMineLastContentCondition(lastContentId),
+                determineCategoryCondition(categoryId),
+                post.status.eq(PostStatus.ACTIVE),
+                post.member.id.eq(memberId)
             )
             .orderBy(post.id.desc())
             .limit(5)
             .fetch();
+
+        postResponses.forEach(postResponse ->
+            postResponse.setThumbnail(s3PresignManager.generateAccessUrl(postResponse.getThumbnail())));
+
+        return postResponses;
     }
 
     private BooleanExpression hasLike(final Long memberId) {
@@ -71,7 +81,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
 
     @Override
     public List<GetAllPostsResponse> findAllPosts(final Long lastContentId, final Long categoryId) {
-        return queryFactory
+        final List<GetAllPostsResponse> allPostsResponse = queryFactory
             .select(
                 Projections.fields(
                     GetAllPostsResponse.class,
@@ -92,7 +102,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     Projections.fields(MemberInfo.class,
                         member.id.as("memberId"),
                         member.nickname.value.as("nickname"),
-                        member.imageKey.as("imageKey"),
+                        member.imageKey.as("imageUrl"),
                         member.job.as("memberJob")
                     ).as("memberInfo"),
                     Projections.fields(CountInfo.class,
@@ -106,7 +116,11 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .leftJoin(postImage).on(post.id.eq(postImage.post.id))
             .leftJoin(postHashtag).on(post.id.eq(postHashtag.post.id))
             .leftJoin(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
-            .where(getPredicate1(lastContentId), getPredicate(categoryId), post.status.eq(PostStatus.ACTIVE))
+            .where(
+                deterMineLastContentCondition(lastContentId),
+                determineCategoryCondition(categoryId),
+                post.status.eq(PostStatus.ACTIVE)
+            )
             .groupBy(
                 post.id,
                 post.title.title,
@@ -124,16 +138,29 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .orderBy(post.id.desc())
             .limit(10)
             .fetch();
+
+        allPostsResponse.forEach(response -> {
+            response.setThumbnail(s3PresignManager.generateAccessUrl(response.getThumbnail()));
+            if (!response.imageUrls().isEmpty()) {
+                response.setImageUrls(Arrays.stream(response.imageUrls().split(","))
+                    .map(s3PresignManager::generateAccessUrl)
+                    .collect(Collectors.joining(",")));
+            }
+            response.getMemberInfo()
+                .setImageUrl(s3PresignManager.generateAccessUrl(response.getMemberInfo().getImageUrl()));
+        });
+
+        return allPostsResponse;
     }
 
-    private static @Nullable Predicate getPredicate1(Long lastContentId) {
+    private static Predicate deterMineLastContentCondition(final Long lastContentId) {
         if (lastContentId == null) {
             return null;
         }
         return post.id.lt(lastContentId);
     }
 
-    private static @Nullable Predicate getPredicate(final Long categoryId) {
+    private static Predicate determineCategoryCondition(final Long categoryId) {
         if (categoryId == null) {
             return null;
         }

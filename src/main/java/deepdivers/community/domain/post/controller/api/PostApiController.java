@@ -38,7 +38,7 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@Override
-	@PostMapping("/update/{postId}")
+	@PostMapping("/edit/{postId}")
 	public ResponseEntity<API<PostSaveResponse>> updatePost(
 		@Auth final Member member,
 		@PathVariable final Long postId,
@@ -49,7 +49,7 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@Override
-	@PatchMapping("/delete/{postId}")
+	@PatchMapping("/remove/{postId}")
 	public ResponseEntity<NoContent> deletePost(
 		@Auth final Member member,
 		@PathVariable final Long postId

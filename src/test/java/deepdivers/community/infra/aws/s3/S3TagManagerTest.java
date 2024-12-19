@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.annotation.Transactional;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectTaggingRequest;
@@ -21,6 +23,8 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @SpringBootTest
 @Import(LocalStackTestConfig.class)
+@DirtiesContext
+@Transactional
 public class S3TagManagerTest {
 
     @Autowired

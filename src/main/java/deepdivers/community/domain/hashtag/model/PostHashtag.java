@@ -42,7 +42,7 @@ public class PostHashtag extends BaseEntity {
 	private Hashtag hashtag;
 
 	@Builder
-	public PostHashtag(Post post, Hashtag hashtag) {
+	public PostHashtag(final Post post, final Hashtag hashtag) {
 		this.post = post;
 		this.hashtag = hashtag;
 	}

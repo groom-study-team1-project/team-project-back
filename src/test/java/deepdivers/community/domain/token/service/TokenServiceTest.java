@@ -1,5 +1,8 @@
 package deepdivers.community.domain.token.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
@@ -11,6 +14,9 @@ import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.global.utility.time.TimeProvider;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +26,10 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Clock;
-import java.time.Instant;
-import java.time.ZoneId;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 @SpringBootTest
 @Import(LocalStackTestConfig.class)
-@Transactional
 @DirtiesContext
+@Transactional
 class TokenServiceTest {
 
     @Autowired

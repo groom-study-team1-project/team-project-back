@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
@@ -59,6 +60,7 @@ public class Member extends BaseEntity {
     private MemberRole role;
 
     @Column(nullable = false)
+    @ColumnDefault("'profiles/002da67c_1730807352645.png'")
     private String imageKey;
 
     @Column(length = 100, nullable = false)
