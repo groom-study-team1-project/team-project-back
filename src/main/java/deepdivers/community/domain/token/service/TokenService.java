@@ -8,6 +8,7 @@ import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
+import deepdivers.community.infra.aws.s3.S3PresignManager;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     private final AuthHelper authHelper;
+    private final S3PresignManager s3PresignManager;
 
     private static final String KEY_MEMBER_ID = "memberId";
     private static final String KEY_MEMBER_NICKNAME = "memberNickname";
@@ -74,7 +76,7 @@ public class TokenService {
         data.put(KEY_MEMBER_ID, member.getId());
         data.put(KEY_MEMBER_NICKNAME, member.getNickname());
         data.put(KEY_MEMBER_ROLE, member.getRole());
-        data.put(KEY_MEMBER_IMAGE, member.getImageKey());
+        data.put(KEY_MEMBER_IMAGE, s3PresignManager.generateAccessUrl(member.getImageKey()));
         return data;
     }
 

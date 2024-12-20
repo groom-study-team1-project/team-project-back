@@ -19,7 +19,6 @@ public class MemberProfileResponse {
     @Schema(description = "사용자 역할", example = "NORMAL, STUDENT, GRADUATE")
     private final MemberRole role;
     @Schema(description = "사용자 이미지", example = "image.png")
-    @Setter
     private String imageUrl;
     @Schema(description = "사용자 소개", example = "안녕하세요. 구름톤 딥다이브 수강생입니다.")
     private final String aboutMe;
@@ -37,5 +36,10 @@ public class MemberProfileResponse {
     private final int commentCount;
     @Schema(description = "본인 식별", example = "false/true")
     private final boolean me;
+
+    public MemberProfileResponse withImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+        return this;
+    }
 
 }

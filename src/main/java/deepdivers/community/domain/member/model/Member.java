@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import java.util.Locale;
+import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -131,41 +132,11 @@ public class Member extends BaseEntity {
         this.nickname.update(request.nickname());
         this.phoneNumber.update(request.phoneNumber());
         this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
-        updateProfileImage(request.imageKey());
-        updateAboutMe(request.aboutMe());
-        updateGithub(request.githubUrl());
-        updateBlog(request.blogUrl());
-        updateJob(request.job());
-    }
-
-    private void updateGithub(final String githubUrl) {
-        if (!(githubUrl == null || githubUrl.isEmpty())) {
-            this.githubAddr = githubUrl;
-        }
-    }
-
-    private void updateBlog(final String blogUrl) {
-        if (!(blogUrl == null || blogUrl.isEmpty())) {
-            this.blogAddr = blogUrl;
-        }
-    }
-
-    private void updateProfileImage(final String imageUrl) {
-        if (!(imageUrl == null || imageUrl.isEmpty())) {
-            this.imageKey = imageUrl;
-        }
-    }
-
-    private void updateAboutMe(final String aboutMe) {
-        if (!(aboutMe == null || aboutMe.isEmpty())) {
-            this.aboutMe = aboutMe;
-        }
-    }
-
-    private void updateJob(final String job) {
-        if (!(job == null || job.isEmpty())) {
-            this.job = job;
-        }
+        Optional.ofNullable(request.imageKey()).ifPresent(key -> this.imageKey = key);
+        Optional.ofNullable(request.aboutMe()).ifPresent(about -> this.aboutMe = about);
+        Optional.ofNullable(request.githubUrl()).ifPresent(github -> this.githubAddr = github);
+        Optional.ofNullable(request.blogUrl()).ifPresent(blog -> this.blogAddr = blog);
+        Optional.ofNullable(request.job()).ifPresent(j -> this.job = j);
     }
 
     public void validateStatus() {

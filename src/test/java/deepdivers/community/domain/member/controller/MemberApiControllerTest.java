@@ -136,20 +136,27 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("프로필 정보 수정시 이미지 정보가 없다면 400 BadRequest 가 떨어진다.")
-    void profileUpdateNullImageUrlReturns400BadRequest() {
+    @DisplayName("프로필 정보 수정시 이미지 정보가 없어도 정상 응답한다.")
+    void profileUpdateNullImageUrlReturns200OK() {
         // given
-        MemberProfileRequest request = new MemberProfileRequest("test", "", "", "010-1234-5678", "", "", "EMPTY");
+        MemberProfileRequest request = new MemberProfileRequest("test", null, "", "010-1234-5678", "", "", "EMPTY");
+        Member member = memberService.getMemberWithThrow(1L);
+        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
+        given(memberService.updateProfile(member, request)).willReturn(mockResponse);
 
         // when, then
-        RestAssuredMockMvc.given().log().all()
+        NoContent response = RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .body(request)
             .when().put("/api/members/me")
             .then().log().all()
-            .status(HttpStatus.BAD_REQUEST)
-            .body("code", equalTo(101))
-            .body("message", containsString("사용자 이미지 키 정보가 필요합니다."));
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>() {
+            });
+
+        // then
+        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
     }
 
     @Test

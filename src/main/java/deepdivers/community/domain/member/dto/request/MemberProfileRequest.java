@@ -8,8 +8,7 @@ public record MemberProfileRequest(
     @Schema(description = "사용자 닉네임", example = "구름이")
     @NotBlank(message = "사용자 닉네임 정보가 필요합니다.")
     String nickname,
-    @Schema(description = "사용자 이미지 키", example = "profiles/uuid/fileName.extension")
-    @NotBlank(message = "사용자 이미지 키 정보가 필요합니다.")
+    @Schema(description = "사용자 이미지 키", example = "profiles/uuid/fileName.extension", nullable = true)
     String imageKey,
     @Schema(description = "사용자 소개", example = "안녕하세요.")
     String aboutMe,

@@ -38,7 +38,7 @@ public interface MemberApiControllerDocs {
     )
     ResponseEntity<API<MemberProfileResponse>> me(Member member, Long profileOwnerId);
 
-    @Operation(summary = "이미지 업로드", description = "프로필 이미지를 업로드하는 기능")
+    @Operation(summary = "이미지 업로드 (현재 사용되지 않음)", description = "프로필 이미지를 업로드하는 기능", deprecated = true)
     @ApiResponse(
         responseCode = "1004",
         description = """

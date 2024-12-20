@@ -77,8 +77,10 @@ public class MemberService {
     public NoContent updateProfile(final Member member, final MemberProfileRequest request) {
         validateNewNickname(member.getNickname(), request.nickname());
 
-        s3TagManager.removeDeleteTag(request.imageKey());
-        s3TagManager.markAsDeleted(member.getImageKey());
+        if (request.imageKey() != null) {
+            s3TagManager.removeDeleteTag(request.imageKey());
+            s3TagManager.markAsDeleted(member.getImageKey());
+        }
 
         member.updateProfile(request);
         memberRepository.save(member);
@@ -87,10 +89,9 @@ public class MemberService {
     }
 
     private void validateNewNickname(final String memberNickname, final String newNickname) {
-        if (memberNickname.equals(newNickname)) {
-            throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
+        if (!memberNickname.equals(newNickname)) {
+            validateUniqueNickname(newNickname);
         }
-        validateUniqueNickname(newNickname);
     }
 
     public NoContent changePassword(final Member member, final UpdatePasswordRequest request) {

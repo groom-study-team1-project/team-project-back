@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Import(LocalStackTestConfig.class)
 @Transactional
 @DirtiesContext
-@Import(LocalStackTestConfig.class)
 class CategoryServiceTest {
 
 	@Autowired

@@ -49,6 +49,7 @@ public class MemberApiController implements MemberApiControllerDocs {
     }
 
     @PostMapping(value = "/me/profile-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    @Deprecated
     public ResponseEntity<API<ImageUploadResponse>> profileImageUpload(
             @Auth final Member member,
             @RequestParam final MultipartFile imageFile
