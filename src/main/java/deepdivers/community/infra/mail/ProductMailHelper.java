@@ -1,4 +1,4 @@
-package deepdivers.community.global.utility.mail;
+package deepdivers.community.infra.mail;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

@@ -6,7 +6,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.anyString;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -122,28 +121,20 @@ class PostTest {
 
 	@Test
 	@DisplayName("게시글에 이미지 연결 성공")
-	void connectImagesToPost() {
+	void connectImageKeyToPost() {
 		// given
 		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", "", category.getId(), List.of("tag1", "tag2"), null),
+				new PostSaveRequest("Test Title", "Test Content", "", category.getId(), List.of(), List.of()),
 				category,
 				member
 		);
-
-		List<PostImage> images = List.of(
-				new PostImage(post, "http://example.com/image1.jpg"),
-				new PostImage(post, "http://example.com/image2.jpg")
-		);
+		List<String> imageKeys = List.of("post/imageKey1.png");
 
 		// when
-		post.connectImages(images);
+		post.connectImageKey(imageKeys);
 
 		// then
-		assertThat(post.getPostImages()).hasSize(2);
-		assertThat(post.getPostImages().stream()
-				.map(PostImage::getImageUrl)
-				.toList())
-				.containsExactlyInAnyOrder("http://example.com/image1.jpg", "http://example.com/image2.jpg");
+		assertThat(post.getImageKeys()).isEqualTo(imageKeys);
 	}
 
 	@Test

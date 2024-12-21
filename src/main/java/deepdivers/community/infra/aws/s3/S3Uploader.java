@@ -1,8 +1,9 @@
-package deepdivers.community.global.utility.uploader;
+package deepdivers.community.infra.aws.s3;
 
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 
+import deepdivers.community.infra.aws.s3.exception.S3Exception;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -99,12 +100,12 @@ public class S3Uploader {
 
         final String contentType = file.getContentType();
         if (Objects.isNull(contentType) || !ALLOWED_MIME_TYPES.contains(contentType)) {
-            throw new BadRequestException(S3Exception.INVALID_IMAGE);
+            throw new BadRequestException(S3Exception.INVALID_IMAGE_FORMAT);
         }
 
         final String extension = getExtension(file).substring(1);
         if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new BadRequestException(S3Exception.INVALID_IMAGE);
+            throw new BadRequestException(S3Exception.INVALID_IMAGE_FORMAT);
         }
     }
 

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comments")
+@RequestMapping("/open/comments")
 public class CommentOpenController implements CommentOpenControllerDocs {
 
     private final CommentQueryRepository commentQueryRepository;

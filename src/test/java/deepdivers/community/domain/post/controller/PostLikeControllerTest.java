@@ -41,11 +41,6 @@ class PostLikeControllerTest extends ControllerTest {
     @MockBean
     private AuthorizationResolver authorizationResolver;
 
-    @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) {
-        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-    }
-
     @Test
     @DisplayName("좋아요 추가 성공 시 200 OK 반환")
     void likeSuccess() {

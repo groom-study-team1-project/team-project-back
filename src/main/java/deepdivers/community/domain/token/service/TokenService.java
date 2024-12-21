@@ -8,6 +8,7 @@ import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
+import deepdivers.community.infra.aws.s3.S3PresignManager;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -18,13 +19,14 @@ import org.springframework.stereotype.Service;
 public class TokenService {
 
     private final AuthHelper authHelper;
+    private final S3PresignManager s3PresignManager;
 
     private static final String KEY_MEMBER_ID = "memberId";
     private static final String KEY_MEMBER_NICKNAME = "memberNickname";
     private static final String KEY_MEMBER_ROLE = "memberRole";
     private static final String KEY_MEMBER_IMAGE = "memberImageUrl";
 
-    public TokenResponse tokenGenerator(final Member member) {
+    public TokenResponse generateToken(final Member member) {
         return getTokenResponse(
                 createAccessTokenData(member),
                 createRefreshTokenData(member)
@@ -35,12 +37,12 @@ public class TokenService {
     public API<TokenResponse> reIssueAccessToken(final String bearerAccessToken, final String refreshToken) {
         final String accessToken = authHelper.resolveToken(bearerAccessToken);
         final AuthPayload authPayload = validateRefreshToken(accessToken, refreshToken);
-        final TokenResponse response = tokenGenerator(authPayload);
+        final TokenResponse response = generateToken(authPayload);
 
         return API.of(TokenStatusType.RE_ISSUE_SUCCESS, response);
     }
 
-    private TokenResponse tokenGenerator(final AuthPayload memberInfo) {
+    private TokenResponse generateToken(final AuthPayload memberInfo) {
         return getTokenResponse(
                 createAccessTokenData(memberInfo),
                 createRefreshTokenData(memberInfo)
@@ -74,7 +76,7 @@ public class TokenService {
         data.put(KEY_MEMBER_ID, member.getId());
         data.put(KEY_MEMBER_NICKNAME, member.getNickname());
         data.put(KEY_MEMBER_ROLE, member.getRole());
-        data.put(KEY_MEMBER_IMAGE, member.getImageUrl());
+        data.put(KEY_MEMBER_IMAGE, s3PresignManager.generateAccessUrl(member.getImageKey()));
         return data;
     }
 

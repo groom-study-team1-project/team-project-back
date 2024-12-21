@@ -1,7 +1,6 @@
 package deepdivers.community.domain.member.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "사용자 회원가입 하기")
@@ -18,11 +17,11 @@ public record MemberSignUpRequest(
         @NotBlank(message = "사용자 닉네임 정보가 필요합니다.")
         String nickname,
 
-        @Schema(description = "사용자 이미지", example = "http://localhost:8080/images/profile.png")
-        @NotBlank(message = "사용자 이미지 정보가 필요합니다.")
-        String imageUrl,
+        @Schema(description = "사용자 이미지 키", example = "profiles/002da67c_1730807352645.png")
+        @NotBlank(message = "사용자 이미지 키 정보가 필요합니다.")
+        String imageKey,
 
-        @Schema(description = "사용자 전화번호", example = "010-0000-0000")
+        @Schema(description = "사용자 전화번호", example = "010-1234-1234")
         @NotBlank(message = "사용자 전화번호 정보가 필요합니다.")
         String phoneNumber
 ) {

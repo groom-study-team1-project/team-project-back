@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "5. 게시글", description = "비회원 게시글 조회 API")
+@Tag(name = "05. 게시글", description = "비회원 게시글 조회 API")
 public interface PostOpenControllerDocs {
 
 	@Operation(summary = "게시글 조회 (비회원)", description = "비회원이 게시글을 조회하는 기능")

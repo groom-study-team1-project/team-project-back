@@ -19,16 +19,18 @@ public record PostSaveRequest(
 	@Size(min = 5, message = "게시글 내용은 최소 5자 이상이어야 합니다.")
 	String content,
 
-	@Schema(description = "게시글 썸네일 URL", example = "https://example.com/temp/thumbnail.jpg")
-	String thumbnail,
+	@Schema(description = "게시글 썸네일 URL", example = "posts/thumbnail.png")
+	String thumbnailImageKey,
 
 	@Schema(description = "카테고리 ID", example = "1")
 	@NotNull(message = "카테고리 선택은 필수입니다.")
 	Long categoryId,
 
 	@Schema(description = "해시태그 목록", example = "[\"Spring\", \"Boot\"]")
+	@NotNull
 	List<String> hashtags,
 
-	@Schema(description = "게시글 이미지 목록")
-	List<String> imageUrls
+	@Schema(description = "게시글 이미지 키 목록", example = "[\"posts/uuid/image1.png\", \"posts/uuid/image2.png\"]")
+	@NotNull
+	List<String> imageKeys
 ) {}

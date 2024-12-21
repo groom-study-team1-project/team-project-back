@@ -3,7 +3,7 @@ package deepdivers.community.domain.post.service;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.PostImage;
 import deepdivers.community.domain.post.repository.PostImageRepository;
-import deepdivers.community.global.utility.uploader.S3Uploader;
+import deepdivers.community.infra.aws.s3.S3Uploader;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-import static deepdivers.community.global.utility.uploader.S3Uploader.POST_DIRECTORY;
-import static deepdivers.community.global.utility.uploader.S3Uploader.TEMP_DIRECTORY;
+import static deepdivers.community.infra.aws.s3.S3Uploader.POST_DIRECTORY;
+import static deepdivers.community.infra.aws.s3.S3Uploader.TEMP_DIRECTORY;
 
 @Slf4j
 @Service

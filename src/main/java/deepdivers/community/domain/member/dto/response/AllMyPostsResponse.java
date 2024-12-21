@@ -14,6 +14,7 @@ public class AllMyPostsResponse {
 
     private Long id;
     private String title;
+    private String thumbnail;
     private Integer viewCount;
     private Integer likeCount;
     private Integer commentCount;
