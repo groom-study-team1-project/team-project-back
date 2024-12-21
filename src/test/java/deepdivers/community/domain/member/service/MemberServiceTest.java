@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import deepdivers.community.domain.ServiceTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.common.StatusResponse;
@@ -17,34 +18,21 @@ import deepdivers.community.domain.member.dto.response.statustype.MemberStatusTy
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.vo.MemberRole;
-import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
-import deepdivers.community.infra.aws.s3.S3TagManagerTest;
 import deepdivers.community.infra.aws.s3.exception.S3Exception;
-import deepdivers.community.infra.aws.s3.properties.S3Properties;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @SpringBootTest
-@Import(LocalStackTestConfig.class)
-@Transactional
-@DirtiesContext
-class MemberServiceTest extends S3TagManagerTest {
+class MemberServiceTest extends ServiceTest {
 
     @Autowired
     private MemberService memberService;

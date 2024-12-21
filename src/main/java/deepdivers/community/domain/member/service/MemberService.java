@@ -53,7 +53,7 @@ public class MemberService {
         final Member member = authenticateMember(request.email(), request.password());
         member.validateStatus();
 
-        final TokenResponse tokenResponse = tokenService.tokenGenerator(member);
+        final TokenResponse tokenResponse = tokenService.generateToken(member);
         return API.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 

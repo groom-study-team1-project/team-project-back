@@ -83,7 +83,7 @@ jacoco {
 
 def excludedPatterns = [
 		'deepdivers.community.BackendApplication',
-		'deepdivers.community.**.{config,exception,dto,properties}.*',
+		'deepdivers.community.**.{config,exception,dto,properties}.**',
 		'deepdivers.community.infra.aws.s3.generator.S3RequestGenerator'
 ]
 

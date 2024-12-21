@@ -13,7 +13,6 @@ import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.vo.PostStatus;
-import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.infra.aws.s3.exception.S3Exception;
 import java.util.List;
@@ -21,16 +20,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@DirtiesContext
-@Transactional
-@Import(LocalStackTestConfig.class)
 class PostServiceTest extends ServiceTest {
 
     @Autowired

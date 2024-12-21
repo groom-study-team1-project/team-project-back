@@ -26,7 +26,7 @@ public class TokenService {
     private static final String KEY_MEMBER_ROLE = "memberRole";
     private static final String KEY_MEMBER_IMAGE = "memberImageUrl";
 
-    public TokenResponse tokenGenerator(final Member member) {
+    public TokenResponse generateToken(final Member member) {
         return getTokenResponse(
                 createAccessTokenData(member),
                 createRefreshTokenData(member)
@@ -37,12 +37,12 @@ public class TokenService {
     public API<TokenResponse> reIssueAccessToken(final String bearerAccessToken, final String refreshToken) {
         final String accessToken = authHelper.resolveToken(bearerAccessToken);
         final AuthPayload authPayload = validateRefreshToken(accessToken, refreshToken);
-        final TokenResponse response = tokenGenerator(authPayload);
+        final TokenResponse response = generateToken(authPayload);
 
         return API.of(TokenStatusType.RE_ISSUE_SUCCESS, response);
     }
 
-    private TokenResponse tokenGenerator(final AuthPayload memberInfo) {
+    private TokenResponse generateToken(final AuthPayload memberInfo) {
         return getTokenResponse(
                 createAccessTokenData(memberInfo),
                 createRefreshTokenData(memberInfo)
