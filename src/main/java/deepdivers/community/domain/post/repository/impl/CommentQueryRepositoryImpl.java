@@ -38,7 +38,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                     comment.createdAt.as("createdAt"),
                     member.id.as("memberId"),
                     member.nickname.value.as("memberNickname"),
-                    member.imageUrl.as("memberImageUrl"),
+                    member.imageKey.as("memberImageUrl"),
                     comment.createdAt.ne(comment.updatedAt).as("isModified"),
                     like.isNotNull().as("isLikedMe"),
                     comment.member.id.eq(memberId).as("isAuthor")
@@ -72,7 +72,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                     comment.createdAt.as("createdAt"),
                     member.id.as("memberId"),
                     member.nickname.value.as("memberNickname"),
-                    member.imageUrl.as("memberImageUrl"),
+                    member.imageKey.as("memberImageUrl"),
                     comment.createdAt.ne(comment.updatedAt).as("isModified"),
                     like.isNotNull().as("isLikedMe"),
                     comment.member.id.eq(memberId).as("isAuthor")

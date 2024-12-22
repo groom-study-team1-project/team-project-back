@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "1. 회원", description = "회원 관련 API")
+@Tag(name = "01. 회원", description = "회원 관련 API")
 public interface MemberOpenControllerDocs {
 
     @Operation(summary = "회원가입", description = "회원가입을 하는 기능")

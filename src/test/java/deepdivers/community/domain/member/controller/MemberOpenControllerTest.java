@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
@@ -13,33 +11,20 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.open.MemberOpenController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
-import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = MemberOpenController.class)
 class MemberOpenControllerTest extends ControllerTest {
-
-    @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) throws Exception {
-        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-        mockingAuthArgumentResolver();
-    }
 
     /*
     * 회원가입 컨트롤러 테스트
@@ -60,7 +45,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
-            .when().post("/members/sign-up")
+            .when().post("/open/members/sign-up")
             .then().log().all()
             .status(HttpStatus.OK)
             .extract()
@@ -83,7 +68,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
-            .when().post("/members/sign-up")
+            .when().post("/open/members/sign-up")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
@@ -102,7 +87,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
-            .when().post("/members/sign-up")
+            .when().post("/open/members/sign-up")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
@@ -121,11 +106,11 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
-            .when().post("/members/sign-up")
+            .when().post("/open/members/sign-up")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
-            .body("message", containsString("사용자 이미지 정보가 필요합니다."));
+            .body("message", containsString("사용자 이미지 키 정보가 필요합니다."));
     }
 
     @Test
@@ -139,7 +124,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(request)
-            .when().post("/members/sign-up")
+            .when().post("/open/members/sign-up")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
@@ -165,7 +150,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(loginRequest)
-            .when().post("/members/login")
+            .when().post("/open/members/login")
             .then().log().all()
             .status(HttpStatus.OK)
             .extract()
@@ -188,7 +173,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(loginRequest)
-            .when().post("/members/login")
+            .when().post("/open/members/login")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
@@ -206,7 +191,7 @@ class MemberOpenControllerTest extends ControllerTest {
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON)
             .body(loginRequest)
-            .when().post("/members/login")
+            .when().post("/open/members/login")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))

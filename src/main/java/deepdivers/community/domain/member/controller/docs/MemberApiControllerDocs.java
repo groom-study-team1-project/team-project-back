@@ -18,7 +18,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "2. 회원 - 토큰", description = "토큰 정보가 필요한 회원 관련 API")
+@Tag(name = "02. 회원 - 토큰", description = "토큰 정보가 필요한 회원 관련 API")
 public interface MemberApiControllerDocs {
 
     @Operation(summary = "프로필 조회", description = "프로필을 조회하는 기능")
@@ -37,23 +37,6 @@ public interface MemberApiControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<API<MemberProfileResponse>> me(Member member, Long profileOwnerId);
-
-    @Operation(summary = "이미지 업로드", description = "프로필 이미지를 업로드하는 기능")
-    @ApiResponse(
-        responseCode = "1004",
-        description = """
-                1. 사용자 프로필 이미지 업로드에 성공하였습니다.
-                """
-    )
-    @ApiResponse(
-        responseCode = "2009\n9000~9005",
-        description = """
-                1. 사용자 정보를 찾을 수 없습니다.
-                2. 토큰 관련 예외입니다.
-                """,
-        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-    )
-    ResponseEntity<API<ImageUploadResponse>> profileImageUpload(Member member, MultipartFile imageFile);
 
     @Operation(summary = "프로필 수정", description = "프로필을 수정하는 기능")
     @ApiResponse(

@@ -2,36 +2,31 @@ package deepdivers.community.domain.post.controller;
 
 import static deepdivers.community.domain.post.dto.response.statustype.PostStatusType.POST_VIEW_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
+import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.controller.dto.GetAllPostsTestResponse;
+import deepdivers.community.domain.post.controller.open.PostOpenController;
+import deepdivers.community.domain.post.dto.response.CountInfo;
+import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
+import deepdivers.community.domain.post.dto.response.MemberInfo;
+import deepdivers.community.domain.post.dto.response.PostReadResponse;
+import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.repository.PostQueryRepository;
+import deepdivers.community.domain.post.service.PostService;
+import deepdivers.community.global.exception.model.BadRequestException;
+import io.restassured.common.mapper.TypeRef;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import deepdivers.community.domain.post.repository.PostQueryRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.WebApplicationContext;
-
-import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.post.controller.open.PostOpenController;
-import deepdivers.community.domain.post.dto.response.CountInfo;
-import deepdivers.community.domain.post.dto.response.MemberInfo;
-import deepdivers.community.domain.post.dto.response.GetAllPostsResponse; // Ensure this is used
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
-import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.global.exception.model.BadRequestException;
-import io.restassured.common.mapper.TypeRef;
-import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 @WebMvcTest(controllers = PostOpenController.class)
 class PostOpenControllerTest extends ControllerTest {
@@ -41,11 +36,6 @@ class PostOpenControllerTest extends ControllerTest {
 
 	@MockBean
 	private PostQueryRepository postQueryRepository;
-
-	@BeforeEach
-	void setUp(WebApplicationContext webApplicationContext) {
-		RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
-	}
 
 	@Test
 	@DisplayName("게시글 상세 조회 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")

@@ -26,7 +26,6 @@ public class PostApiController implements PostApiControllerDocs {
 	private final PostService postService;
 	private final LikeService likeService;
 
-
 	@Override
 	@PostMapping("/upload")
 	public ResponseEntity<API<PostSaveResponse>> createPost(
@@ -38,7 +37,7 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@Override
-	@PostMapping("/update/{postId}")
+	@PostMapping("/edit/{postId}")
 	public ResponseEntity<API<PostSaveResponse>> updatePost(
 		@Auth final Member member,
 		@PathVariable final Long postId,
@@ -49,20 +48,12 @@ public class PostApiController implements PostApiControllerDocs {
 	}
 
 	@Override
-	@PatchMapping("/delete/{postId}")
+	@PatchMapping("/remove/{postId}")
 	public ResponseEntity<NoContent> deletePost(
 		@Auth final Member member,
 		@PathVariable final Long postId
 	) {
 		final NoContent response = postService.deletePost(postId, member);
-		return ResponseEntity.ok(response);
-	}
-
-	@PostMapping(value = "/upload/image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-	public ResponseEntity<API<PostImageUploadResponse>> uploadPostImage(
-		@RequestParam final MultipartFile imageFile
-	) {
-		API<PostImageUploadResponse> response = postService.uploadPostImage(imageFile);
 		return ResponseEntity.ok(response);
 	}
 

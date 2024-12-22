@@ -2,11 +2,6 @@ package deepdivers.community.domain.member.service;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.exception.model.NotFoundException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
-import deepdivers.community.global.utility.uploader.S3Uploader;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
@@ -19,6 +14,11 @@ import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
+import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.infra.aws.s3.S3TagManager;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,12 +34,13 @@ public class MemberService {
     private final Encryptor encryptor;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
-    private final S3Uploader s3Uploader;
+    private final S3TagManager s3TagManager;
 
     public NoContent signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
 
         final Member member = Member.of(request, encryptor);
+        s3TagManager.removeDeleteTag(request.imageKey());
         memberRepository.save(member);
 
         return NoContent.from(MemberStatusType.MEMBER_SIGN_UP_SUCCESS);
@@ -50,7 +51,7 @@ public class MemberService {
         final Member member = authenticateMember(request.email(), request.password());
         member.validateStatus();
 
-        final TokenResponse tokenResponse = tokenService.tokenGenerator(member);
+        final TokenResponse tokenResponse = tokenService.generateToken(member);
         return API.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
     }
 
@@ -66,20 +67,24 @@ public class MemberService {
             .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
-    public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
-        final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
-        return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
-    }
-
     public NoContent updateProfile(final Member member, final MemberProfileRequest request) {
-        if (!member.getNickname().equals(request.nickname())) {
-            validateUniqueNickname(request.nickname());
+        validateNewNickname(member.getNickname(), request.nickname());
+
+        if (request.imageKey() != null) {
+            s3TagManager.removeDeleteTag(request.imageKey());
+            s3TagManager.markAsDeleted(member.getImageKey());
         }
 
         member.updateProfile(request);
         memberRepository.save(member);
 
         return NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
+    }
+
+    private void validateNewNickname(final String memberNickname, final String newNickname) {
+        if (!memberNickname.equals(newNickname)) {
+            validateUniqueNickname(newNickname);
+        }
     }
 
     public NoContent changePassword(final Member member, final UpdatePasswordRequest request) {
@@ -106,7 +111,7 @@ public class MemberService {
         validateUniqueNickname(request.nickname());
     }
 
-    private void validateUniqueEmail(final String email) {
+    protected void validateUniqueEmail(final String email) {
         if (hasEmailVerification(email)) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }

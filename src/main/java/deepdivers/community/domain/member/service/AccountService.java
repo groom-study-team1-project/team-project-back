@@ -7,9 +7,8 @@ import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
-import deepdivers.community.global.utility.mail.MailHelper;
+import deepdivers.community.infra.mail.MailHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +32,12 @@ public class AccountService {
     }
 
     public NoContent emailAuthentication(final AuthenticateEmailRequest request) {
-        boolean hasEmail = memberService.hasEmailVerification(request.email());
-        if (hasEmail) {
-            throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
-        }
+        memberService.validateUniqueEmail(request.email());
         mailHelper.sendAuthenticatedEmail(request.email());
         return NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
     }
 
     public NoContent passwordAuthentication(final AuthenticateEmailRequest request) {
-        // todo test
         boolean hasEMail = memberService.hasEmailVerification(request.email());
         if (!hasEMail) {
             throw new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT);
@@ -55,4 +50,5 @@ public class AccountService {
         final Member member = memberService.getMemberWithThrow(request.email());
         return memberService.resetPassword(member, request);
     }
+
 }

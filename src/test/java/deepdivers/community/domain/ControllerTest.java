@@ -11,9 +11,12 @@ import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.global.utility.encryptor.Encryptor;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 @Import(Encryptor.class)
 public class ControllerTest {
@@ -24,6 +27,11 @@ public class ControllerTest {
     protected MemberService memberService;
     @MockBean
     protected Encryptor encryptor;
+
+    @BeforeEach
+    protected void setUp(WebApplicationContext webApplicationContext) throws Exception {
+        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+    }
 
     protected void mockingAuthArgumentResolver() {
         AuthPayload tokenPayload = new AuthPayload(1L, "1", "1", "", 1L, 1L);

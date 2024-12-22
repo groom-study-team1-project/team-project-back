@@ -1,16 +1,11 @@
-package deepdivers.community.global.utility.mail;
+package deepdivers.community.infra.mail;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
-@Component
-@Slf4j
-public class LocalMailHelper implements MailHelper {
+public class FakeMailHelper implements MailHelper {
 
     private final Map<String, Data> db = new HashMap<>();
     private static final Duration CODE_EXPIRATION_TIME = Duration.ofMinutes(5);
@@ -31,7 +26,6 @@ public class LocalMailHelper implements MailHelper {
         final LocalDateTime time = LocalDateTime.now();
         db.remove(email);
         db.put(email, new Data(verifyCode, time));
-        log.info("============ send email ========> verifyCode = {}", verifyCode);
     }
 
     @Override

@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "7. 댓글", description = "댓글 조회 API")
+@Tag(name = "07. 댓글", description = "댓글 조회 API")
 public interface CommentOpenControllerDocs {
 
     @Operation(summary = "댓글 조회", description = "게시글 댓글을 조회하는 기능")

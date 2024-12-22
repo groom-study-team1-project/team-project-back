@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "4. 토큰", description = "토큰 관련 API")
+@Tag(name = "04. 토큰", description = "토큰 관련 API")
 public interface TokenControllerDocs {
 
     @Operation(

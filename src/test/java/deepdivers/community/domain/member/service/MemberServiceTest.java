@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import deepdivers.community.domain.ServiceTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.common.StatusResponse;
@@ -17,77 +18,56 @@ import deepdivers.community.domain.member.dto.response.statustype.MemberStatusTy
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.vo.MemberRole;
-import deepdivers.community.domain.member.repository.MemberRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
-import deepdivers.community.global.utility.uploader.S3Exception;
+import deepdivers.community.infra.aws.s3.exception.S3Exception;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-@Transactional
-@Import(LocalStackTestConfig.class)
-@DirtiesContext
-class MemberServiceTest {
+class MemberServiceTest extends ServiceTest {
 
     @Autowired
     private MemberService memberService;
     @Autowired
     private AuthHelper authHelper;
-    @Autowired
-    @EncryptorBean
-    private Encryptor encryptor;
-    @Autowired
-    private MemberRepository memberRepository;
 
     /*
      * 회원 가입 관련 테스트
      * 성공, 예외
      * */
     @Test
-    @DisplayName("회원 가입이 성공했을 경우 저장된 정보를 테스트한다.")
-    void signUpSuccessAfterFindMemberTest() {
-        // Given, test.sql
-        String email = "test@mail.com";
-        String password = "password1234!";
-        String nickname = "test";
-        String img = "test";
-        String tel = "010-1234-5678";
-        MemberSignUpRequest request = new MemberSignUpRequest(email, password, nickname, img, tel);
-        long lastAccountId = 10L;
+    @DisplayName("회원 가입이 성공했을 경우를 테스트한다.")
+    void signUpSuccessTest() {
+        // Given
+        MemberSignUpRequest request = new MemberSignUpRequest(
+            "test@mail.com", "password1234!", "test", "profile/test-image.jpg", "010-1234-5678"
+        );
+        createTestObject("profile/test-image.jpg");
 
         // When
-        memberService.signUp(request);
+        NoContent result = memberService.signUp(request);
 
         // Then
-        Member member = memberRepository.findByEmailValue(email).get();
-        assertThat(member.getId()).isGreaterThan(lastAccountId);
-        assertThat(member.getEmail()).isEqualTo(email);
-        assertThat(encryptor.matches(password, member.getPassword())).isTrue();
-        assertThat(member.getNickname()).isEqualTo(nickname);
-        assertThat(member.getPhoneNumber()).isEqualTo(tel);
+        assertThat(result.status().code()).isEqualTo(MemberStatusType.MEMBER_SIGN_UP_SUCCESS.getCode());
+        assertThat(result.status().message()).isEqualTo(MemberStatusType.MEMBER_SIGN_UP_SUCCESS.getMessage());
     }
 
     @Test
     @DisplayName("소문자 닉네임 정보가 저장되는지 확인한다.")
     void validateSavedLowerCaseNickname() {
         // Given, Test.sql
-        String nickname = "aA안1";
-        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", nickname, "test", "010-1234-5678");
+        createTestObject("profile/test-image.jpg");
+        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", "aA안1", "profile/test-image.jpg", "010-1234-5678");
         memberService.signUp(request);
+
         String expectedNickname = "aa안1";
 
         // When & Then
@@ -97,19 +77,17 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("회원 가입이 성공했을 경우를 테스트한다.")
-    void signUpSuccessTest() {
+    @DisplayName("업로드 되지 않은 image Key 정보가 주어질 때 회원가입 시 예외가 발생하는지 확인한다.")
+    void givenDoesNotExistingImageKeyWhenSignUpTest() {
         // Given, test.sql
-        MemberSignUpRequest request = new MemberSignUpRequest("test@mail.com", "password1234!", "test", "test", "010-1234-5678");
+        MemberSignUpRequest request = new MemberSignUpRequest(
+            "test@mail.com", "password1234!", "test", "profile/not-exist-image.jpg", "010-1234-5678"
+        );
 
-        // When
-        NoContent response = memberService.signUp(request);
-
-        // Then
-        StatusType statusType = MemberStatusType.MEMBER_SIGN_UP_SUCCESS;
-        assertThat(response).isNotNull();
-        assertThat(response.status().code()).isEqualTo(statusType.getCode());
-        assertThat(response.status().message()).isEqualTo(statusType.getMessage());
+        // When & then
+        assertThatThrownBy(() -> memberService.signUp(request))
+            .isInstanceOf(BadRequestException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", S3Exception.NOT_FOUND_FILE);
     }
 
     @Test
@@ -246,56 +224,23 @@ class MemberServiceTest {
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
     }
 
-    /*
-     * 프로필 수정 관련 테스트
-     * */
-    @Test
-    @DisplayName("프로필 이미지 업로드에 성공한 경우를 테스트한다.")
-    void imageUploadSuccessTest() {
-        // Given
-        Long memberId = 1L;
-        MultipartFile file = new MockMultipartFile(
-                "file", "test.jpg", "image/jpeg", "test image content".getBytes()
-        );
-
-        // When
-        API<ImageUploadResponse> other = memberService.profileImageUpload(file, memberId);
-
-        // Then
-        ImageUploadResponse result = other.result();
-        assertThat(result.imageUrl()).contains(memberId.toString());
-    }
-
-    @Test
-    @DisplayName("이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
-    void InvalidImageUploadShouldBadRequestException() {
-        // Given
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test.jpg", "text/plain", "test image content".getBytes()
-        );
-        Long memberId = 1L;
-
-        // When, Then
-        assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE);
-    }
-
     @Test
     @DisplayName("프로필 수정이 성공할 경우를 테스트한다.")
     void profileUpdateSuccessTest() {
         // Given test.sql
         Member member = memberService.getMemberWithThrow(1L);
-        MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "", "EMPTY");
+        System.out.println(member);
+        MemberProfileRequest request =
+            new MemberProfileRequest("test", "profile/test-image2.jpg", "", "010-1234-5678", "", "", "EMPTY");
+        createTestObject("profile/test-image1.jpg");
+        createTestObject("profile/test-image2.jpg");
 
         // When
-        NoContent memberProfileResponseAPI = memberService.updateProfile(member, request);
+        NoContent result = memberService.updateProfile(member, request);
 
         // then
-        StatusResponse responseStatus = memberProfileResponseAPI.status();
-        MemberStatusType status = MemberStatusType.UPDATE_PROFILE_SUCCESS;
-        assertThat(responseStatus.code()).isEqualTo(status.getCode());
-        assertThat(responseStatus.message()).isEqualTo(status.getMessage());
+        assertThat(result.status().code()).isEqualTo(MemberStatusType.UPDATE_PROFILE_SUCCESS.getCode());
+        assertThat(result.status().message()).isEqualTo(MemberStatusType.UPDATE_PROFILE_SUCCESS.getMessage());
     }
 
     /*

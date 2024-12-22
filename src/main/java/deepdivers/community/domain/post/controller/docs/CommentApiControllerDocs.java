@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
-@Tag(name = "8. 댓글 - 토큰", description = "댓글 관련 API")
+@Tag(name = "08. 댓글 - 토큰", description = "댓글 관련 API")
 public interface CommentApiControllerDocs {
 
     @Operation(summary = "댓글 작성", description = "게시글 댓글을 작성하는 기능")

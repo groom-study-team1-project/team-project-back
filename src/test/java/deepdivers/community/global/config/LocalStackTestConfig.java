@@ -2,6 +2,7 @@ package deepdivers.community.global.config;
 
 import static org.testcontainers.containers.localstack.LocalStackContainer.Service.S3;
 
+import deepdivers.community.infra.aws.s3.S3PresignManager;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -11,6 +12,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @TestConfiguration
 public class LocalStackTestConfig {
@@ -36,6 +38,7 @@ public class LocalStackTestConfig {
         // 기본 버킷 생성
         s3Client.createBucket(b -> b.bucket("test-bucket"));
     }
+
 
     @Bean(destroyMethod = "")
     @Primary

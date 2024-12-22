@@ -1,14 +1,11 @@
 package deepdivers.community.domain.token.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.StatusResponse;
-import deepdivers.community.domain.token.dto.ReissueResponse;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.dto.TokenStatusType;
 import deepdivers.community.domain.token.service.TokenService;
@@ -21,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(controllers = TokenController.class)
 class TokenControllerTest extends ControllerTest {
@@ -30,8 +26,7 @@ class TokenControllerTest extends ControllerTest {
     TokenService tokenService;
 
     @BeforeEach
-    void setUp(WebApplicationContext webApplicationContext) throws Exception {
-        RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
+    void init() {
         mockingAuthArgumentResolver();
     }
 
@@ -47,14 +42,15 @@ class TokenControllerTest extends ControllerTest {
 
         // when
         API<TokenResponse> response = RestAssuredMockMvc
-                .given().log().all()
-                .header(HttpHeaders.AUTHORIZATION, accessToken)
-                .header("Refresh-Token", refreshToken)
-                .when().patch("/tokens/re-issue")
-                .then().log().all()
-                .status(HttpStatus.OK)
-                .extract()
-                .as(new TypeRef<>(){});
+            .given().log().all()
+            .header(HttpHeaders.AUTHORIZATION, accessToken)
+            .header("Refresh-Token", refreshToken)
+            .when().patch("/open/tokens/re-issue")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>() {
+            });
 
         // then
         assertThat(response).isNotNull();

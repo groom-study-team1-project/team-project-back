@@ -9,8 +9,10 @@ import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAllPostsResponse {
@@ -25,6 +27,10 @@ public class GetAllPostsResponse {
 	private String hashtags;
 	private String imageUrls;
 	private LocalDateTime createdAt;
+
+	public String imageUrls() {
+		return imageUrls;
+	}
 
 	public List<String> getImageUrls() {
 		return Optional.ofNullable(imageUrls)
