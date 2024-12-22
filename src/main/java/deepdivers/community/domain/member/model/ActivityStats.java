@@ -23,4 +23,11 @@ public class ActivityStats {
         return new ActivityStats(0, 0);
     }
 
+    public void incrementCommentCount() {
+        commentCount++;
+    }
+
+    public void incrementPostCount() {
+        postCount++;
+    }
 }

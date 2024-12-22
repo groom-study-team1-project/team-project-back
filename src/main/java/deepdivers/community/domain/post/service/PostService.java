@@ -42,9 +42,11 @@ public class PostService {
         final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
         final Post post = Post.of(request, postCategory, member);
 
+        member.incrementPostCount();
+        request.imageKeys().forEach(s3TagManager::removeDeleteTag);
+        
         final Set<PostHashtag> hashtags = hashtagService.createPostHashtags(post, request.hashtags());
         final Post savedPost = createPost(post, hashtags, request.imageKeys());
-        request.imageKeys().forEach(s3TagManager::removeDeleteTag);
 
         return API.of(PostStatusType.POST_CREATE_SUCCESS, PostSaveResponse.from(savedPost));
     }

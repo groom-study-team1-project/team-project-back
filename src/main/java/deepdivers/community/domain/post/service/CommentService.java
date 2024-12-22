@@ -28,14 +28,19 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     public NoContent writeComment(final Member member, final WriteCommentRequest request) {
-        final Post post = postRepository.findById(request.postId())
-            .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
+        final Post post = getPostWithoutException(request);
         final Comment comment = Comment.of(post, member, request.content());
 
-        commentRepository.save(comment);
+        member.incrementCommentCount();
         postRepository.incrementCommentCount(post.getId());
+        commentRepository.save(comment);
 
         return NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+    }
+
+    private Post getPostWithoutException(WriteCommentRequest request) {
+        return postRepository.findById(request.postId())
+            .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
     }
 
     public NoContent writeReply(final Member member, final WriteReplyRequest request) {
