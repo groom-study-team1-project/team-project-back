@@ -43,27 +43,6 @@ public interface PostApiControllerDocs {
 	)
 	ResponseEntity<NoContent> deletePost(Member member, Long postId);
 
-	@Operation(summary = "게시글 이미지 업로드", description = "게시글 이미지를 업로드하는 기능")
-	@ApiResponse(
-		responseCode = "1204",
-		description = """
-				1. 게시글 이미지 업로드에 성공하였습니다.
-				"""
-	)
-	@ApiResponse(
-		responseCode = "4002",
-		description = "유효하지 않은 이미지 파일입니다.",
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
-	@ApiResponse(
-		responseCode = "9000~9005",
-		description = """
-				1. 토큰 관련 예외입니다.
-				""",
-		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-	)
-	ResponseEntity<API<PostImageUploadResponse>> uploadPostImage(MultipartFile imageFile);
-
 	@Operation(summary = "게시글 좋아요", description = "게시글 좋아요를 하는 기능")
 	@ApiResponse(
 			responseCode = "1205",

@@ -3,13 +3,16 @@ package deepdivers.community.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import deepdivers.community.domain.ServiceTest;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.common.StatusResponse;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
+import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.infra.mail.MailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +23,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-@Import(LocalStackTestConfig.class)
-@Transactional
-@DirtiesContext
-class AccountServiceTest {
+class AccountServiceTest extends ServiceTest {
 
     @Autowired
     private AccountService accountService;
@@ -38,13 +38,11 @@ class AccountServiceTest {
         String nickname = "noDuplicate";
 
         // When
-        NoContent noContent = accountService.verifyNickname(nickname);
+        NoContent result = accountService.verifyNickname(nickname);
 
         // then
-        StatusResponse expectedStatus = StatusResponse.from(AccountStatusType.NICKNAME_VALIDATE_SUCCESS);
-        StatusResponse resultStatus = noContent.status();
-        assertThat(resultStatus.code()).isEqualTo(expectedStatus.code());
-        assertThat(resultStatus.message()).isEqualTo(expectedStatus.message());
+        NoContent expectedResult = NoContent.from(AccountStatusType.NICKNAME_VALIDATE_SUCCESS);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     /*
@@ -57,13 +55,11 @@ class AccountServiceTest {
         AuthenticateEmailRequest request = new AuthenticateEmailRequest("email@test.com");
 
         // When
-        NoContent noContent = accountService.emailAuthentication(request);
+        NoContent result = accountService.emailAuthentication(request);
 
         // then
-        StatusResponse expectedStatus = StatusResponse.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
-        StatusResponse resultStatus = noContent.status();
-        assertThat(resultStatus.code()).isEqualTo(expectedStatus.code());
-        assertThat(resultStatus.message()).isEqualTo(expectedStatus.message());
+        NoContent expectedResult = NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     /*
@@ -77,13 +73,11 @@ class AccountServiceTest {
         VerifyEmailRequest request = new VerifyEmailRequest("email@test.com", "123456");
 
         // When
-        NoContent noContent = accountService.verifyEmail(request);
+        NoContent result = accountService.verifyEmail(request);
 
         // then
-        StatusResponse expectedStatus = StatusResponse.from(AccountStatusType.VERIFY_EMAIL_SUCCESS);
-        StatusResponse resultStatus = noContent.status();
-        assertThat(resultStatus.code()).isEqualTo(expectedStatus.code());
-        assertThat(resultStatus.message()).isEqualTo(expectedStatus.message());
+        NoContent expectedResult = NoContent.from(AccountStatusType.VERIFY_EMAIL_SUCCESS);
+        assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
     @Test
@@ -123,6 +117,16 @@ class AccountServiceTest {
         assertThatThrownBy(() -> accountService.verifyEmail(request))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MailException.INVALID_VERIFY_CODE);
+    }
+
+    @Test
+    void 존재하지_않는_이메일로_비밀번호_찾기_시_예외가_발생한다() {
+        // given
+        AuthenticateEmailRequest request = new AuthenticateEmailRequest("noemail@mail.com");
+        // when & then
+        assertThatThrownBy(() -> accountService.passwordAuthentication(request))
+            .isInstanceOf(NotFoundException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
     }
 
 }

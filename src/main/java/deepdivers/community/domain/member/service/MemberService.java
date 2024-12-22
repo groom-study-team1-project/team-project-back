@@ -19,7 +19,6 @@ import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import deepdivers.community.global.utility.encryptor.EncryptorBean;
 import deepdivers.community.infra.aws.s3.S3TagManager;
-import deepdivers.community.infra.aws.s3.S3Uploader;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,6 @@ public class MemberService {
     private final Encryptor encryptor;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
-    private final S3Uploader s3Uploader;
     private final S3TagManager s3TagManager;
 
     public NoContent signUp(final MemberSignUpRequest request) {
@@ -67,11 +65,6 @@ public class MemberService {
     public Member getMemberWithThrow(final String email) {
         return memberRepository.findByEmailValue(email)
             .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
-    }
-
-    public API<ImageUploadResponse> profileImageUpload(final MultipartFile imageFile, final Long memberId) {
-        final String uploadUrl = s3Uploader.profileImageUpload(imageFile, memberId);
-        return API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, ImageUploadResponse.of(uploadUrl));
     }
 
     public NoContent updateProfile(final Member member, final MemberProfileRequest request) {
@@ -118,7 +111,7 @@ public class MemberService {
         validateUniqueNickname(request.nickname());
     }
 
-    private void validateUniqueEmail(final String email) {
+    protected void validateUniqueEmail(final String email) {
         if (hasEmailVerification(email)) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_EMAIL);
         }

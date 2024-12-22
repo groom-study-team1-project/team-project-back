@@ -224,41 +224,6 @@ class MemberServiceTest extends ServiceTest {
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
     }
 
-    /*
-     * 프로필 수정 관련 테스트
-     * */
-    @Test
-    @DisplayName("프로필 이미지 업로드에 성공한 경우를 테스트한다.")
-    void imageUploadSuccessTest() {
-        // Given
-        Long memberId = 1L;
-        MultipartFile file = new MockMultipartFile(
-                "file", "test.jpg", "image/jpeg", "test image content".getBytes()
-        );
-
-        // When
-        API<ImageUploadResponse> other = memberService.profileImageUpload(file, memberId);
-
-        // Then
-        ImageUploadResponse result = other.result();
-        assertThat(result.imageUrl()).contains(memberId.toString());
-    }
-
-    @Test
-    @DisplayName("이미지 업로드 시 이미지 파일이 아닐 경우 예외가 발생한다.")
-    void InvalidImageUploadShouldBadRequestException() {
-        // Given
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "test.jpg", "text/plain", "test image content".getBytes()
-        );
-        Long memberId = 1L;
-
-        // When, Then
-        assertThatThrownBy(() -> memberService.profileImageUpload(file, memberId))
-            .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", S3Exception.INVALID_IMAGE_FORMAT);
-    }
-
     @Test
     @DisplayName("프로필 수정이 성공할 경우를 테스트한다.")
     void profileUpdateSuccessTest() {

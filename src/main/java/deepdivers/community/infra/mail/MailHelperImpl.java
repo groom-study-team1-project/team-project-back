@@ -14,10 +14,9 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
-@Profile("product")
 @Component
 @RequiredArgsConstructor
-public class ProductMailHelper implements MailHelper {
+public class MailHelperImpl implements MailHelper {
 
     private static final String EMAIL_AUTH_SUBJECT = "[구름커뮤니티] 인증 관련 메일입니다.";
     private static final Duration CODE_EXPIRATION_TIME = Duration.ofMinutes(5);

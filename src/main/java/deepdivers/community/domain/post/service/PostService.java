@@ -36,7 +36,6 @@ public class PostService {
     private final CategoryService categoryService;
     private final VisitorService visitorService;
     private final HashtagService hashtagService;
-    private final ImageService imageService;
     private final S3TagManager s3TagManager;
 
     public API<PostSaveResponse> createPost(final PostSaveRequest request, final Member member) {
@@ -88,11 +87,6 @@ public class PostService {
                 PostStatusType.POST_VIEW_SUCCESS,
                 PostReadResponse.from(post)
         );
-    }
-
-    public API<PostImageUploadResponse> uploadPostImage(final MultipartFile imageFile) {
-        final String uploadUrl = imageService.uploadImageToTemp(imageFile);
-        return API.of(PostStatusType.POST_IMAGE_UPLOAD_SUCCESS, PostImageUploadResponse.of(uploadUrl));
     }
 
     public Post createPost(final Post post, final Set<PostHashtag> hashtags, final List<String> imageKeys) {

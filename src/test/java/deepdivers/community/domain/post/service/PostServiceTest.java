@@ -30,42 +30,6 @@ class PostServiceTest extends ServiceTest {
     private PostService postService;
 
     @Test
-    @DisplayName("이미지 업로드 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
-    void uploadPostImageSuccessfullyReturns200OK() {
-        // given
-        MockMultipartFile imageFile = new MockMultipartFile(
-                "imageFile",
-                "test-image.jpg",
-                MediaType.IMAGE_JPEG_VALUE,
-                "Test Image Content".getBytes()
-        );
-
-        // when
-        API<PostImageUploadResponse> response = postService.uploadPostImage(imageFile);
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response.result().imageUrl()).contains("temp/");
-    }
-
-    @Test
-    @DisplayName("유효하지 않은 파일로 업로드 요청 시 예외가 발생한다")
-    void uploadPostImageWithInvalidFileThrowsException() {
-        // given
-        MockMultipartFile invalidFile = new MockMultipartFile(
-                "imageFile",
-                "invalid.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "Invalid File Content".getBytes()
-        );
-
-        // when & then
-        assertThatThrownBy(() -> postService.uploadPostImage(invalidFile))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(S3Exception.INVALID_IMAGE_FORMAT.getMessage());
-    }
-
-    @Test
     @DisplayName("게시글 생성이 성공하면 저장된 게시글 정보를 테스트한다.")
     void createPostSuccessTest() {
         // Given

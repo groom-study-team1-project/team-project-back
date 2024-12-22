@@ -47,50 +47,6 @@ class MemberApiControllerTest extends ControllerTest {
     }
 
     /*
-     * 프로필 이미지 업로드 컨트롤러 테스트
-     * */
-    @Test
-    @DisplayName("프로필 이미지 업로드가 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
-    void uploadProfileImageSuccessfullyReturns200OK() {
-        // given
-        String contentBody = "image";
-        String imageUrl = "testurl.png";
-        ImageUploadResponse uploadResponse = ImageUploadResponse.of(imageUrl);
-        API<ImageUploadResponse> mockResponse = API.of(MemberStatusType.UPLOAD_IMAGE_SUCCESS, uploadResponse);
-        given(memberService.profileImageUpload(any(MultipartFile.class), anyLong())).willReturn(mockResponse);
-
-        // when
-        API<ImageUploadResponse> response = RestAssuredMockMvc.given().log().all()
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .multiPart("imageFile", contentBody, MediaType.IMAGE_PNG_VALUE)
-            .when().post("/api/members/me/profile-image")
-            .then().log().all()
-            .status(HttpStatus.OK)
-            .extract()
-            .as(new TypeRef<>() {
-            });
-
-        // then
-        assertThat(response).isNotNull();
-        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
-    }
-
-    @Test
-    @DisplayName("이미지 파일이 업로드 되지 않으면 서버 에러가 발생해야한다.")
-    void notAttachImageFileReturnInternalServerError() {
-        // given
-
-        // when, then
-        RestAssuredMockMvc.given().log().all()
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .when().post("/api/members/profile-image")
-            .then().log().all()
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("code", equalTo(100))
-            .body("message", containsString("알 수 없는 서버 에러가 발생했습니다."));
-    }
-
-    /*
      * 프로필 수정 컨트롤러 테스트
      * */
     @Test

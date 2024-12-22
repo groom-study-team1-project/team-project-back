@@ -38,23 +38,6 @@ public interface MemberApiControllerDocs {
     )
     ResponseEntity<API<MemberProfileResponse>> me(Member member, Long profileOwnerId);
 
-    @Operation(summary = "이미지 업로드 (현재 사용되지 않음)", description = "프로필 이미지를 업로드하는 기능", deprecated = true)
-    @ApiResponse(
-        responseCode = "1004",
-        description = """
-                1. 사용자 프로필 이미지 업로드에 성공하였습니다.
-                """
-    )
-    @ApiResponse(
-        responseCode = "2009\n9000~9005",
-        description = """
-                1. 사용자 정보를 찾을 수 없습니다.
-                2. 토큰 관련 예외입니다.
-                """,
-        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
-    )
-    ResponseEntity<API<ImageUploadResponse>> profileImageUpload(Member member, MultipartFile imageFile);
-
     @Operation(summary = "프로필 수정", description = "프로필을 수정하는 기능")
     @ApiResponse(
         responseCode = "1007\n9000~9005",

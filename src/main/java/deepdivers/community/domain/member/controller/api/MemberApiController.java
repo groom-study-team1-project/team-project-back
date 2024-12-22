@@ -2,33 +2,29 @@ package deepdivers.community.domain.member.controller.api;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.global.security.jwt.Auth;
 import deepdivers.community.domain.member.controller.docs.MemberApiControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
-import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberQueryRepository;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
+import deepdivers.community.global.security.jwt.Auth;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -46,16 +42,6 @@ public class MemberApiController implements MemberApiControllerDocs {
     ) {
         final MemberProfileResponse memberProfile = memberQueryRepository.getMemberProfile(memberId, member.getId());
         return ResponseEntity.ok(API.of(MemberStatusType.GET_PROFILE_SUCCESS, memberProfile));
-    }
-
-    @PostMapping(value = "/me/profile-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    @Deprecated
-    public ResponseEntity<API<ImageUploadResponse>> profileImageUpload(
-            @Auth final Member member,
-            @RequestParam final MultipartFile imageFile
-    ) {
-        final API<ImageUploadResponse> response = memberService.profileImageUpload(imageFile, member.getId());
-        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/me")

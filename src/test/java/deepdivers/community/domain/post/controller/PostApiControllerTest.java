@@ -48,61 +48,6 @@ class PostApiControllerTest extends ControllerTest {
 	}
 
 	@Test
-	@DisplayName("이미지 업로드 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
-	void postImageUploadSuccessfullyReturns200OK() {
-		// given
-		MockMultipartFile imageFile = new MockMultipartFile(
-				"imageFile",
-				"test-image.jpg",
-				MediaType.IMAGE_JPEG_VALUE,
-				"Test Image Content".getBytes()
-		);
-
-		PostImageUploadResponse responseBody = new PostImageUploadResponse("http://example.com/test-image.jpg");
-		API<PostImageUploadResponse> mockResponse = API.of(PostStatusType.POST_IMAGE_UPLOAD_SUCCESS, responseBody);
-
-		given(postService.uploadPostImage(any(MultipartFile.class))).willReturn(mockResponse);
-
-		// when
-		API<PostImageUploadResponse> response = RestAssuredMockMvc.given().log().all()
-				.contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-				.multiPart("imageFile", "test-image.jpg", "Test Image Content".getBytes(), MediaType.IMAGE_JPEG_VALUE)
-				.when().post("/api/posts/upload/image")
-				.then().log().all()
-				.status(HttpStatus.OK)
-				.extract()
-				.as(new TypeRef<>() {
-				});
-
-		// then
-		assertThat(response).isNotNull();
-		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
-	}
-
-	@Test
-	@DisplayName("유효하지 않은 파일로 업로드 요청 시 400 Bad Request를 반환한다")
-	void postImageUploadFailsForInvalidFile() {
-		// given
-		MockMultipartFile invalidFile = new MockMultipartFile(
-				"imageFile",
-				"test-file.txt",
-				MediaType.TEXT_PLAIN_VALUE,
-				"Invalid File Content".getBytes()
-		);
-
-		given(postService.uploadPostImage(any(MultipartFile.class)))
-				.willThrow(new BadRequestException(PostExceptionType.INVALID_IMAGE_FILE));
-
-		// when & then
-		RestAssuredMockMvc.given().log().all()
-				.contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
-				.multiPart("imageFile", "test-file.txt", "Invalid File Content".getBytes(), MediaType.TEXT_PLAIN_VALUE)
-				.when().post("/api/posts/upload/image")
-				.then().log().all()
-				.status(HttpStatus.BAD_REQUEST);
-	}
-
-	@Test
 	@DisplayName("게시글 생성 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
 	void createPostSuccessfullyReturns200OK() {
 		// given
