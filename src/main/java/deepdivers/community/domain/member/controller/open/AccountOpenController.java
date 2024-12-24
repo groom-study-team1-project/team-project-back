@@ -43,14 +43,13 @@ public class AccountOpenController implements AccountOpenControllerDocs {
 
     @PostMapping("/authenticate/password")
     public ResponseEntity<NoContent> sendPasswordMail(@RequestBody @Valid final AuthenticateEmailRequest request) {
-        // todo test
         NoContent response = accountService.passwordAuthentication(request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/reset/password")
     public ResponseEntity<NoContent> resetPassword(@RequestBody @Valid final ResetPasswordRequest request) {
-        // todo test & 보안성 강화
+        // todo 보안성 강화 - 토큰
         NoContent response = accountService.resetPassword(request);
         return ResponseEntity.ok(response);
     }
