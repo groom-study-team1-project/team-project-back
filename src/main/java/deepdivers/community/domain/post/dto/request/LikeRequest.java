@@ -1,8 +1,8 @@
 package deepdivers.community.domain.post.dto.request;
 
-import deepdivers.community.domain.post.model.vo.LikeTarget;
+import jakarta.validation.constraints.NotNull;
 
 public record LikeRequest (
-    Long targetId
+    @NotNull Long targetId
 ) {
 }

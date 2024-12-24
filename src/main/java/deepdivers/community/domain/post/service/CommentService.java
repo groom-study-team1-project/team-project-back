@@ -11,6 +11,7 @@ import deepdivers.community.domain.post.exception.CommentExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.comment.Comment;
+import deepdivers.community.domain.post.model.vo.CommentStatus;
 import deepdivers.community.domain.post.repository.CommentRepository;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
@@ -47,9 +48,10 @@ public class CommentService {
         final Comment comment = getCommentWithThrow(request.commentId());
         final Comment reply = Comment.of(comment.getPost(), member, request);
 
-        commentRepository.save(reply);
+        member.incrementCommentCount();
         postRepository.incrementCommentCount(comment.getPost().getId());
         commentRepository.incrementReplyCount(reply.getParentCommentId());
+        commentRepository.save(reply);
 
         return NoContent.from(CommentStatusType.REPLY_CREATE_SUCCESS);
     }
@@ -66,31 +68,30 @@ public class CommentService {
 
     private void validateAuthor(final Member member, final Member author) {
         if (!member.equals(author)) {
-            throw new BadRequestException(CommentExceptionType.NOT_FOUND_COMMENT);
+            throw new BadRequestException(CommentExceptionType.INVALID_ACCESS);
         }
     }
 
     private Comment getCommentWithThrow(final Long id) {
         return commentRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(CommentExceptionType.NOT_FOUND_COMMENT));
     }
 
-    /* todo: 낙관 락으로 동시성 이슈 해결하기, 로직 개선하기
-     *  batch 작업으로 대댓글 다같이 삭제하기*/
     public NoContent removeComment(final Member member, final RemoveCommentRequest request) {
         final Comment comment = getCommentWithThrow(request.commentId());
         validateAuthor(member, comment.getMember());
 
-        comment.deleteComment();
-        commentRepository.save(comment);
-
-        if (comment.getParentCommentId() != null) {
-            final Comment parent = getCommentWithThrow(comment.getParentCommentId());
-            parent.decrementReplyCount();
-            commentRepository.save(parent);
-        }
+        commentRepository.deleteComment(comment.getId(), CommentStatus.UNREGISTERED);
+        postRepository.decrementCommentCount(comment.getPost().getId());
+        decrementReplyCount(comment);
 
         return NoContent.from(CommentStatusType.COMMENT_REMOVE_SUCCESS);
+    }
+
+    private void decrementReplyCount(final Comment comment) {
+        if (comment.getParentCommentId() != null) {
+            commentRepository.decrementReplyCount(comment.getParentCommentId());
+        }
     }
 
 }

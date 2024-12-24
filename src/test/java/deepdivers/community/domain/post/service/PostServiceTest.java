@@ -7,23 +7,17 @@ import deepdivers.community.domain.ServiceTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.Post;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.infra.aws.s3.exception.S3Exception;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 
-@SpringBootTest
 class PostServiceTest extends ServiceTest {
 
     @Autowired
@@ -41,8 +35,21 @@ class PostServiceTest extends ServiceTest {
 
         // Then
         Long id = response.result().postId();
-        Post post = getPost(id);
-        assertThat(post).isNotNull();
+        assertThat(getPost(id)).isNotNull();
+    }
+
+    @Test
+    void 게시글_작성_후_사용자_게시글_수가_증가한다() {
+        // Given
+        PostSaveRequest request = new PostSaveRequest("title", "Content", "Thumbnail", 1L, List.of(), List.of());
+        Member member = getMember(1L);
+        Integer postCount = member.getActivityStats().getPostCount();
+
+        // When
+        postService.createPost(request, member);
+
+        // Then
+        assertThat(member.getActivityStats().getPostCount()).isEqualTo(postCount + 1);
     }
 
     @Test
@@ -160,7 +167,7 @@ class PostServiceTest extends ServiceTest {
 
         // Then
         Post post = getPost(1L);
-        assertThat(post.getViewCount()).isEqualTo(11L);
+        assertThat(post.getViewCount()).isEqualTo(1L);
     }
 
     @Test

@@ -6,7 +6,6 @@ import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.hashtag.service.HashtagService;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
@@ -17,14 +16,12 @@ import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.infra.aws.s3.S3TagManager;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +41,7 @@ public class PostService {
 
         member.incrementPostCount();
         request.imageKeys().forEach(s3TagManager::removeDeleteTag);
-        
+
         final Set<PostHashtag> hashtags = hashtagService.createPostHashtags(post, request.hashtags());
         final Post savedPost = createPost(post, hashtags, request.imageKeys());
 

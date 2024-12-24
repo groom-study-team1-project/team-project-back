@@ -231,9 +231,9 @@ class MemberServiceTest extends ServiceTest {
         Member member = memberService.getMemberWithThrow(1L);
         System.out.println(member);
         MemberProfileRequest request =
-            new MemberProfileRequest("test", "profile/test-image2.jpg", "", "010-1234-5678", "", "", "EMPTY");
-        createTestObject("profile/test-image1.jpg");
-        createTestObject("profile/test-image2.jpg");
+            new MemberProfileRequest("test", "profiles/test-image2.jpg", "", "010-1234-5678", "", "", "EMPTY");
+        createTestObject("profiles/test-image1.jpg");
+        createTestObject("profiles/test-image2.jpg");
 
         // When
         NoContent result = memberService.updateProfile(member, request);

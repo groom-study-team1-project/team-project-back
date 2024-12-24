@@ -67,7 +67,7 @@ public class CommentApiController implements CommentApiControllerDocs {
     @PostMapping("/like")
     public ResponseEntity<NoContent> likeComment(
         @Auth final Member member,
-        @RequestBody final LikeRequest request
+        @Valid @RequestBody final LikeRequest request
     ) {
         final NoContent response = likeService.likeComment(request, member.getId());
         return ResponseEntity.ok(response);
@@ -76,7 +76,7 @@ public class CommentApiController implements CommentApiControllerDocs {
     @PostMapping("/unlike")
     public ResponseEntity<NoContent> unlikeComment(
         @Auth final Member member,
-        @RequestBody final LikeRequest request
+        @Valid @RequestBody final LikeRequest request
     ) {
         final NoContent response = likeService.unlikeComment(request, member.getId());
         return ResponseEntity.ok(response);
