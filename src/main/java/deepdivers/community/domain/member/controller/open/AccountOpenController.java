@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/open/accounts")
 @RequiredArgsConstructor
 public class AccountOpenController implements AccountOpenControllerDocs {
 
