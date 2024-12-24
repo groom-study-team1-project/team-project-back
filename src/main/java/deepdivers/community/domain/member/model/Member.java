@@ -162,4 +162,12 @@ public class Member extends BaseEntity {
         resetPassword(encryptor, request.newPassword());
     }
 
+    public void incrementCommentCount() {
+        activityStats.incrementCommentCount();
+    }
+
+    public void incrementPostCount() {
+        activityStats.incrementPostCount();
+    }
+
 }
