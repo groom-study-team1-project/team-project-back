@@ -67,9 +67,6 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private Set<PostHashtag> postHashtags = new HashSet<>();
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PostImage> imageKeys = new ArrayList<>();
-
     @Builder
     public Post(final PostSaveRequest request, final PostCategory category, final Member member) {
         this.title = PostTitle.of(request.title());
@@ -84,6 +81,7 @@ public class Post extends BaseEntity {
     }
 
     public static Post of(final PostSaveRequest request, final PostCategory category, final Member member) {
+        member.incrementPostCount();
         return new Post(request, category, member);
     }
 
@@ -95,12 +93,6 @@ public class Post extends BaseEntity {
 
     public Post connectHashtags(final Set<PostHashtag> postHashtags) {
         this.postHashtags = postHashtags;
-        return this;
-    }
-
-    public Post connectImageKey(final List<String> postImageKeys) {
-        imageKeys.removeIf(image -> true);
-        postImageKeys.forEach(imageKey -> imageKeys.add(PostImage.of(this, imageKey)));
         return this;
     }
 
@@ -122,7 +114,4 @@ public class Post extends BaseEntity {
         }
     }
 
-    public List<String> getImageKeys() {
-        return imageKeys.stream().map(PostImage::getImageKey).toList();
-    }
 }

@@ -120,24 +120,6 @@ class PostTest {
 	}
 
 	@Test
-	@DisplayName("게시글에 이미지 연결 성공")
-	void connectImageKeyToPost() {
-		// given
-		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", "", category.getId(), List.of(), List.of()),
-				category,
-				member
-		);
-		List<String> imageKeys = List.of("post/imageKey1.png");
-
-		// when
-		post.connectImageKey(imageKeys);
-
-		// then
-		assertThat(post.getImageKeys()).isEqualTo(imageKeys);
-	}
-
-	@Test
 	@DisplayName("조회수 증가 성공")
 	void increaseViewCount() {
 		// given

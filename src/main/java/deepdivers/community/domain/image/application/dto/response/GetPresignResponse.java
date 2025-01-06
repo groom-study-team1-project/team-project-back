@@ -1,4 +1,4 @@
-package deepdivers.community.domain.uploader.application.dto.response;
+package deepdivers.community.domain.image.application.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.infra.aws.s3.properties.S3Properties;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectTaggingRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectTaggingResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.Tag;
 
 @SpringBootTest
 @Import(LocalStackTestConfig.class)
@@ -35,6 +37,8 @@ public class S3TagManagerTest {
 
     @Autowired
     private S3Properties s3Properties;
+    @Autowired
+    private S3PresignManager s3PresignManager;
 
     @Test
     @DisplayName("S3에 저장된 객체에 태그를 설정한다.")
@@ -113,4 +117,17 @@ public class S3TagManagerTest {
         s3Client.putObject(putObjectRequest, RequestBody.fromString("test content"));
     }
 
+    protected String generateAccessUrl(String key) {
+        return s3PresignManager.generateAccessUrl(key);
+    }
+
+    protected List<Tag> getTag(String key) {
+        GetObjectTaggingRequest getTaggingRequest = GetObjectTaggingRequest.builder()
+            .bucket(s3Properties.getBucket())
+            .key(key)
+            .build();
+
+        GetObjectTaggingResponse response = s3Client.getObjectTagging(getTaggingRequest);
+        return response.tagSet();
+    }
 }

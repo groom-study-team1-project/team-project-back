@@ -2,6 +2,7 @@ package deepdivers.community.domain.post.repository.impl;
 
 import static deepdivers.community.domain.hashtag.model.QHashtag.hashtag1;
 import static deepdivers.community.domain.hashtag.model.QPostHashtag.postHashtag;
+import static deepdivers.community.domain.image.repository.entity.QImage.image;
 import static deepdivers.community.domain.member.model.QMember.member;
 import static deepdivers.community.domain.post.model.QPost.post;
 import static deepdivers.community.domain.post.model.QPostImage.postImage;
@@ -12,6 +13,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import deepdivers.community.domain.image.domain.ImageType;
+import deepdivers.community.domain.image.repository.entity.QImage;
 import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.post.dto.response.CountInfo;
 import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
@@ -31,7 +34,6 @@ import org.springframework.stereotype.Repository;
 public class PostQueryRepositoryImpl implements PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
-    private final S3PresignManager s3PresignManager;
 
     @Override
     public List<AllMyPostsResponse> findAllMyPosts(
@@ -66,9 +68,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .limit(5)
             .fetch();
 
-        postResponses.forEach(postResponse ->
-            postResponse.setThumbnail(s3PresignManager.generateAccessUrl(postResponse.getThumbnail())));
-
         return postResponses;
     }
 
@@ -93,7 +92,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     post.createdAt.as("createdAt"),
                     Expressions.stringTemplate(
                         "IFNULL(GROUP_CONCAT(DISTINCT {0}), '')",
-                        postImage.imageKey
+                        image.imageUrl
                     ).as("imageUrls"),
                     Expressions.stringTemplate(
                         "IFNULL(GROUP_CONCAT(DISTINCT {0}), '')",
@@ -113,7 +112,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 ))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
-            .leftJoin(postImage).on(post.id.eq(postImage.post.id))
+            .leftJoin(image).on(post.id.eq(image.referenceId).and(image.imageType.eq(ImageType.POST_CONTENT)))
             .leftJoin(postHashtag).on(post.id.eq(postHashtag.post.id))
             .leftJoin(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
             .where(
@@ -138,17 +137,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .orderBy(post.id.desc())
             .limit(10)
             .fetch();
-
-        allPostsResponse.forEach(response -> {
-            response.setThumbnail(s3PresignManager.generateAccessUrl(response.getThumbnail()));
-            if (!response.imageUrls().isEmpty()) {
-                response.setImageUrls(Arrays.stream(response.imageUrls().split(","))
-                    .map(s3PresignManager::generateAccessUrl)
-                    .collect(Collectors.joining(",")));
-            }
-            response.getMemberInfo()
-                .setImageUrl(s3PresignManager.generateAccessUrl(response.getMemberInfo().getImageUrl()));
-        });
 
         return allPostsResponse;
     }

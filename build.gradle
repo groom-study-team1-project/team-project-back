@@ -86,6 +86,7 @@ def excludedPatterns = [
 		'deepdivers.community.**.config.**',
 		'deepdivers.community.**.exception.**',
 		'deepdivers.community.**.dto.**',
+		'deepdivers.community.**.entity.**',
 		'deepdivers.community.infra.aws.s3.properties.**',
 		'deepdivers.community.infra.aws.s3.generator.S3RequestGenerator'
 ]

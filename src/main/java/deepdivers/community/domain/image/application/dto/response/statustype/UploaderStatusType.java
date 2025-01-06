@@ -1,4 +1,4 @@
-package deepdivers.community.domain.uploader.application.dto.response.statustype;
+package deepdivers.community.domain.image.application.dto.response.statustype;
 
 import deepdivers.community.domain.common.StatusType;
 import lombok.AllArgsConstructor;

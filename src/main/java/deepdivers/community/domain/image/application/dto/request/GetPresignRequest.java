@@ -1,4 +1,4 @@
-package deepdivers.community.domain.uploader.application.dto.request;
+package deepdivers.community.domain.image.application.dto.request;
 
 import deepdivers.community.infra.aws.s3.KeyType;
 import io.swagger.v3.oas.annotations.media.Schema;

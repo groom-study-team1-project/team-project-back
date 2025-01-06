@@ -1,8 +1,8 @@
-package deepdivers.community.domain.uploader.ui.docs;
+package deepdivers.community.domain.image.ui.docs;
 
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.uploader.application.dto.request.GetPresignRequest;
-import deepdivers.community.domain.uploader.application.dto.response.GetPresignResponse;
+import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
+import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

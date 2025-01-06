@@ -1,4 +1,4 @@
-package deepdivers.community.domain.uploader.ui;
+package deepdivers.community.domain.image.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -9,9 +9,9 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.uploader.application.dto.request.GetPresignRequest;
-import deepdivers.community.domain.uploader.application.dto.response.GetPresignResponse;
-import deepdivers.community.domain.uploader.application.dto.response.statustype.UploaderStatusType;
+import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
+import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
+import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusType;
 import deepdivers.community.infra.aws.s3.KeyType;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import io.restassured.common.mapper.TypeRef;

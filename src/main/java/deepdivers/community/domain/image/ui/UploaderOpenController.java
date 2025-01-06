@@ -1,10 +1,10 @@
-package deepdivers.community.domain.uploader.ui;
+package deepdivers.community.domain.image.ui;
 
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.uploader.application.dto.request.GetPresignRequest;
-import deepdivers.community.domain.uploader.application.dto.response.GetPresignResponse;
-import deepdivers.community.domain.uploader.application.dto.response.statustype.UploaderStatusType;
-import deepdivers.community.domain.uploader.ui.docs.UploaderOpenControllerDocs;
+import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
+import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
+import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusType;
+import deepdivers.community.domain.image.ui.docs.UploaderOpenControllerDocs;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

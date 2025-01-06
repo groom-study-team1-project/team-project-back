@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.ServiceTest;
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
@@ -71,6 +72,7 @@ class PostServiceTest extends ServiceTest {
         // Given
         Member member = getMember(1L);
         PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
+        createTestObject("posts/image1.png");
 
         // When
         postService.updatePost(1L, request, member);
@@ -211,8 +213,9 @@ class PostServiceTest extends ServiceTest {
         postService.updatePost(1L, request, member);
 
         // Then
-        Post post = getPost(1L);
-        assertThat(post.getImageKeys()).hasSize(2);
+        List<Image> postContentImages = getPostContentImages(1L);
+        List<String> imageKeys = postContentImages.stream().map(Image::getImageKey).toList();
+        assertThat(imageKeys).isEqualTo(List.of("posts/image2.png", "posts/image3.png"));
     }
 
 }

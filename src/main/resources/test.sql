@@ -53,7 +53,8 @@ VALUES (11, '열 한번째 게시글', '열 한번째 게시글의 내용입니�
 insert into hashtag (id, hashtag) values (1, '태그입니다');
 insert into post_hashtag (id, post_id, hashtag_id, created_at, updated_at) values (1, 10, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-insert into post_image (id, post_id, image_key) values (1, 1, 'posts/image1.png');
+insert into deepdive_community_image (image_id, image_key, image_url, image_type, reference_id, created_at, updated_at)
+values (1, 'posts/image1.png', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/posts/image1.png', 'POST_CONTENT', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO comment (id, member_id, post_id, parent_comment_id, content, reply_count, like_count, status, created_at, updated_at)
 VALUES (1, 1, 1, null, '댓글입니다.', 1, 0, 'REGISTERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

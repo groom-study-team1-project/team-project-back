@@ -31,14 +31,11 @@ class PostQueryRepositoryImplTest {
 
     @Autowired
     private EntityManager em;
-    @MockBean
-    private S3PresignManager s3PresignManager;
     private PostQueryRepository postQueryRepository;
 
     @BeforeEach
     void setUp() {
-        postQueryRepository = new PostQueryRepositoryImpl(new JPAQueryFactory(em), s3PresignManager);
-        when(s3PresignManager.generateAccessUrl(anyString())).thenAnswer(image -> "image");
+        postQueryRepository = new PostQueryRepositoryImpl(new JPAQueryFactory(em));
     }
 
     @Test

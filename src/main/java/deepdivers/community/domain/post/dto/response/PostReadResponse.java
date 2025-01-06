@@ -39,7 +39,7 @@ public record PostReadResponse(
 				post.getCommentCount()
 			),
 			post.getHashtags(),
-			post.getImageKeys(),
+			null, // todo: read 작업 책임 분리하기
 			post.getCreatedAt().toString()
 		);
 	}
