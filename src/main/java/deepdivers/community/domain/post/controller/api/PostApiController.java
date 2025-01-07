@@ -9,7 +9,7 @@ import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.global.security.jwt.Auth;
+import deepdivers.community.global.security.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;

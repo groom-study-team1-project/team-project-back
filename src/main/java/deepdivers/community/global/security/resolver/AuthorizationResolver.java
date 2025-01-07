@@ -1,7 +1,10 @@
-package deepdivers.community.global.security.jwt;
+package deepdivers.community.global.security.resolver;
 
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.service.MemberService;
+import deepdivers.community.global.security.Auth;
+import deepdivers.community.global.security.AuthHelper;
+import deepdivers.community.global.security.AuthPayload;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
@@ -24,7 +28,13 @@ public class AuthorizationResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(final MethodParameter parameter) {
-        return parameter.withContainingClass(Member.class).hasParameterAnnotation(Auth.class);
+        final String requestURI = ((ServletRequestAttributes) RequestContextHolder
+            .getRequestAttributes())
+            .getRequest()
+            .getRequestURI();
+
+        return (requestURI.startsWith("/api/") &&
+                parameter.withContainingClass(Member.class).hasParameterAnnotation(Auth.class));
     }
 
     @Override

@@ -35,12 +35,6 @@ import org.springframework.web.multipart.MultipartFile;
 @WebMvcTest(controllers = MemberApiController.class)
 class MemberApiControllerTest extends ControllerTest {
 
-    @MockBean
-    PostQueryRepository PostQueryRepository;
-
-    @MockBean
-    MemberQueryRepository memberQueryRepository;
-
     @BeforeEach
     void init() {
         mockingAuthArgumentResolver();
@@ -192,32 +186,6 @@ class MemberApiControllerTest extends ControllerTest {
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
             .body("message", containsString("새로운 비밀번호 정보가 필요합니다."));
-    }
-
-    @Test
-    @DisplayName("멤버 id로 프로필 조회를 할 수 있다.")
-    void searchMemberProfileFromMemberId() {
-        // given
-        Long memberId = 1L;
-        Long viewerId = 1L;
-        MemberProfileResponse mockResponse =
-            new MemberProfileResponse(memberId, "", MemberRole.NORMAL, "", "", "", "", "", "", 0, 0, false);
-        API<MemberProfileResponse> mockResult = API.of(MemberStatusType.GET_PROFILE_SUCCESS, mockResponse);
-        given(memberQueryRepository.getMemberProfile(memberId, viewerId)).willReturn(mockResponse);
-
-        // when
-        API<MemberProfileResponse> result = RestAssuredMockMvc.given().log().all()
-            .contentType(ContentType.JSON)
-            .pathParam("memberId", memberId)
-            .when().get("/api/members/me/{memberId}")
-            .then().log().all()
-            .status(HttpStatus.OK)
-            .extract()
-            .as(new TypeRef<>() {
-            });
-
-        // then
-        assertThat(result).usingRecursiveComparison().isEqualTo(mockResult);
     }
 
 }

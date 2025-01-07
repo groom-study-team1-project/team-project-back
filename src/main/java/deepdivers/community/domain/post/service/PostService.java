@@ -7,7 +7,6 @@ import deepdivers.community.domain.hashtag.service.HashtagService;
 import deepdivers.community.domain.image.application.ImageService;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
@@ -30,7 +29,6 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CategoryService categoryService;
-    private final VisitorService visitorService;
     private final HashtagService hashtagService;
     private final ImageService imageService;
 
@@ -67,17 +65,6 @@ public class PostService {
         postRepository.save(post);
 
         return NoContent.from(PostStatusType.POST_DELETE_SUCCESS);
-    }
-
-    @Transactional(readOnly = true)
-    public API<PostReadResponse> readPostDetail(final Long postId, final String ipAddr) {
-        final Post post = getPostByIdWithThrow(postId);
-        visitorService.increaseViewCount(post, ipAddr);
-
-        return API.of(
-                PostStatusType.POST_VIEW_SUCCESS,
-                PostReadResponse.from(post)
-        );
     }
 
     private Post getPostByIdWithThrow(final Long postId) {

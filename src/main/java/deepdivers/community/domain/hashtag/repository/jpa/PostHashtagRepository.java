@@ -1,4 +1,4 @@
-package deepdivers.community.domain.hashtag.repository;
+package deepdivers.community.domain.hashtag.repository.jpa;
 
 import java.util.List;
 import java.util.Set;
@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
 import deepdivers.community.domain.hashtag.model.PostHashtag;
-import deepdivers.community.domain.post.model.Post;
 
 @Transactional
 public interface PostHashtagRepository extends JpaRepository<PostHashtag, Long> {

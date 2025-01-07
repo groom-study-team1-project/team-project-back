@@ -161,28 +161,6 @@ class PostServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("게시글 상세 조회가 성공적으로 처리되면 게시글 상세 정보를 반환한다")
-    void readPostDetailSuccessTest() {
-        // Given
-        // When
-        postService.readPostDetail(1L, "127.0.0.1");
-
-        // Then
-        Post post = getPost(1L);
-        assertThat(post.getViewCount()).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 게시글 ID로 상세 조회 시 예외가 발생한다")
-    void readPostDetailWithInvalidIdThrowsException() {
-        // Given
-        // When & Then
-        assertThatThrownBy(() -> postService.readPostDetail(999L, "127.0.0.1"))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
-    }
-
-    @Test
     @DisplayName("이미지가 업로드된 게시글을 작성한다.")
     void createHavingImagePostSuccess() {
         // Given

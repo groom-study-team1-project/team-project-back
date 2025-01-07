@@ -1,4 +1,4 @@
-package deepdivers.community.domain.image.repository;
+package deepdivers.community.domain.image.repository.jpa;
 
 import deepdivers.community.domain.image.domain.ImageType;
 import deepdivers.community.domain.image.repository.entity.Image;

@@ -1,14 +1,13 @@
 package deepdivers.community.domain.post.repository;
 
-import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
-import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
-
+import deepdivers.community.domain.post.dto.response.PostDetailResponse;
+import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import java.util.List;
 
 public interface PostQueryRepository {
 
-    List<AllMyPostsResponse> findAllMyPosts(Long memberId, Long lastTargetId, Long categoryId);
+    List<PostPreviewResponse> findAllPosts(Long memberId, Long lastContentId, Long categoryId);
 
-    List<GetAllPostsResponse> findAllPosts(Long lastContentId, Long categoryId);
+    PostDetailResponse readPostByPostId(Long postId, Long viewerId);
 
 }

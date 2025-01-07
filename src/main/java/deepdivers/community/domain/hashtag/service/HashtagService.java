@@ -2,8 +2,8 @@ package deepdivers.community.domain.hashtag.service;
 
 import deepdivers.community.domain.hashtag.model.Hashtag;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
-import deepdivers.community.domain.hashtag.repository.HashtagRepository;
-import deepdivers.community.domain.hashtag.repository.PostHashtagRepository;
+import deepdivers.community.domain.hashtag.repository.jpa.HashtagRepository;
+import deepdivers.community.domain.hashtag.repository.jpa.PostHashtagRepository;
 import deepdivers.community.domain.post.model.Post;
 import jakarta.transaction.Transactional;
 import java.util.LinkedHashSet;

@@ -2,7 +2,7 @@ package deepdivers.community.domain;
 
 
 import deepdivers.community.domain.image.domain.ImageType;
-import deepdivers.community.domain.image.repository.JpaImageRepository;
+import deepdivers.community.domain.image.repository.jpa.JpaImageRepository;
 import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.repository.MemberRepository;

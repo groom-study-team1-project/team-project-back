@@ -1,4 +1,4 @@
-package deepdivers.community.global.security.jwt;
+package deepdivers.community.global.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

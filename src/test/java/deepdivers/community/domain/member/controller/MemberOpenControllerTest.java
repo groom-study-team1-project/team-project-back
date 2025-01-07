@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
@@ -12,19 +13,26 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.controller.open.MemberOpenController;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.model.vo.MemberRole;
+import deepdivers.community.domain.member.repository.MemberQueryRepository;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import io.restassured.common.mapper.TypeRef;
+import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @WebMvcTest(controllers = MemberOpenController.class)
 class MemberOpenControllerTest extends ControllerTest {
+
+    @MockBean private MemberQueryRepository memberQueryRepository;
 
     /*
     * 회원가입 컨트롤러 테스트
@@ -177,6 +185,29 @@ class MemberOpenControllerTest extends ControllerTest {
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
             .body("message", containsString("사용자 비밀번호 정보가 필요합니다."));
+    }
+
+    @Test
+    @DisplayName("멤버 id로 프로필 조회를 할 수 있다.")
+    void searchMemberProfileFromMemberId() {
+        // given
+        MemberProfileResponse mockResponse = new MemberProfileResponse(1L, "", MemberRole.NORMAL, "", "", "", "", "", "", 0, 0, false);
+        given(memberQueryRepository.getMemberProfile(anyLong(), anyLong())).willReturn(mockResponse);
+
+        // when
+        API<MemberProfileResponse> result = RestAssuredMockMvc.given().log().all()
+            .contentType(ContentType.JSON)
+            .pathParam("memberId", 1L)
+            .when().get("/open/members/me/{memberId}")
+            .then().log().all()
+            .status(HttpStatus.OK)
+            .extract()
+            .as(new TypeRef<>() {
+            });
+
+        // then
+        API<MemberProfileResponse> mockResult = API.of(MemberStatusType.GET_PROFILE_SUCCESS, mockResponse);
+        assertThat(result).usingRecursiveComparison().isEqualTo(mockResult);
     }
 
 }

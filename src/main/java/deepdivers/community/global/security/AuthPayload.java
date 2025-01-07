@@ -1,4 +1,4 @@
-package deepdivers.community.global.security.jwt;
+package deepdivers.community.global.security;
 
 public record AuthPayload (
         Long memberId,

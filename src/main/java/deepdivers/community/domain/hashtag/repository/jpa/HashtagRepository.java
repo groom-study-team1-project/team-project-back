@@ -1,4 +1,4 @@
-package deepdivers.community.domain.hashtag.repository;
+package deepdivers.community.domain.hashtag.repository.jpa;
 
 import deepdivers.community.domain.hashtag.model.Hashtag;
 import org.springframework.data.jpa.repository.JpaRepository;

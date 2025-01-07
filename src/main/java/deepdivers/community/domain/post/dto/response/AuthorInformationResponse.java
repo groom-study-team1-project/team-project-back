@@ -9,8 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CountInfo {
-	private Integer viewCount;
-	private Integer likeCount;
-	private Integer commentCount;
+public class AuthorInformationResponse {
+	private Long memberId;
+	private String nickname;
+	private String imageUrl;
+	private String memberJob;
 }

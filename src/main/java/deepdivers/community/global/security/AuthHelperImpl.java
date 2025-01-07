@@ -1,4 +1,4 @@
-package deepdivers.community.global.security.jwt;
+package deepdivers.community.global.security;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -3,7 +3,11 @@ package deepdivers.community.domain.post.repository.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
+import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRepository;
+import deepdivers.community.domain.hashtag.repository.HashtagQueryRepositoryImpl;
+import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
+import deepdivers.community.domain.image.repository.ImageQueryRepositoryImpl;
+import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.global.config.JpaConfig;
 import deepdivers.community.global.config.LocalStackTestConfig;
@@ -20,18 +24,28 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DataJpaTest
-@Import({JpaConfig.class, QueryDslConfig.class, LocalStackTestConfig.class})
+@Import({
+    JpaConfig.class,
+    QueryDslConfig.class,
+    LocalStackTestConfig.class,
+    HashtagQueryRepositoryImpl.class,
+    ImageQueryRepositoryImpl.class
+})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext
 class PostQueryRepositoryImplTest {
 
-    @Autowired
-    private EntityManager em;
+    @Autowired private EntityManager em;
+    @Autowired private HashtagQueryRepository hashtagQueryRepository;
+    @Autowired private ImageQueryRepository imageQueryRepository;
     private PostQueryRepository postQueryRepository;
 
     @BeforeEach
     void setUp() {
-        postQueryRepository = new PostQueryRepositoryImpl(new JPAQueryFactory(em));
+        postQueryRepository = new PostQueryRepositoryImpl(
+            new JPAQueryFactory(em),
+            hashtagQueryRepository,
+            imageQueryRepository);
     }
 
     @Test
@@ -39,7 +53,7 @@ class PostQueryRepositoryImplTest {
     void givenNullLastPostIdAndNullCategoryIdWhenFindAllPostsThenReturnTenPosts() {
         // given, test.sql
         // when
-        List<GetAllPostsResponse> result = postQueryRepository.findAllPosts(null, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, null, null);
 
         // then
         assertThat(result).hasSize(10);
@@ -50,7 +64,7 @@ class PostQueryRepositoryImplTest {
     void givenNullLastPostIdAndCategoryIdWhenFindAllPostsThenReturnPostsByCategory() {
         // given, test.sql
         // when
-        List<GetAllPostsResponse> result = postQueryRepository.findAllPosts(null, 1L);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, null, 1L);
 
         // then
         assertThat(result).hasSize(3);
@@ -62,7 +76,7 @@ class PostQueryRepositoryImplTest {
         // given, test.sql
 
         // when
-        List<GetAllPostsResponse> result = postQueryRepository.findAllPosts(5L, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, 5L, null);
 
         // then
         assertThat(result).hasSize(4);
@@ -73,7 +87,7 @@ class PostQueryRepositoryImplTest {
     void givenLastPostIdAndCategoryIdWhenFindAllPostsThenReturnNoDeletePosts() {
         // given, test.sql
         // when
-        List<GetAllPostsResponse> result = postQueryRepository.findAllPosts(5L, 1L);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, 5L, 1L);
 
         // then
         assertThat(result).hasSize(2);
@@ -86,7 +100,7 @@ class PostQueryRepositoryImplTest {
         Long lastPostId = 1L;
 
         // when
-        List<GetAllPostsResponse> result = postQueryRepository.findAllPosts(lastPostId, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, lastPostId, null);
 
         // then
         assertThat(result).hasSize(0);

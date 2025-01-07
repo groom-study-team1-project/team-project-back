@@ -1,4 +1,4 @@
-package deepdivers.community.global.security.jwt;
+package deepdivers.community.global.security;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import java.lang.annotation.ElementType;
