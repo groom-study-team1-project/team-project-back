@@ -5,7 +5,6 @@ import static deepdivers.community.domain.hashtag.model.QPostHashtag.postHashtag
 import static deepdivers.community.domain.image.repository.entity.QImage.image;
 import static deepdivers.community.domain.member.model.QMember.member;
 import static deepdivers.community.domain.post.model.QPost.post;
-import static deepdivers.community.domain.post.model.QPostImage.postImage;
 import static deepdivers.community.domain.post.model.like.QLike.like;
 
 import com.querydsl.core.types.Predicate;
@@ -14,7 +13,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.image.domain.ImageType;
-import deepdivers.community.domain.image.repository.entity.QImage;
 import deepdivers.community.domain.member.dto.response.AllMyPostsResponse;
 import deepdivers.community.domain.post.dto.response.CountInfo;
 import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
@@ -22,10 +20,7 @@ import deepdivers.community.domain.post.dto.response.MemberInfo;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.infra.aws.s3.S3PresignManager;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

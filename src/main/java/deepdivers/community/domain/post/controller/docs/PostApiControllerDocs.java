@@ -5,7 +5,6 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +13,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "06. 게시글 - 토큰", description = "토큰 정보가 필요한 게시글 관련 API")
 public interface PostApiControllerDocs {

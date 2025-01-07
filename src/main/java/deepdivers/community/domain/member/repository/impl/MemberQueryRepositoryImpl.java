@@ -8,7 +8,6 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.repository.MemberQueryRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.infra.aws.s3.S3PresignManager;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
