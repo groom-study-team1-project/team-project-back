@@ -24,6 +24,7 @@ import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.security.jwt.AuthHelper;
 import deepdivers.community.global.security.jwt.AuthPayload;
 import deepdivers.community.infra.aws.s3.exception.S3Exception;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,11 @@ class MemberServiceTest extends ServiceTest {
     private MemberService memberService;
     @Autowired
     private AuthHelper authHelper;
+
+    @BeforeEach
+    void setUp() {
+        createTestObject("default-image/users/default-profile.png");
+    }
 
     /*
      * 회원 가입 관련 테스트
@@ -229,10 +235,9 @@ class MemberServiceTest extends ServiceTest {
     void profileUpdateSuccessTest() {
         // Given test.sql
         Member member = memberService.getMemberWithThrow(1L);
-        System.out.println(member);
         MemberProfileRequest request =
             new MemberProfileRequest("test", "profiles/test-image2.jpg", "", "010-1234-5678", "", "", "EMPTY");
-        createTestObject("profiles/test-image1.jpg");
+        createTestObject("default-image/users/test-image1.jpg");
         createTestObject("profiles/test-image2.jpg");
 
         // When

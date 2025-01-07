@@ -17,8 +17,7 @@ public record MemberSignUpRequest(
         @NotBlank(message = "사용자 닉네임 정보가 필요합니다.")
         String nickname,
 
-        @Schema(description = "사용자 이미지 키", example = "profiles/002da67c_1730807352645.png")
-        @NotBlank(message = "사용자 이미지 키 정보가 필요합니다.")
+        @Schema(description = "사용자 이미지 키", example = "default-image/users/default-profile.png")
         String imageKey,
 
         @Schema(description = "사용자 전화번호", example = "010-1234-1234")

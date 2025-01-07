@@ -54,13 +54,14 @@ class NicknameTest {
     }
 
     @Test
-    @DisplayName("닉네임 객체의 대소문자는 동등하지 않다.")
+    @DisplayName("닉네임 객체의 대소문자가 같다면 동등하다.")
     void nicknamesWithDifferentCasesShouldBeNotEqual() {
         // given, when
         Nickname baseNickname = new Nickname("nickName");
         Nickname compareNickname = new Nickname("nickname");
+
         // then
-        assertThat(baseNickname.equals(compareNickname)).isFalse();
+        assertThat(baseNickname.equals(compareNickname)).isTrue();
     }
 
 }

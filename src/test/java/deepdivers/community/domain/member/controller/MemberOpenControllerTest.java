@@ -95,25 +95,6 @@ class MemberOpenControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("회원가입 요청 시 이미지 주소 정보가 존재하지 않는다면 400 BadRequest 를 반환한다.")
-    void signUpNullImageUrlReturns400BadRequest() {
-        // given
-        MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "test1234!", "테스트", null,
-            "010-1234-5678");
-
-        // when, then
-        RestAssuredMockMvc
-            .given().log().all()
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(request)
-            .when().post("/open/members/sign-up")
-            .then().log().all()
-            .status(HttpStatus.BAD_REQUEST)
-            .body("code", equalTo(101))
-            .body("message", containsString("사용자 이미지 키 정보가 필요합니다."));
-    }
-
-    @Test
     @DisplayName("회원가입 요청 시 전화번호 정보가 존재하지 않는다면 400 BadRequest 를 반환한다.")
     void signUpNullPhoneNumberReturns400BadRequest() {
         // given

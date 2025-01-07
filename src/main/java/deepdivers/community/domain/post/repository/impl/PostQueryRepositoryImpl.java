@@ -101,7 +101,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                     Projections.fields(MemberInfo.class,
                         member.id.as("memberId"),
                         member.nickname.value.as("nickname"),
-                        member.imageKey.as("imageUrl"),
+                        member.image.imageUrl.as("imageUrl"),
                         member.job.as("memberJob")
                     ).as("memberInfo"),
                     Projections.fields(CountInfo.class,
@@ -127,7 +127,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 post.category.id,
                 member.id,
                 member.nickname.value,
-                member.imageKey,
+                member.image.imageUrl,
                 member.job,
                 post.viewCount,
                 post.likeCount,
