@@ -19,7 +19,7 @@ import deepdivers.community.global.exception.model.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class CommentIntegrationTest extends IntegrationTest {
+class CommentServiceTest extends IntegrationTest {
 
     @Autowired CommentService commentService;
 

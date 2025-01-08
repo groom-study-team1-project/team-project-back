@@ -1,17 +1,22 @@
 package deepdivers.community.domain.post.repository.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import deepdivers.community.domain.RepositoryTest;
 import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRepository;
 import deepdivers.community.domain.hashtag.repository.HashtagQueryRepositoryImpl;
 import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
 import deepdivers.community.domain.image.repository.ImageQueryRepositoryImpl;
+import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
+import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.global.config.JpaConfig;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.config.QueryDslConfig;
+import deepdivers.community.global.exception.model.NotFoundException;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,40 +28,16 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
-@DataJpaTest
-@Import({
-    JpaConfig.class,
-    QueryDslConfig.class,
-    LocalStackTestConfig.class,
-    HashtagQueryRepositoryImpl.class,
-    ImageQueryRepositoryImpl.class
-})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DirtiesContext
-class PostQueryRepositoryImplTest {
-
-    @Autowired private JPAQueryFactory jpaQueryFactory;
-    @Autowired private HashtagQueryRepository hashtagQueryRepository;
-    @Autowired private ImageQueryRepository imageQueryRepository;
-    private PostQueryRepository postQueryRepository;
-
-    @BeforeEach
-    void setUp() {
-        postQueryRepository = new PostQueryRepositoryImpl(
-            jpaQueryFactory,
-            hashtagQueryRepository,
-            imageQueryRepository);
-    }
+class PostQueryRepositoryImplTest extends RepositoryTest {
 
     @Test
-    @DisplayName("카테고리 정보와 마지막 포스트 정보가 없을 경우 전체 게시글 중 최신 10개가 조회된다.")
-    void givenNullLastPostIdAndNullCategoryIdWhenFindAllPostsThenReturnTenPosts() {
+    void 삭제되지_않은_게시글_목록을_가져온다() {
         // given, test.sql
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, null, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, null, null);
 
         // then
-        assertThat(result).hasSize(10);
+        assertThat(result).hasSize(9);
     }
 
     @Test
@@ -64,7 +45,7 @@ class PostQueryRepositoryImplTest {
     void givenNullLastPostIdAndCategoryIdWhenFindAllPostsThenReturnPostsByCategory() {
         // given, test.sql
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, null, 1L);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, null, 1L);
 
         // then
         assertThat(result).hasSize(3);
@@ -76,10 +57,10 @@ class PostQueryRepositoryImplTest {
         // given, test.sql
 
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, 5L, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, 5L, null);
 
         // then
-        assertThat(result).hasSize(4);
+        assertThat(result).hasSize(3);
     }
 
     @Test
@@ -87,7 +68,7 @@ class PostQueryRepositoryImplTest {
     void givenLastPostIdAndCategoryIdWhenFindAllPostsThenReturnNoDeletePosts() {
         // given, test.sql
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, 5L, 1L);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, 5L, 1L);
 
         // then
         assertThat(result).hasSize(2);
@@ -100,10 +81,99 @@ class PostQueryRepositoryImplTest {
         Long lastPostId = 1L;
 
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(0L, lastPostId, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, lastPostId, null);
 
         // then
         assertThat(result).hasSize(0);
+    }
+
+    @Test
+    void 특정_사용자의_게시글_작성_목록을_가져올_수_있다() {
+        // given
+        Long memberId = 1L;
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(memberId, null, null);
+
+        // then
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void 게시글_상세_조회를_할_수_있다() {
+        // given
+        Long postId = 1L;
+        Long viewerId = 1L;
+
+        // when
+        PostDetailResponse result = postQueryRepository.readPostByPostId(postId, viewerId);
+
+        // then
+        assertThat(result.getPostId()).isEqualTo(postId);
+    }
+
+    @Test
+    void 게시글_조회자가_게시글_작성자라면_wroteMe_정보가_true이다() {
+        // given, test.sql
+        Long postId = 1L;
+        Long viewerId = 1L;
+
+        // when
+        PostDetailResponse result = postQueryRepository.readPostByPostId(postId, viewerId);
+
+        // then
+        assertThat(result.isWroteMe()).isTrue();
+    }
+
+    @Test
+    void 게시글_조회자가_게시글_작성자가_아니라면_wroteMe_정보가_false이다() {
+        // given, test.sql
+        Long postId = 1L;
+        Long viewerId = 0L;
+
+        // when
+        PostDetailResponse result = postQueryRepository.readPostByPostId(postId, viewerId);
+
+        // then
+        assertThat(result.isWroteMe()).isFalse();
+    }
+
+    @Test
+    void 게시글_조회자가_좋아요를_눌렀을_경우_likedMe가_true이다() {
+        // given, test.sql
+        Long postId = 1L;
+        Long viewerId = 1L;
+
+        // when
+        PostDetailResponse result = postQueryRepository.readPostByPostId(postId, viewerId);
+
+        // then
+        assertThat(result.isLikedMe()).isTrue();
+    }
+
+    @Test
+    void 게시글_조회자가_좋아요를_누르지_않았을_경우_likedMe가_false이다() {
+        // given, test.sql
+        Long postId = 1L;
+        Long viewerId = 0L;
+
+        // when
+        PostDetailResponse result = postQueryRepository.readPostByPostId(postId, viewerId);
+
+        // then
+        assertThat(result.isLikedMe()).isFalse();
+    }
+
+    @Test
+    void 존재하지_않는_게시글_조회시_예외가_발생한다() {
+        // given, test.sql
+        Long postId = 15L;
+        Long viewerId = 1L;
+
+        // when & then
+        assertThatThrownBy(() -> postQueryRepository.readPostByPostId(postId, viewerId))
+            .isInstanceOf(NotFoundException.class)
+            .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
     }
 
 }

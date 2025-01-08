@@ -118,7 +118,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     }
 
     private static BooleanExpression determineAuthorCheckingCondition(final Long memberId) {
-        if (memberId == 0L) {
+        if (memberId == null) {
             return null;
         }
         return post.member.id.eq(memberId);

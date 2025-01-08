@@ -56,7 +56,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 전체_게시글을_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(any(), anyLong(), anyLong())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), anyLong(), anyLong())).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -78,7 +78,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 조회_조건이_없어도_조회를_할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(anyLong(), isNull(), isNull())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), isNull(), isNull())).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -98,7 +98,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 조회_조건이_카테고리_ID만_존재할_경우_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(anyLong(), isNull(), anyLong())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), isNull(), anyLong())).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -119,7 +119,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 조회_조건이_마지막_게시글_정보만_있을_경우에도_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(anyLong(), anyLong(), isNull())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), anyLong(), isNull())).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -137,7 +137,7 @@ class PostOpenControllerTest extends ControllerTest {
 	}
 
 	@Test
-	void 내가_쓴_게시글에_대해_조회할_수_있다() {
+	void 내가_쓴_게시글_목록에_대해_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
 		given(postQueryRepository.findAllPosts(anyLong(), isNull(), isNull())).willReturn(mockQueryResult);

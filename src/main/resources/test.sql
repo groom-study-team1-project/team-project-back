@@ -28,11 +28,11 @@ INSERT INTO category (id, title, description, status) VALUES (4, '공지사항 �
 
 -- Post 테이블 INSERT 쿼리
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (1, '첫 번째 게시글', '첫 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 2, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1);
+VALUES (1, '첫 번째 게시글', '첫 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 2, 1, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (2, '두 번째 게시글', '두 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 2);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (3, '세 번째 게시글', '세 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3, 3);
+VALUES (3, '세 번째 게시글', '세 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'DELETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3, 3);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (4, '네 번째 게시글', '네 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4, 1);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
@@ -47,8 +47,6 @@ INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_c
 VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9, 2);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (10, '열 번째 게시글', '열 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 3);
-INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (11, '열 한번째 게시글', '열 한번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'DELETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 3);
 
 insert into hashtag (id, hashtag) values (1, '태그입니다');
 insert into post_hashtag (id, post_id, hashtag_id, created_at, updated_at) values (1, 10, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
@@ -61,3 +59,5 @@ VALUES (1, 1, 1, null, '댓글입니다.', 1, 0, 'REGISTERED', CURRENT_TIMESTAMP
 
 INSERT INTO comment (id, member_id, post_id, parent_comment_id, content, reply_count, like_count, status, created_at, updated_at)
 VALUES (2, 1, 1, 1, '답글입니다.', 0, 0, 'REGISTERED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+INSERT INTO deepdive_community_like (target_id, member_id, target_type, created_at, updated_at) VALUES (1, 1, 'POST', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

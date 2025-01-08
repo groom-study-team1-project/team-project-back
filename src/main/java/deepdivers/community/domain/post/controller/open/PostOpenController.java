@@ -40,7 +40,7 @@ public class PostOpenController implements PostOpenControllerDocs {
 	) {
 		return ResponseEntity.ok(API.of(
 			PostStatusType.POST_VIEW_SUCCESS,
-			postQueryRepository.findAllPosts(0L, lastPostId, categoryId)
+			postQueryRepository.findAllPosts(null, lastPostId, categoryId)
 		));
 	}
 

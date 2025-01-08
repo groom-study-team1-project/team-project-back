@@ -19,7 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class PostIntegrationTest extends IntegrationTest {
+class PostServiceTest extends IntegrationTest {
 
     @Autowired
     private PostService postService;

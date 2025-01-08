@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
@@ -20,11 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 
-@SpringBootTest
-@Transactional
-@Import(LocalStackTestConfig.class)
-@DirtiesContext
-class LikeServiceIntTest {
+class LikeServiceIntTest extends IntegrationTest {
 
     @Autowired
     private LikeService likeService;
