@@ -35,7 +35,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @DirtiesContext
 class PostQueryRepositoryImplTest {
 
-    @Autowired private EntityManager em;
+    @Autowired private JPAQueryFactory jpaQueryFactory;
     @Autowired private HashtagQueryRepository hashtagQueryRepository;
     @Autowired private ImageQueryRepository imageQueryRepository;
     private PostQueryRepository postQueryRepository;
@@ -43,7 +43,7 @@ class PostQueryRepositoryImplTest {
     @BeforeEach
     void setUp() {
         postQueryRepository = new PostQueryRepositoryImpl(
-            new JPAQueryFactory(em),
+            jpaQueryFactory,
             hashtagQueryRepository,
             imageQueryRepository);
     }

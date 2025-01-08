@@ -2,15 +2,10 @@ package deepdivers.community.domain.post.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.anyString;
 
-import java.util.List;
-import java.util.Set;
-
-import deepdivers.community.domain.hashtag.model.Hashtag;
-import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
@@ -20,12 +15,13 @@ import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class PostTest {
 
@@ -95,28 +91,6 @@ class PostTest {
 		assertThatThrownBy(() -> Post.of(request, category, member))
 				.isInstanceOf(BadRequestException.class)
 				.hasMessageContaining(PostExceptionType.VALUE_CANNOT_BE_NULL.getMessage());
-	}
-
-	@Test
-	@DisplayName("게시글에 해시태그 연결 성공")
-	void connectHashtagsToPost() {
-		// given
-		Post post = Post.of(
-				new PostSaveRequest("Test Title", "Test Content", "",  category.getId(), List.of("tag1", "tag2"), List.of("http/temp/f.jpeg")),
-				category,
-				member
-		);
-		Set<PostHashtag> hashtags = Set.of(
-				new PostHashtag(post, new Hashtag("tag1")),
-				new PostHashtag(post, new Hashtag("tag2"))
-		);
-
-		// when
-		post.connectHashtags(hashtags);
-
-		// then
-		assertThat(post.getPostHashtags()).hasSize(2);
-		assertThat(post.getHashtags()).containsExactlyInAnyOrder("tag1", "tag2");
 	}
 
 	@Test

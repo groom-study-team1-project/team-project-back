@@ -2,7 +2,6 @@ package deepdivers.community.domain.post.service;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.hashtag.service.HashtagService;
 import deepdivers.community.domain.image.application.ImageService;
 import deepdivers.community.domain.member.model.Member;
@@ -15,7 +14,6 @@ import deepdivers.community.domain.post.model.PostCategory;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,8 +34,8 @@ public class PostService {
         final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
         final Post post = Post.of(request, postCategory, member);
 
-        final Set<PostHashtag> hashtags = hashtagService.createPostHashtags(post, request.hashtags());
-        final Post savedPost = postRepository.save(post.connectHashtags(hashtags));
+        final Post savedPost = postRepository.save(post);
+        hashtagService.createPostHashtags(post, request.hashtags());
         imageService.createPostContentImage(request.imageKeys(), savedPost.getId());
 
         return API.of(PostStatusType.POST_CREATE_SUCCESS, PostSaveResponse.from(savedPost));
@@ -48,12 +46,10 @@ public class PostService {
         final Post post = getPostByIdWithThrow(postId);
         validatePostAuthor(member, post);
 
-        final Set<PostHashtag> postHashtags = hashtagService.updatePostHashtags(post, request.hashtags());
-        imageService.updatePostContentImage(request.imageKeys(), post.getId());
+        final Post updatedPost = post.updatePost(request, postCategory);
+        hashtagService.updatePostHashtags(updatedPost, request.hashtags());
+        imageService.updatePostContentImage(request.imageKeys(), updatedPost.getId());
 
-        final Post updatedPost = postRepository.save(
-            post.updatePost(request, postCategory).connectHashtags(postHashtags)
-        );
         return API.of(PostStatusType.POST_UPDATE_SUCCESS, PostSaveResponse.from(updatedPost));
     }
 

@@ -16,10 +16,6 @@ public interface PostHashtagRepository extends JpaRepository<PostHashtag, Long> 
 
 	List<PostHashtag> findAllByPostId(Long postId);
 
-	@Modifying
-	@Query("DELETE FROM PostHashtag ph WHERE ph.post.id = :postId AND ph.hashtag.id IN :hashtagIds")
-	void deleteByPostIdAndHashtagIds(@Param("postId") Long postId, @Param("hashtagIds") Set<Long> hashtagIds);
-
 }
 
 

@@ -18,16 +18,6 @@ public class HashtagQueryRepositoryImpl implements HashtagQueryRepository {
 
     private final JPAQueryFactory queryFactory;
 
-    public Map<Long, List<String>> findAllHashtagByPosts(final List<Long> postIds) {
-        return queryFactory.select(post.id, hashtag1.hashtag)
-            .from(postHashtag)
-            .leftJoin(post).on(postHashtag.post.id.eq(post.id))
-            .leftJoin(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
-            .where(post.id.in(postIds))
-            .transform(GroupBy.groupBy(post.id)
-                .as(GroupBy.list(hashtag1.hashtag)));
-    }
-
     public List<String> findAllHashtagByPost(final Long postId) {
         return queryFactory
             .select(hashtag1.hashtag)

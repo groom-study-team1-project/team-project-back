@@ -1,9 +1,12 @@
 package deepdivers.community.domain.post.repository.impl;
 
+import static deepdivers.community.domain.hashtag.model.QHashtag.hashtag1;
+import static deepdivers.community.domain.hashtag.model.QPostHashtag.postHashtag;
 import static deepdivers.community.domain.member.model.QMember.member;
 import static deepdivers.community.domain.post.model.QPost.post;
 import static deepdivers.community.domain.post.model.like.QLike.like;
 
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -37,7 +40,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     public List<PostPreviewResponse> findAllPosts(final Long memberId, final Long lastPostId, final Long categoryId) {
         final List<PostPreviewResponse> postPreviewResponses = extractPostPreview(memberId, lastPostId, categoryId);
         final List<Long> postIds = postPreviewResponses.stream().map(PostPreviewResponse::getPostId).toList();
-        final Map<Long, List<String>> hashtagsByPostId = hashtagQueryRepository.findAllHashtagByPosts(postIds);
+        final Map<Long, List<String>> hashtagsByPostId = findAllHashtagByPosts(postIds);
 
         postPreviewResponses.forEach(postPreviewResponse -> {
             final List<String> hashtags = hashtagsByPostId.getOrDefault(
@@ -69,6 +72,17 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
 
         return postDetailResponse;
     }
+
+    private Map<Long, List<String>> findAllHashtagByPosts(final List<Long> postIds) {
+        return queryFactory.select(post.id, hashtag1.hashtag)
+            .from(post)
+            .leftJoin(postHashtag).on(post.id.eq(postHashtag.post.id))
+            .leftJoin(hashtag1).on(postHashtag.hashtag.id.eq(hashtag1.id))
+            .where(post.id.in(postIds))
+            .transform(GroupBy.groupBy(post.id)
+                .as(GroupBy.list(hashtag1.hashtag)));
+    }
+
 
     private List<PostPreviewResponse> extractPostPreview(
         final Long memberId,
