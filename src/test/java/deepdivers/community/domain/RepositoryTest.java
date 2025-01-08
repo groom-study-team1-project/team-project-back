@@ -5,6 +5,8 @@ import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRe
 import deepdivers.community.domain.hashtag.repository.HashtagQueryRepositoryImpl;
 import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
 import deepdivers.community.domain.image.repository.ImageQueryRepositoryImpl;
+import deepdivers.community.domain.member.repository.MemberQueryRepository;
+import deepdivers.community.domain.member.repository.impl.MemberQueryRepositoryImpl;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.domain.post.repository.impl.PostQueryRepositoryImpl;
 import deepdivers.community.global.config.JpaConfig;
@@ -24,6 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
     HashtagQueryRepositoryImpl.class,
     ImageQueryRepositoryImpl.class,
     PostQueryRepositoryImpl.class,
+    MemberQueryRepositoryImpl.class,
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext
@@ -33,5 +36,6 @@ public class RepositoryTest {
     @Autowired protected HashtagQueryRepository hashtagQueryRepository;
     @Autowired protected ImageQueryRepository imageQueryRepository;
     @Autowired protected PostQueryRepository postQueryRepository;
+    @Autowired protected MemberQueryRepository memberQueryRepository;
 
 }

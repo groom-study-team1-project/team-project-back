@@ -8,6 +8,7 @@ import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.repository.MemberQueryRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.global.exception.model.NotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -21,7 +22,7 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepository {
     @Override
     public MemberProfileResponse getMemberProfile(final Long profileId, final Long viewerId) {
         return Optional.ofNullable(getMemberProfileResponse(profileId, viewerId))
-            .orElseThrow(() -> new BadRequestException(MemberExceptionType.NOT_FOUND_MEMBER));
+            .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_MEMBER));
     }
 
     private MemberProfileResponse getMemberProfileResponse(final Long profileId, final Long viewerId) {
