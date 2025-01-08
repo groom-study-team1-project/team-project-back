@@ -1,6 +1,7 @@
 package deepdivers.community.domain.post.controller.open;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.post.aspect.IncreaseViewCount;
 import deepdivers.community.domain.post.controller.docs.PostOpenControllerDocs;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
@@ -23,8 +24,8 @@ public class PostOpenController implements PostOpenControllerDocs {
 
 	private final PostQueryRepository postQueryRepository;
 
-	@Override
 	@GetMapping("/{postId}")
+	@IncreaseViewCount
 	public ResponseEntity<API<PostDetailResponse>> getPostById(
 		@PathVariable final Long postId,
 		@Auth final Long viewerId
