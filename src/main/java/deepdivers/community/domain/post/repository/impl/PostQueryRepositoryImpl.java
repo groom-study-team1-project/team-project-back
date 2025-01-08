@@ -68,7 +68,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         }
 
         postDetailResponse.setHashtags(hashtagQueryRepository.findAllHashtagByPost(postId));
-        postDetailResponse.setImageUrls(imageQueryRepository.findAllImagesByPost(postId));
+        postDetailResponse.setImageUrls(imageQueryRepository.findAllImageUrlsByPost(postId));
 
         return postDetailResponse;
     }

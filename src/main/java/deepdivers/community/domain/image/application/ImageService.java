@@ -1,6 +1,6 @@
 package deepdivers.community.domain.image.application;
 
-import deepdivers.community.domain.image.domain.ImageType;
+import deepdivers.community.domain.image.repository.entity.ImageType;
 import deepdivers.community.domain.image.repository.jpa.JpaImageRepository;
 import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.infra.aws.s3.S3PresignManager;

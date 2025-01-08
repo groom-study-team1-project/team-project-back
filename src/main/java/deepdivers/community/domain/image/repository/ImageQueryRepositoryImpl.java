@@ -4,7 +4,7 @@ import static deepdivers.community.domain.image.repository.entity.QImage.image;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
-import deepdivers.community.domain.image.domain.ImageType;
+import deepdivers.community.domain.image.repository.entity.ImageType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -16,7 +16,7 @@ public class ImageQueryRepositoryImpl implements ImageQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<String> findAllImagesByPost(final Long postId) {
+    public List<String> findAllImageUrlsByPost(final Long postId) {
         return queryFactory
             .select(image.imageUrl)
             .from(image)

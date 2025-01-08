@@ -72,7 +72,7 @@ class PostServiceTest extends IntegrationTest {
         // Given
         Member member = getMember(1L);
         PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
-        createTestObject("posts/image1.png");
+        createTestObject("default-image/posts/thumbnail.png");
 
         // When
         postService.updatePost(1L, request, member);
@@ -181,7 +181,7 @@ class PostServiceTest extends IntegrationTest {
     @DisplayName("이미지가 업로드된 게시글을 수정한다.")
     void editHavingImagePostSuccess() {
         // Given
-        createTestObject("posts/image1.png");
+        createTestObject("default-image/posts/thumbnail.png");
         createTestObject("posts/image2.png");
         createTestObject("posts/image3.png");
         PostSaveRequest request = new PostSaveRequest("title", "Content", "", 1L, List.of(), List.of("posts/image2.png", "posts/image3.png"));

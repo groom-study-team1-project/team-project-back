@@ -5,7 +5,7 @@ import deepdivers.community.domain.hashtag.model.Hashtag;
 import deepdivers.community.domain.hashtag.model.PostHashtag;
 import deepdivers.community.domain.hashtag.repository.jpa.HashtagRepository;
 import deepdivers.community.domain.hashtag.repository.jpa.PostHashtagRepository;
-import deepdivers.community.domain.image.domain.ImageType;
+import deepdivers.community.domain.image.repository.entity.ImageType;
 import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.image.repository.jpa.JpaImageRepository;
 import deepdivers.community.domain.member.model.Member;

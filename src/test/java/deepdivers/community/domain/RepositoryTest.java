@@ -27,6 +27,7 @@ import org.springframework.test.annotation.DirtiesContext;
     ImageQueryRepositoryImpl.class,
     PostQueryRepositoryImpl.class,
     MemberQueryRepositoryImpl.class,
+    ImageQueryRepositoryImpl.class,
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext

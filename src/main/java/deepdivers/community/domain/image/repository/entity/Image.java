@@ -1,7 +1,6 @@
 package deepdivers.community.domain.image.repository.entity;
 
 import deepdivers.community.domain.common.BaseEntity;
-import deepdivers.community.domain.image.domain.ImageType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

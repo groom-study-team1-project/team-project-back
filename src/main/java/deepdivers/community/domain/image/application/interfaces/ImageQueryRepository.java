@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface ImageQueryRepository {
 
-    List<String> findAllImagesByPost(Long postId);
+    List<String> findAllImageUrlsByPost(Long postId);
 
 }
