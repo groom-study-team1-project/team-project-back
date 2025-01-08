@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.ServiceTest;
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.common.StatusResponse;
@@ -30,7 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MemberServiceTest extends ServiceTest {
+class MemberIntegrationTest extends IntegrationTest {
 
     @Autowired
     private MemberService memberService;

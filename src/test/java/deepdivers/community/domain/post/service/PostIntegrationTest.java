@@ -3,7 +3,7 @@ package deepdivers.community.domain.post.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.ServiceTest;
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.member.model.Member;
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class PostServiceTest extends ServiceTest {
+class PostIntegrationTest extends IntegrationTest {
 
     @Autowired
     private PostService postService;

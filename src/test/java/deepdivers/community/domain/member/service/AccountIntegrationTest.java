@@ -3,14 +3,12 @@ package deepdivers.community.domain.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.ServiceTest;
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.common.StatusResponse;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
 import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.infra.mail.MailException;
@@ -18,12 +16,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-class AccountServiceTest extends ServiceTest {
+class AccountIntegrationTest extends IntegrationTest {
 
     @Autowired
     private AccountService accountService;

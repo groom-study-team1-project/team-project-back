@@ -3,7 +3,7 @@ package deepdivers.community.domain.token.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.ServiceTest;
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.TokenResponse;
@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TokenServiceTest extends ServiceTest {
+class TokenIntegrationTest extends IntegrationTest {
 
     @Autowired
     private TokenService tokenService;
