@@ -1,6 +1,10 @@
 package deepdivers.community.domain;
 
 
+import deepdivers.community.domain.hashtag.model.Hashtag;
+import deepdivers.community.domain.hashtag.model.PostHashtag;
+import deepdivers.community.domain.hashtag.repository.jpa.HashtagRepository;
+import deepdivers.community.domain.hashtag.repository.jpa.PostHashtagRepository;
 import deepdivers.community.domain.image.domain.ImageType;
 import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.image.repository.jpa.JpaImageRepository;
@@ -34,11 +38,13 @@ import software.amazon.awssdk.services.s3.model.Tag;
 @Transactional
 public class IntegrationTest {
 
+    @Autowired EntityManager entityManager;
     @Autowired MemberRepository memberRepository;
     @Autowired PostRepository postRepository;
     @Autowired CommentRepository commentRepository;
-    @Autowired EntityManager entityManager;
+    @Autowired PostHashtagRepository postHashtagRepository;
     @Autowired JpaImageRepository imageRepository;
+    @Autowired HashtagRepository hashtagRepository;
 
     @Autowired protected S3Client s3Client;
     @Autowired protected S3Properties s3Properties;
@@ -57,6 +63,14 @@ public class IntegrationTest {
             .stream()
             .filter(image -> image.getReferenceId().equals(id) && image.getImageType() == ImageType.POST_CONTENT)
             .toList();
+    }
+
+    protected List<PostHashtag> getHashtagsByPostId(Long postId) {
+        return postHashtagRepository.findAllByPostId(postId);
+    }
+
+    protected Hashtag getHashtag(Long id) {
+        return hashtagRepository.findById(id).get();
     }
 
     protected Comment getComment(Long id) {

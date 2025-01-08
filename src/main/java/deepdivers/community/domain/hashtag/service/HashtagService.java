@@ -26,8 +26,8 @@ public class HashtagService {
         createPostHashtags(post, newHashtags);
     }
 
-    public void createPostHashtags(final Post post, final List<String> newHashTags) {
-        final LinkedHashSet<PostHashtag> postHashtags = newHashTags.stream()
+    public void createPostHashtags(final Post post, final List<String> hashTags) {
+        final LinkedHashSet<PostHashtag> postHashtags = hashTags.stream()
             .map(this::getOrCreateHashtag)
             .map(hashtag -> PostHashtag.of(post, hashtag))
             .collect(Collectors.toCollection(LinkedHashSet::new));
