@@ -1,8 +1,6 @@
 package deepdivers.community.domain.post.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
@@ -10,23 +8,17 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.post.controller.api.PostApiController;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
-import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.security.jwt.AuthorizationResolver;
-import io.restassured.common.mapper.TypeRef;
-import org.junit.jupiter.api.BeforeEach;
+import deepdivers.community.global.security.resolver.AuthorizationResolver;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.context.WebApplicationContext;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 
 @WebMvcTest(controllers = PostApiController.class)

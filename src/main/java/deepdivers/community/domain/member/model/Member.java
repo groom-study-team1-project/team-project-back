@@ -19,16 +19,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import java.util.Locale;
 import java.util.Optional;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Entity
@@ -43,7 +40,6 @@ import org.hibernate.annotations.DynamicUpdate;
 )
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-@ToString
 public class Member extends BaseEntity {
 
     @Id
@@ -60,18 +56,14 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole role;
 
-    @Column(nullable = false)
-    @ColumnDefault("'profiles/002da67c_1730807352645.png'")
-    private String imageKey;
+    @Embedded
+    private ProfileImage image;
 
     @Column(length = 100, nullable = false)
     private String aboutMe;
 
     @Embedded
     private Nickname nickname;
-
-    @Column(name = "lowerNickname", nullable = false, length = 20)
-    private String lowerNickname;
 
     @Embedded
     private PhoneNumber phoneNumber;
@@ -97,9 +89,8 @@ public class Member extends BaseEntity {
         this.password = new Password(encryptor, request.password());
         this.nickname = new Nickname(request.nickname());
         this.phoneNumber = new PhoneNumber(request.phoneNumber());
-        this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
-        this.imageKey = request.imageKey();
         this.activityStats = ActivityStats.createDefault();
+        this.image = ProfileImage.createDefault();
         this.aboutMe = StringUtils.EMPTY;
         this.githubAddr = StringUtils.EMPTY;
         this.blogAddr = StringUtils.EMPTY;
@@ -129,10 +120,8 @@ public class Member extends BaseEntity {
     }
 
     public void updateProfile(final MemberProfileRequest request) {
-        this.nickname.update(request.nickname());
+        Optional.ofNullable(request.nickname()).ifPresent(nickname -> this.nickname = this.nickname.update(nickname));
         this.phoneNumber.update(request.phoneNumber());
-        this.lowerNickname = request.nickname().toLowerCase(Locale.ENGLISH);
-        Optional.ofNullable(request.imageKey()).ifPresent(key -> this.imageKey = key);
         Optional.ofNullable(request.aboutMe()).ifPresent(about -> this.aboutMe = about);
         Optional.ofNullable(request.githubUrl()).ifPresent(github -> this.githubAddr = github);
         Optional.ofNullable(request.blogUrl()).ifPresent(blog -> this.blogAddr = blog);
@@ -168,6 +157,10 @@ public class Member extends BaseEntity {
 
     public void incrementPostCount() {
         activityStats.incrementPostCount();
+    }
+
+    public void updateProfileImage(final String imageKey, final String imageUrl) {
+        image = ProfileImage.of(imageKey, imageUrl);
     }
 
 }

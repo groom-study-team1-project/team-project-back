@@ -3,8 +3,9 @@ package deepdivers.community.domain.post.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.ServiceTest;
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
@@ -18,7 +19,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class PostServiceTest extends ServiceTest {
+class PostServiceTest extends IntegrationTest {
 
     @Autowired
     private PostService postService;
@@ -71,6 +72,7 @@ class PostServiceTest extends ServiceTest {
         // Given
         Member member = getMember(1L);
         PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
+        createTestObject("default-image/posts/thumbnail.png");
 
         // When
         postService.updatePost(1L, request, member);
@@ -159,28 +161,6 @@ class PostServiceTest extends ServiceTest {
     }
 
     @Test
-    @DisplayName("게시글 상세 조회가 성공적으로 처리되면 게시글 상세 정보를 반환한다")
-    void readPostDetailSuccessTest() {
-        // Given
-        // When
-        postService.readPostDetail(1L, "127.0.0.1");
-
-        // Then
-        Post post = getPost(1L);
-        assertThat(post.getViewCount()).isEqualTo(1L);
-    }
-
-    @Test
-    @DisplayName("존재하지 않는 게시글 ID로 상세 조회 시 예외가 발생한다")
-    void readPostDetailWithInvalidIdThrowsException() {
-        // Given
-        // When & Then
-        assertThatThrownBy(() -> postService.readPostDetail(999L, "127.0.0.1"))
-                .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
-    }
-
-    @Test
     @DisplayName("이미지가 업로드된 게시글을 작성한다.")
     void createHavingImagePostSuccess() {
         // Given
@@ -201,7 +181,7 @@ class PostServiceTest extends ServiceTest {
     @DisplayName("이미지가 업로드된 게시글을 수정한다.")
     void editHavingImagePostSuccess() {
         // Given
-        createTestObject("posts/image1.png");
+        createTestObject("default-image/posts/thumbnail.png");
         createTestObject("posts/image2.png");
         createTestObject("posts/image3.png");
         PostSaveRequest request = new PostSaveRequest("title", "Content", "", 1L, List.of(), List.of("posts/image2.png", "posts/image3.png"));
@@ -211,8 +191,9 @@ class PostServiceTest extends ServiceTest {
         postService.updatePost(1L, request, member);
 
         // Then
-        Post post = getPost(1L);
-        assertThat(post.getImageKeys()).hasSize(2);
+        List<Image> postContentImages = getPostContentImages(1L);
+        List<String> imageKeys = postContentImages.stream().map(Image::getImageKey).toList();
+        assertThat(imageKeys).isEqualTo(List.of("posts/image2.png", "posts/image3.png"));
     }
 
 }

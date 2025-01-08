@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
 import deepdivers.community.domain.post.model.PostCategory;
@@ -20,11 +21,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
-@Import(LocalStackTestConfig.class)
-@Transactional
-@DirtiesContext
-class CategoryServiceTest {
+class CategoryServiceTest extends IntegrationTest {
 
 	@Autowired
 	private CategoryService categoryService;

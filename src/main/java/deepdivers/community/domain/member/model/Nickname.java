@@ -4,6 +4,7 @@ import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = "value")
+@EqualsAndHashCode(of = {"lower"})
 public class Nickname {
 
     private static final Pattern PATTERN = Pattern.compile("^[a-zA-Z가-힣][a-zA-Z0-9가-힣]*$");
@@ -22,6 +23,9 @@ public class Nickname {
 
     @Column(name = "nickname", nullable = false, length = 20)
     private String value;
+
+    @Column(name = "lower_nickname", nullable = false, length = 20)
+    private String lower;
 
     public void validateNickname(final String nickname) {
         validateNicknameLength(nickname);
@@ -43,10 +47,15 @@ public class Nickname {
     protected Nickname(final String nickname) {
         validateNickname(nickname);
         this.value = nickname;
+        this.lower = nickname.toLowerCase(Locale.ENGLISH);
     }
 
-    public void update(final String nickname) {
+    public Nickname update(final String nickname) {
+        validateNickname(nickname);
         this.value = nickname;
+        this.lower = nickname.toLowerCase(Locale.ENGLISH);
+
+        return this;
     }
 
 }

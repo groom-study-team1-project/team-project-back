@@ -3,21 +3,19 @@ package deepdivers.community.domain.token.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.ServiceTest;
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.security.jwt.AuthHelper;
-import deepdivers.community.global.security.jwt.AuthPayload;
+import deepdivers.community.global.security.AuthHelper;
+import deepdivers.community.global.security.AuthPayload;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class TokenServiceTest extends ServiceTest {
+class TokenServiceTest extends IntegrationTest {
 
     @Autowired
     private TokenService tokenService;

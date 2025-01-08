@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = false, of = {"id"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "c_like")
+@Table(name = "deepdive_community_like")
 public class Like extends BaseEntity {
 
     @EmbeddedId

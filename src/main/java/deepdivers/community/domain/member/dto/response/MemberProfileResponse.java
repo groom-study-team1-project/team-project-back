@@ -1,11 +1,9 @@
 package deepdivers.community.domain.member.dto.response;
 
-import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.member.model.vo.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 @Schema(description = "사용자 프로필 조회 결과")
 @AllArgsConstructor
@@ -35,11 +33,6 @@ public class MemberProfileResponse {
     @Schema(description = "사용자 댓글 수", example = "0")
     private final int commentCount;
     @Schema(description = "본인 식별", example = "false/true")
-    private final boolean me;
-
-    public MemberProfileResponse withImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-        return this;
-    }
+    private final boolean myProfile;
 
 }

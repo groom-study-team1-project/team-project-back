@@ -13,7 +13,6 @@ import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.post.controller.api.PostApiController;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.dto.response.PostImageUploadResponse;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
@@ -30,8 +29,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = PostApiController.class)
 class PostApiControllerTest extends ControllerTest {

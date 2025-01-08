@@ -7,7 +7,6 @@ import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.ResetPasswordRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
@@ -18,12 +17,12 @@ import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import deepdivers.community.global.utility.encryptor.Encryptor;
 import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.infra.aws.s3.S3PresignManager;
 import deepdivers.community.infra.aws.s3.S3TagManager;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -35,15 +34,26 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
     private final S3TagManager s3TagManager;
+    private final S3PresignManager s3PresignManager;
 
     public NoContent signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
 
         final Member member = Member.of(request, encryptor);
-        s3TagManager.removeDeleteTag(request.imageKey());
+        useProfileImage(member, request.imageKey());
         memberRepository.save(member);
 
         return NoContent.from(MemberStatusType.MEMBER_SIGN_UP_SUCCESS);
+    }
+
+    public void useProfileImage(final Member member, final String imageKey) {
+        if (imageKey == null) {
+            return;
+        }
+
+        s3TagManager.markAsDeleted(member.getImage().getImageKey());
+        s3TagManager.removeDeleteTag(imageKey);
+        member.updateProfileImage(imageKey, s3PresignManager.generateAccessUrl(imageKey));
     }
 
     @Transactional(readOnly = true)
@@ -70,13 +80,8 @@ public class MemberService {
     public NoContent updateProfile(final Member member, final MemberProfileRequest request) {
         validateNewNickname(member.getNickname(), request.nickname());
 
-        if (request.imageKey() != null) {
-            s3TagManager.removeDeleteTag(request.imageKey());
-            s3TagManager.markAsDeleted(member.getImageKey());
-        }
-
         member.updateProfile(request);
-        memberRepository.save(member);
+        useProfileImage(member, request.imageKey());
 
         return NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
     }
@@ -123,7 +128,7 @@ public class MemberService {
 
     protected void validateUniqueNickname(final String nickname) {
         final String lowerNickname = nickname.toLowerCase(Locale.ENGLISH);
-        final boolean isDuplicateNickname = memberRepository.existsByLowerNickname(lowerNickname);
+        final boolean isDuplicateNickname = memberRepository.existsByNicknameLower(lowerNickname);
 
         if (isDuplicateNickname) {
             throw new BadRequestException(MemberExceptionType.ALREADY_REGISTERED_NICKNAME);

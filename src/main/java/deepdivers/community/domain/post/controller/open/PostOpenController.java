@@ -2,12 +2,11 @@ package deepdivers.community.domain.post.controller.open;
 
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.controller.docs.PostOpenControllerDocs;
-import deepdivers.community.domain.post.dto.response.GetAllPostsResponse;
-import deepdivers.community.domain.post.dto.response.PostReadResponse;
+import deepdivers.community.domain.post.dto.response.PostDetailResponse;
+import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.domain.post.service.PostService;
-import jakarta.servlet.http.HttpServletRequest;
+import deepdivers.community.global.security.Auth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,26 +22,37 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostOpenController implements PostOpenControllerDocs {
 
 	private final PostQueryRepository postQueryRepository;
-	private final PostService postService;
 
 	@Override
 	@GetMapping("/{postId}")
-	public ResponseEntity<API<PostReadResponse>> getPostById(
+	public ResponseEntity<API<PostDetailResponse>> getPostById(
 		@PathVariable final Long postId,
-		final HttpServletRequest request
+		@Auth final Long viewerId
 	) {
-		final API<PostReadResponse> response = postService.readPostDetail(postId, request.getRemoteAddr());
-		return ResponseEntity.ok(response);
+		final PostDetailResponse postDetailResponse = postQueryRepository.readPostByPostId(postId, viewerId);
+		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, postDetailResponse));
 	}
 
 	@GetMapping
-	public ResponseEntity<API<List<GetAllPostsResponse>>> getAllPosts(
+	public ResponseEntity<API<List<PostPreviewResponse>>> getAllPosts(
 		@RequestParam(required = false) final Long categoryId,
 		@RequestParam(required = false) final Long lastPostId
 	) {
 		return ResponseEntity.ok(API.of(
 			PostStatusType.POST_VIEW_SUCCESS,
-			postQueryRepository.findAllPosts(lastPostId, categoryId)
+			postQueryRepository.findAllPosts(null, lastPostId, categoryId)
+		));
+	}
+
+	@GetMapping("/me/{memberId}")
+	public ResponseEntity<API<List<PostPreviewResponse>>> getMyAllPosts(
+		@PathVariable final Long memberId,
+		@RequestParam(required = false) final Long categoryId,
+		@RequestParam(required = false) final Long lastPostId
+	) {
+		return ResponseEntity.ok(API.of(
+			PostStatusType.MY_POSTS_GETTING_SUCCESS,
+			postQueryRepository.findAllPosts(memberId, lastPostId, categoryId)
 		));
 	}
 

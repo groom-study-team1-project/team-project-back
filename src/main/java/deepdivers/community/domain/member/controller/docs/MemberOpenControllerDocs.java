@@ -4,6 +4,8 @@ import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
+import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
+import deepdivers.community.domain.member.model.Member;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,5 +57,21 @@ public interface MemberOpenControllerDocs {
         content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
     )
     ResponseEntity<API<TokenResponse>> login(MemberLoginRequest request);
+
+    @Operation(summary = "프로필 조회", description = "프로필을 조회하는 기능")
+    @ApiResponse(
+        responseCode = "1002",
+        description = """
+                1. 프로필 조회에 성공했습니다.
+                """
+    )
+    @ApiResponse(
+        responseCode = "2009",
+        description = """
+                1. 사용자 정보를 찾을 수 없습니다.
+                """,
+        content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
+    )
+    ResponseEntity<API<MemberProfileResponse>> me(Long profileOwnerId, Long viewerId);
 
 }

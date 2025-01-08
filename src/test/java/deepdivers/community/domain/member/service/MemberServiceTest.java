@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.ServiceTest;
+import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.common.StatusResponse;
@@ -13,7 +13,6 @@ import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
 import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.domain.member.model.Member;
@@ -21,23 +20,27 @@ import deepdivers.community.domain.member.model.vo.MemberRole;
 import deepdivers.community.domain.token.dto.TokenResponse;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
-import deepdivers.community.global.security.jwt.AuthHelper;
-import deepdivers.community.global.security.jwt.AuthPayload;
+import deepdivers.community.global.security.AuthHelper;
+import deepdivers.community.global.security.AuthPayload;
 import deepdivers.community.infra.aws.s3.exception.S3Exception;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-class MemberServiceTest extends ServiceTest {
+class MemberServiceTest extends IntegrationTest {
 
     @Autowired
     private MemberService memberService;
     @Autowired
     private AuthHelper authHelper;
+
+    @BeforeEach
+    void setUp() {
+        createTestObject("default-image/users/default-profile.png");
+    }
 
     /*
      * 회원 가입 관련 테스트
@@ -229,10 +232,9 @@ class MemberServiceTest extends ServiceTest {
     void profileUpdateSuccessTest() {
         // Given test.sql
         Member member = memberService.getMemberWithThrow(1L);
-        System.out.println(member);
         MemberProfileRequest request =
             new MemberProfileRequest("test", "profiles/test-image2.jpg", "", "010-1234-5678", "", "", "EMPTY");
-        createTestObject("profiles/test-image1.jpg");
+        createTestObject("default-image/users/test-image1.jpg");
         createTestObject("profiles/test-image2.jpg");
 
         // When
