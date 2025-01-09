@@ -1,11 +1,12 @@
 package deepdivers.community.domain.post.service;
 
-import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.exception.LikeExceptionType;
-import deepdivers.community.domain.post.entity.like.Like;
-import deepdivers.community.domain.post.entity.like.LikeId;
-import deepdivers.community.domain.post.repository.jpa.CommentRepository;
-import deepdivers.community.domain.post.repository.jpa.LikeRepository;
+import deepdivers.community.domain.like.dto.LikeRequest;
+import deepdivers.community.domain.like.service.LikeService;
+import deepdivers.community.domain.like.exception.LikeExceptionType;
+import deepdivers.community.domain.like.entity.Like;
+import deepdivers.community.domain.like.entity.LikeId;
+import deepdivers.community.domain.comment.repository.jpa.CommentRepository;
+import deepdivers.community.domain.like.repository.LikeRepository;
 import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;

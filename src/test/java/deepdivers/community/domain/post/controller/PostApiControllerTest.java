@@ -15,7 +15,7 @@ import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.code.PostStatusType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.service.LikeService;
+import deepdivers.community.domain.like.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.exception.model.BadRequestException;
 import io.restassured.common.mapper.TypeRef;

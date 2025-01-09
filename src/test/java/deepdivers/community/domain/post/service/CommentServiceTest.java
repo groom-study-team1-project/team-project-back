@@ -4,16 +4,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
+import deepdivers.community.domain.comment.service.CommentService;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.entity.Member;
-import deepdivers.community.domain.post.dto.request.EditCommentRequest;
-import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
-import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
-import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.post.dto.code.CommentStatusType;
-import deepdivers.community.domain.post.exception.CommentExceptionType;
+import deepdivers.community.domain.comment.dto.request.EditCommentRequest;
+import deepdivers.community.domain.comment.dto.request.RemoveCommentRequest;
+import deepdivers.community.domain.comment.dto.request.WriteCommentRequest;
+import deepdivers.community.domain.comment.dto.request.WriteReplyRequest;
+import deepdivers.community.domain.comment.dto.code.CommentStatusType;
+import deepdivers.community.domain.comment.exception.CommentExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.entity.comment.CommentStatus;
+import deepdivers.community.domain.comment.entity.CommentStatus;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class CommentServiceTest extends IntegrationTest {
 
-    @Autowired CommentService commentService;
+    @Autowired
+    CommentService commentService;
 
     @Test
     void 댓글_작성이_성공한다() {

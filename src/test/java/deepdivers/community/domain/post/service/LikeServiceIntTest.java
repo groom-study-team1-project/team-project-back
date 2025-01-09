@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.dto.code.CommentStatusType;
-import deepdivers.community.domain.post.dto.code.PostStatusType;
-import deepdivers.community.domain.post.exception.LikeExceptionType;
-import deepdivers.community.domain.post.repository.jpa.LikeRepository;
+import deepdivers.community.domain.like.dto.LikeRequest;
+import deepdivers.community.domain.like.dto.code.LikeStatusType;
+import deepdivers.community.domain.like.service.LikeService;
+import deepdivers.community.domain.like.exception.LikeExceptionType;
+import deepdivers.community.domain.like.repository.LikeRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +42,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.likeComment(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 반영 확인
-        NoContent expect = NoContent.from(CommentStatusType.COMMENT_LIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusType.COMMENT_LIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 
@@ -68,7 +68,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.unlikeComment(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 삭제 확인
-        NoContent expect = NoContent.from(CommentStatusType.COMMENT_UNLIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusType.COMMENT_UNLIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 
@@ -89,7 +89,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.likePost(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 반영 확인
-        NoContent expect = NoContent.from(PostStatusType.POST_LIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusType.POST_LIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 
@@ -116,7 +116,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.unlikePost(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 삭제 확인
-        NoContent expect = NoContent.from(PostStatusType.POST_UNLIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusType.POST_UNLIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 

@@ -3,7 +3,7 @@ package deepdivers.community.domain.post.controller.docs;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.entity.Member;
-import deepdivers.community.domain.post.dto.request.LikeRequest;
+import deepdivers.community.domain.like.dto.LikeRequest;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;

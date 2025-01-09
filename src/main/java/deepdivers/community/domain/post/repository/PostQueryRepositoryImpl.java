@@ -2,9 +2,9 @@ package deepdivers.community.domain.post.repository;
 
 import static deepdivers.community.domain.hashtag.entity.QHashtag.hashtag1;
 import static deepdivers.community.domain.hashtag.entity.QPostHashtag.postHashtag;
+import static deepdivers.community.domain.like.entity.QLike.like;
 import static deepdivers.community.domain.member.entity.QMember.member;
 import static deepdivers.community.domain.post.entity.QPost.post;
-import static deepdivers.community.domain.post.entity.like.QLike.like;
 
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.OrderSpecifier;
@@ -18,7 +18,7 @@ import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.entity.like.LikeTarget;
+import deepdivers.community.domain.like.entity.LikeTarget;
 import deepdivers.community.domain.post.entity.PostSortType;
 import deepdivers.community.domain.post.entity.PostStatus;
 import deepdivers.community.domain.post.repository.generator.PostQBeanGenerator;

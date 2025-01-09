@@ -14,7 +14,6 @@ public enum CategoryStatusType implements StatusType {
 	CATEGORY_UPDATE_SUCCESS(1302, "카테고리 수정에 성공하였습니다."),
 	CATEGORY_DELETE_SUCCESS(1303, "카테고리 삭제에 성공하였습니다.");
 
-
 	private final int code;
 	private final String message;
 
