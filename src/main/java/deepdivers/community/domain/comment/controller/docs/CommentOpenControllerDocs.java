@@ -26,10 +26,10 @@ public interface CommentOpenControllerDocs {
     ResponseEntity<API<List<GetCommentResponse>>> getCommentsOnPost(
         @Schema(description = "게시글 id", example = "1")
         Long commentId,
-        @Schema(description = "조회자 id, default = 0 (비회원)", example = "0")
-        Long memberId,
-        @Schema(description = "마지막 조회 댓글 id, default = Long.MaxValue", example = "9223372000000000000")
-        Long lastCommentId);
+        @Schema(description = "마지막 조회 댓글 id", example = "99999")
+        Long lastCommentId,
+        Long viewerId
+    );
 
     @Operation(summary = "답글 조회", description = "게시글 댓글의 답글을 조회하는 기능")
     @ApiResponse(
@@ -42,10 +42,9 @@ public interface CommentOpenControllerDocs {
     ResponseEntity<API<List<ContentResponse>>> getRepliesOnComment(
         @Schema(description = "부모 댓글 id", example = "1")
         Long commentId,
-        @Schema(description = "조회자 id, default = 0 (비회원)", example = "0")
-        Long memberId,
-        @Schema(description = "마지막 조회 댓글 id, default = Long.MaxValue", example = "9223372000000000000")
-        Long lastCommentId);
-
+        @Schema(description = "마지막 조회 댓글 id", example = "99999")
+        Long lastCommentId,
+        Long viewerId
+    );
 
 }

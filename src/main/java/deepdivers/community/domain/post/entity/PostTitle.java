@@ -34,7 +34,7 @@ public class PostTitle {
 	}
 
 	private static void validateTitleNotNull(final String title) {
-		if (title == null) {
+		if (title == null || title.isEmpty()) {
 			throw new BadRequestException(PostExceptionCode.VALUE_CANNOT_BE_NULL);
 		}
 	}

@@ -6,6 +6,7 @@ import deepdivers.community.domain.comment.dto.response.ContentResponse;
 import deepdivers.community.domain.comment.dto.response.GetCommentResponse;
 import deepdivers.community.domain.comment.dto.code.CommentStatusCode;
 import deepdivers.community.domain.comment.controller.interfaces.CommentQueryRepository;
+import deepdivers.community.global.security.Auth;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,23 +26,25 @@ public class CommentOpenController implements CommentOpenControllerDocs {
     @GetMapping("/{postId}")
     public ResponseEntity<API<List<GetCommentResponse>>> getCommentsOnPost(
         @PathVariable final Long postId,
-        @RequestParam(required = false, defaultValue = "0") final Long memberId,
-        @RequestParam(required = false, defaultValue = "9223372036854775807") final Long lastCommentId
+        @RequestParam(required = false) final Long lastCommentId,
+        @Auth final Long viewerId
     ) {
-        final List<GetCommentResponse> response =
-            commentQueryRepository.findTop5CommentsByPost(postId, memberId, lastCommentId);
-        return ResponseEntity.ok(API.of(CommentStatusCode.COMMENT_GET_SUCCESS, response));
+        return ResponseEntity.ok(API.of(
+            CommentStatusCode.COMMENT_GET_SUCCESS,
+            commentQueryRepository.findTop5CommentsByPost(postId, viewerId, lastCommentId))
+        );
     }
 
     @GetMapping("/replies/{commentId}")
     public ResponseEntity<API<List<ContentResponse>>> getRepliesOnComment(
         @PathVariable final Long commentId,
-        @RequestParam(required = false, defaultValue = "0") final Long memberId,
-        @RequestParam(required = false, defaultValue = "9223372036854775807") final Long lastCommentId
+        @RequestParam(required = false) final Long lastCommentId,
+        @Auth final Long viewerId
     ) {
-        final List<ContentResponse> response =
-            commentQueryRepository.findTop5RepliesByComment(commentId, memberId, lastCommentId);
-        return ResponseEntity.ok(API.of(CommentStatusCode.REPLY_GET_SUCCESS, response));
+        return ResponseEntity.ok(API.of(
+            CommentStatusCode.REPLY_GET_SUCCESS,
+            commentQueryRepository.findTop5RepliesByComment(commentId, viewerId, lastCommentId)
+        ));
     }
 
 }

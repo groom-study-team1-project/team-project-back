@@ -25,7 +25,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     @Override
     public List<GetCommentResponse> findTop5CommentsByPost(
         final Long postId,
-        final Long memberId,
+        final Long viewerId,
         final Long lastCommentId
     ) {
         return queryFactory.select(
@@ -41,11 +41,11 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                     member.image.imageUrl.as("memberImageUrl"),
                     comment.createdAt.ne(comment.updatedAt).as("isModified"),
                     like.isNotNull().as("isLikedMe"),
-                    comment.member.id.eq(memberId).as("isAuthor")
+                    comment.member.id.eq(viewerId).as("isAuthor")
                 ))
             .from(comment)
             .join(member).on(member.id.eq(comment.member.id))
-            .leftJoin(like).on(hasLike(memberId))
+            .leftJoin(like).on(hasLike(viewerId))
             .where(
                 comment.post.id.eq(postId),
                 comment.id.lt(lastCommentId),

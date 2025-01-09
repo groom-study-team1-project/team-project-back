@@ -58,6 +58,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+// queryDSL
 def generated = 'src/main/generated'
 
 tasks.withType(JavaCompile).configureEach {
@@ -72,51 +73,80 @@ clean {
 	delete file(generated)
 }
 
+// Test Coverage
 tasks.named('test') {
 	useJUnitPlatform()
-	finalizedBy jacocoTestReport  // 테스트 후 Jacoco 리포트 생성
+	finalizedBy jacocoTestReport
 }
 
 jacoco {
-	toolVersion = "0.8.9"  // Jacoco 버전 지정
+	toolVersion = "0.8.9"
 }
 
-def excludedPatterns = [
-		'deepdivers.community.BackendApplication',
-		'deepdivers.community.**.config.**',
-		'deepdivers.community.**.exception.**',
-		'deepdivers.community.**.dto.**',
-		'deepdivers.community.**.entity.**',
-		'deepdivers.community.**.interceptor.**',
-		'deepdivers.community.**.resolver.**',
-		'deepdivers.community.**.generator.**',
-		'deepdivers.community.infra.aws.s3.properties.**',
-		'deepdivers.community.infra.aws.s3.generator.S3RequestGenerator'
-]
+def classDirectoriesFilter = {
+	project.fileTree(
+			dir: it,
+			exclude: [
+					'**/deepdivers/community/BackendApplication*',
+					'**/deepdivers/community/**/config/**',
+					'**/deepdivers/community/**/exception/**',
+					'**/deepdivers/community/**/dto/**',
+					'**/deepdivers/community/**/entity/**',
+					'**/deepdivers/community/**/interceptor/**',
+					'**/deepdivers/community/**/resolver/**',
+					'**/deepdivers/community/**/generator/**',
+					'**/deepdivers/community/global/handler/GlobalExceptionHandler*',
+					'**/deepdivers/community/infra/aws/s3/properties/**',
+					'**/deepdivers/community/infra/aws/s3/generator/S3RequestGenerator*',
+					'**/Q*.class',
+					'**/*_.class',
+					'**/generated/**'
+			]
+	)
+}
 
 jacocoTestReport {
+	dependsOn test
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect(classDirectoriesFilter)))
+	}
+
 	reports {
 		xml.required = true
 		csv.required = false
 		html.required = true
 		html.outputLocation = layout.buildDirectory.dir('reports/jacoco/html')
 	}
-
-	afterEvaluate {
-		classDirectories.setFrom(files(classDirectories.files.collect {
-			fileTree(dir: it, includes: ['**/*.class'], excludes: excludedPatterns)
-		}))
-	}
+	// finalizedBy jacocoTestCoverageVerification
 }
 
-// 커버리지 체크 규칙
 jacocoTestCoverageVerification {
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect(classDirectoriesFilter)))
+	}
+
 	violationRules {
 		rule {
 			element = 'CLASS'
-			excludes = excludedPatterns
+
 			limit {
-				minimum = 0.80  // 최소 80% 커버리지 요구
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.80
+			}
+
+			limit {
+				counter = 'BRANCH'
+				value = 'COVEREDRATIO'
+				minimum = 0.80
+			}
+
+			limit {
+				counter = 'METHOD'
+				value = 'COVEREDRATIO'
+				minimum = 0.80
 			}
 		}
 	}

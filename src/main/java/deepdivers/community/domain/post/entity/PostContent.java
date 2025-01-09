@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = "content")
 public class PostContent {
 
 	private static final int MIN_LENGTH = 5;
@@ -33,7 +32,7 @@ public class PostContent {
 	}
 
 	private static void validateContentNotNull(final String content) {
-		if (content == null) {
+		if (content == null || content.isEmpty()) {
 			throw new BadRequestException(PostExceptionCode.VALUE_CANNOT_BE_NULL);
 		}
 	}

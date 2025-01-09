@@ -6,27 +6,41 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.common.exception.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class PostContentTest {
 
-	@ParameterizedTest
-	@ValueSource(strings = {"This is valid content.", "1234567890", "This content is exactly ten characters."})
+	@Test
 	@DisplayName("올바른 내용을 입력 시 PostContent 객체를 성공적으로 생성하는 것을 확인한다.")
-	void ofWithValidContentShouldCreatePostContent(String validContent) {
-		// given, when
+	void ofWithValidContentShouldCreatePostContent() {
+		// given,
+		String validContent = "content";
+
+		// when
 		PostContent postContent = PostContent.of(validContent);
+
 		// then
-		assertThat(postContent).isNotNull();
 		assertThat(postContent.getContent()).isEqualTo(validContent);
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"", "1234"})
-	@DisplayName("내용 길이에 대해 검증이 실패하는 경우 유효하지 않은 내용 길이의 예외가 떨어지는 것을 확인한다.")
-	void ofWithInvalidContentLengthShouldThrowException(String invalidContent) {
+	@NullAndEmptySource
+	void 빈_입력에_대해서_예외가_발생(String invalidContent) {
 		// given, when, then
+		assertThatThrownBy(() -> PostContent.of(invalidContent))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.VALUE_CANNOT_BE_NULL);
+	}
+
+	@Test
+	void 빈_입력에_대해서_예외가_발생() {
+		// given,
+		String invalidContent = "1".repeat(4);
+
+		// when, then
 		assertThatThrownBy(() -> PostContent.of(invalidContent))
 			.isInstanceOf(BadRequestException.class)
 			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.INVALID_CONTENT_LENGTH);
