@@ -78,15 +78,4 @@ public class Comment extends TimeBaseEntity {
         this.content.updateContent(content);
     }
 
-    public void deleteComment() {
-        this.status = CommentStatus.UNREGISTERED;
-        this.post.decrementCommentCount();
-    }
-
-    public void decrementReplyCount() {
-        if (this.replyCount > 0) {
-            this.replyCount--;
-        }
-    }
-
 }

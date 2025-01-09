@@ -57,8 +57,7 @@ public class PostService {
         final Post post = getPostByIdWithThrow(postId);
         validatePostAuthor(member, post);
 
-        post.setStatus(PostStatus.DELETED);
-        postRepository.save(post);
+        post.deletePost();
 
         return NoContent.from(PostStatusCode.POST_DELETE_SUCCESS);
     }

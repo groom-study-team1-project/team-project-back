@@ -34,29 +34,13 @@ public class PostCategory {
     @Column(length = 100)
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private CategoryStatus status = CategoryStatus.ACTIVE;
-
-    private PostCategory(String title, String description, CategoryStatus status) {
+    private PostCategory(String title, String description) {
         this.title = title;
         this.description = description;
-        if (status != null) {
-            this.status = status;
-        } else {
-            this.status = CategoryStatus.ACTIVE;
-        }
     }
 
-    public static PostCategory createCategory(String title, String description, CategoryStatus status) {
-        return new PostCategory(title, description, status);
+    public static PostCategory createCategory(String title, String description) {
+        return new PostCategory(title, description);
     }
 
-    public void deactivate() {
-        this.status = CategoryStatus.INACTIVE;
-    }
-
-    public String getName() {
-        return this.title;
-    }
 }

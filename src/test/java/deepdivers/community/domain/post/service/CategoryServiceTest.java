@@ -7,7 +7,6 @@ import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionCode;
 import deepdivers.community.domain.post.entity.PostCategory;
-import deepdivers.community.domain.post.entity.CategoryStatus;
 import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
 import deepdivers.community.domain.common.exception.BadRequestException;
 import java.util.List;
@@ -29,8 +28,8 @@ class CategoryServiceTest extends IntegrationTest {
 
 	@BeforeEach
 	void setUp() {
-		category1 = PostCategory.createCategory("Category 1", "Description 1", CategoryStatus.ACTIVE);
-		category2 = PostCategory.createCategory("Category 2", "Description 2", CategoryStatus.ACTIVE);
+		category1 = PostCategory.createCategory("Category 1", "Description 1");
+		category2 = PostCategory.createCategory("Category 2", "Description 2");
 
 		categoryRepository.save(category1);
 		categoryRepository.save(category2);

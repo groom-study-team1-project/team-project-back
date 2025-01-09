@@ -1,8 +1,11 @@
 package deepdivers.community.domain.post.entity;
 
 import deepdivers.community.domain.common.entity.TimeBaseEntity;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -41,26 +44,25 @@ public class Post extends TimeBaseEntity {
 
     @Column(nullable = false)
     @ColumnDefault("0")
-    private Integer commentCount = 0;
+    private Integer commentCount;
 
     @ColumnDefault("0")
     @Column(nullable = false)
-    private Integer likeCount = 0;
+    private Integer likeCount;
 
     @ColumnDefault("0")
     @Column(nullable = false)
-    private Integer viewCount = 0;
+    private Integer viewCount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    @Setter
     private PostStatus status;
 
     @Builder
     public Post(final PostSaveRequest request, final PostCategory category, final Member member) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
-        this.thumbnail = request.thumbnailImageKey();
+        this.thumbnail = request.thumbnailImageUrl();
         this.category = category;
         this.member = member;
         this.commentCount = 0;
@@ -77,19 +79,16 @@ public class Post extends TimeBaseEntity {
     public Post updatePost(final PostSaveRequest request, final PostCategory category) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
-        this.thumbnail = request.thumbnailImageKey();
+        this.thumbnail = request.thumbnailImageUrl();
         this.category = category;
         return this;
     }
 
-    public void increaseViewCount() {
-        this.viewCount += 1;
-    }
-
-    public void decrementCommentCount() {
-        if (this.commentCount > 0) {
-            this.commentCount -= 1;
+    public void deletePost() {
+        if (this.status == PostStatus.DELETED) {
+            throw new NotFoundException(PostExceptionCode.POST_NOT_FOUND);
         }
+        this.status = PostStatus.DELETED;
     }
 
 }

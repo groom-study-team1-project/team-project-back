@@ -20,7 +20,7 @@ public record PostSaveRequest(
 	String content,
 
 	@Schema(description = "게시글 썸네일 URL", example = "posts/thumbnail.png")
-	String thumbnailImageKey,
+	String thumbnailImageUrl,
 
 	@Schema(description = "카테고리 ID", example = "1")
 	@NotNull(message = "카테고리 선택은 필수입니다.")
