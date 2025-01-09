@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.aspect;
 
-import deepdivers.community.domain.post.repository.PostRepository;
+import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

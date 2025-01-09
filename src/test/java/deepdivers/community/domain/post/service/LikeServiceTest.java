@@ -1,13 +1,14 @@
 package deepdivers.community.domain.post.service;
 
-import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.exception.LikeExceptionType;
-import deepdivers.community.domain.post.model.like.Like;
-import deepdivers.community.domain.post.model.like.LikeId;
-import deepdivers.community.domain.post.repository.CommentRepository;
-import deepdivers.community.domain.post.repository.LikeRepository;
-import deepdivers.community.domain.post.repository.PostRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.like.dto.LikeRequest;
+import deepdivers.community.domain.like.service.LikeService;
+import deepdivers.community.domain.like.exception.LikeExceptionCode;
+import deepdivers.community.domain.like.entity.Like;
+import deepdivers.community.domain.like.entity.LikeId;
+import deepdivers.community.domain.comment.repository.jpa.CommentRepository;
+import deepdivers.community.domain.like.repository.LikeRepository;
+import deepdivers.community.domain.post.repository.jpa.PostRepository;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -65,7 +66,7 @@ class LikeServiceTest {
         // When & Then: 중복 요청 시 예외 발생
         assertThatThrownBy(() -> likeService.likeComment(new LikeRequest(commentId), memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
 
     @Test
@@ -91,7 +92,7 @@ class LikeServiceTest {
         // When & Then: 중복 취소 요청 시 예외 발생
         assertThatThrownBy(() -> likeService.unlikeComment(new LikeRequest(commentId), memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
     
     @Test
@@ -116,7 +117,7 @@ class LikeServiceTest {
         // When & Then: 중복 요청 시 예외 발생
         assertThatThrownBy(() -> likeService.likePost(new LikeRequest(postId), memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
 
     @Test
@@ -142,7 +143,7 @@ class LikeServiceTest {
         // When & Then: 중복 요청 시 예외 발생
         assertThatThrownBy(() -> likeService.unlikePost(new LikeRequest(postId), memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
 
 }

@@ -1,7 +1,8 @@
 package deepdivers.community.domain.token.controller;
 
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.token.dto.TokenResponse;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.token.controller.docs.TokenControllerDocs;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;

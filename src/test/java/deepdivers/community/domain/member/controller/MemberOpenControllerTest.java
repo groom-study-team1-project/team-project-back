@@ -8,17 +8,16 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.controller.open.MemberOpenController;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.model.vo.MemberRole;
-import deepdivers.community.domain.member.repository.MemberQueryRepository;
-import deepdivers.community.domain.token.dto.TokenResponse;
+import deepdivers.community.domain.member.dto.code.MemberStatusCode;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.member.entity.MemberRole;
+import deepdivers.community.domain.member.controller.interfaces.MemberQueryRepository;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -44,8 +43,8 @@ class MemberOpenControllerTest extends ControllerTest {
         MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test",
             "010-1234-5678");
 
-        Member account = Member.of(request, this.encryptor);
-        NoContent mockResponse = NoContent.from(MemberStatusType.MEMBER_SIGN_UP_SUCCESS);
+        Member account = Member.of(request, this.passwordEncryptor);
+        NoContent mockResponse = NoContent.from(MemberStatusCode.MEMBER_SIGN_UP_SUCCESS);
         given(memberService.signUp(any(MemberSignUpRequest.class))).willReturn(mockResponse);
 
         // when
@@ -129,7 +128,7 @@ class MemberOpenControllerTest extends ControllerTest {
     void loginSuccessfullyReturns200OK() {
         // given
         TokenResponse tokenResponse = TokenResponse.of("1", "1");
-        API<TokenResponse> mockResponse = API.of(MemberStatusType.MEMBER_LOGIN_SUCCESS, tokenResponse);
+        API<TokenResponse> mockResponse = API.of(MemberStatusCode.MEMBER_LOGIN_SUCCESS, tokenResponse);
         given(memberService.login(any(MemberLoginRequest.class))).willReturn(mockResponse);
 
         MemberLoginRequest loginRequest = new MemberLoginRequest("test@email.com", "test1234!");
@@ -206,7 +205,7 @@ class MemberOpenControllerTest extends ControllerTest {
             });
 
         // then
-        API<MemberProfileResponse> mockResult = API.of(MemberStatusType.GET_PROFILE_SUCCESS, mockResponse);
+        API<MemberProfileResponse> mockResult = API.of(MemberStatusCode.GET_PROFILE_SUCCESS, mockResponse);
         assertThat(result).usingRecursiveComparison().isEqualTo(mockResult);
     }
 

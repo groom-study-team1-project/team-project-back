@@ -1,13 +1,12 @@
 package deepdivers.community.domain.member.controller.docs;
 
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.global.exception.dto.response.ExceptionResponse;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
+import deepdivers.community.domain.common.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

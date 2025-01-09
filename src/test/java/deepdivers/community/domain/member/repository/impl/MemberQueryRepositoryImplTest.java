@@ -5,11 +5,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import deepdivers.community.domain.RepositoryTest;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.NotFoundException;
-import jakarta.persistence.EntityManager;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 class MemberQueryRepositoryImplTest extends RepositoryTest {
 
@@ -60,7 +58,7 @@ class MemberQueryRepositoryImplTest extends RepositoryTest {
         // when & then
         assertThatThrownBy(() -> memberQueryRepository.getMemberProfile(memberId, viewerId))
             .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.NOT_FOUND_MEMBER);
     }
 
 }

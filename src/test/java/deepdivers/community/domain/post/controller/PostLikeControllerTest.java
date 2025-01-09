@@ -4,11 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.post.controller.api.PostApiController;
-import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
-import deepdivers.community.domain.post.service.LikeService;
+import deepdivers.community.domain.common.dto.response.NoContent;
+import deepdivers.community.domain.like.dto.LikeRequest;
+import deepdivers.community.domain.like.dto.code.LikeStatusCode;
+import deepdivers.community.domain.like.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.security.resolver.AuthorizationResolver;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +40,7 @@ class PostLikeControllerTest extends ControllerTest {
         LikeRequest likeRequest = new LikeRequest(postId);
 
         // NoContent 응답을 반환하는 설정
-        NoContent successResponse = NoContent.from(PostStatusType.POST_LIKE_SUCCESS);
+        NoContent successResponse = NoContent.from(LikeStatusCode.POST_LIKE_SUCCESS);
         given(likeService.likePost(eq(likeRequest), anyLong())).willReturn(successResponse);
 
         // when
@@ -64,7 +63,7 @@ class PostLikeControllerTest extends ControllerTest {
         Long postId = 1L;
         LikeRequest likeRequest = new LikeRequest(postId);
 
-        NoContent successResponse = NoContent.from(PostStatusType.POST_UNLIKE_SUCCESS);
+        NoContent successResponse = NoContent.from(LikeStatusCode.POST_UNLIKE_SUCCESS);
         given(likeService.unlikePost(eq(likeRequest), anyLong())).willReturn(successResponse);
 
         // when

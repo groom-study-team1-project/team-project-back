@@ -1,10 +1,10 @@
 package deepdivers.community.domain.post.service;
 
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.exception.CategoryExceptionType;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.post.repository.CategoryRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.post.exception.CategoryExceptionCode;
+import deepdivers.community.domain.post.entity.PostCategory;
+import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class CategoryService {
 
 	public PostCategory getCategoryById(Long categoryId) {
 		return categoryRepository.findById(categoryId)
-				.orElseThrow(() -> new BadRequestException(CategoryExceptionType.CATEGORY_NOT_FOUND));
+				.orElseThrow(() -> new BadRequestException(CategoryExceptionCode.CATEGORY_NOT_FOUND));
 	}
 
 }

@@ -4,11 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.domain.token.exception.TokenExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
+import deepdivers.community.domain.token.exception.TokenExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.security.AuthHelper;
 import deepdivers.community.global.security.AuthPayload;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +63,7 @@ class TokenServiceTest extends IntegrationTest {
         // When, Then
         assertThatThrownBy(() -> tokenService.reIssueAccessToken(bearerToken, member2Token.refreshToken()))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionType.MALFORMED_TOKEN);
+                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionCode.MALFORMED_TOKEN);
     }
 
 }

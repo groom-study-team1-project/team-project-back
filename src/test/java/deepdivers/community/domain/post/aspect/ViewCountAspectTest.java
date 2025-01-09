@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import deepdivers.community.domain.post.repository.PostRepository;
+import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import jakarta.servlet.http.Cookie;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.junit.jupiter.api.BeforeEach;

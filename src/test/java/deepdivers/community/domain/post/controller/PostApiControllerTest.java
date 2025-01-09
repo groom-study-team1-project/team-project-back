@@ -8,17 +8,16 @@ import static org.mockito.BDDMockito.eq;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.controller.api.PostApiController;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.common.dto.response.NoContent;
+import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
-import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.service.LikeService;
+import deepdivers.community.domain.post.dto.code.PostStatusCode;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
+import deepdivers.community.domain.like.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;
@@ -57,7 +56,7 @@ class PostApiControllerTest extends ControllerTest {
 				List.of("http/temp/f.jpeg")
 		);
 		PostSaveResponse responseBody = new PostSaveResponse(1L);
-		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
+		API<PostSaveResponse> mockResponse = API.of(PostStatusCode.POST_CREATE_SUCCESS, responseBody);
 
 		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
 
@@ -160,7 +159,7 @@ class PostApiControllerTest extends ControllerTest {
 		);
 
 		PostSaveResponse responseBody = new PostSaveResponse(1L);
-		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_CREATE_SUCCESS, responseBody);
+		API<PostSaveResponse> mockResponse = API.of(PostStatusCode.POST_CREATE_SUCCESS, responseBody);
 
 		given(postService.createPost(any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
 
@@ -226,7 +225,7 @@ class PostApiControllerTest extends ControllerTest {
 				List.of("http/temp/f.jpeg")
 		);
 		PostSaveResponse responseBody = new PostSaveResponse(postId);
-		API<PostSaveResponse> mockResponse = API.of(PostStatusType.POST_UPDATE_SUCCESS, responseBody);
+		API<PostSaveResponse> mockResponse = API.of(PostStatusCode.POST_UPDATE_SUCCESS, responseBody);
 
 		given(postService.updatePost(eq(postId), any(PostSaveRequest.class), any(Member.class))).willReturn(mockResponse);
 
@@ -309,7 +308,7 @@ class PostApiControllerTest extends ControllerTest {
 		);
 
 		given(postService.updatePost(eq(invalidPostId), any(PostSaveRequest.class), any(Member.class)))
-				.willThrow(new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+				.willThrow(new BadRequestException(PostExceptionCode.POST_NOT_FOUND));
 
 		// when, then
 		RestAssuredMockMvc.given().log().all()
@@ -326,7 +325,7 @@ class PostApiControllerTest extends ControllerTest {
 	void deletePostSuccessfullyReturns200OK() {
 		// given
 		Long postId = 1L;
-		NoContent mockResponse = NoContent.from(PostStatusType.POST_DELETE_SUCCESS);
+		NoContent mockResponse = NoContent.from(PostStatusCode.POST_DELETE_SUCCESS);
 
 		given(postService.deletePost(eq(postId), any(Member.class))).willReturn(mockResponse);
 
@@ -350,7 +349,7 @@ class PostApiControllerTest extends ControllerTest {
 		Long invalidPostId = 999L;
 
 		given(postService.deletePost(eq(invalidPostId), any(Member.class)))
-				.willThrow(new BadRequestException(PostExceptionType.POST_NOT_FOUND));
+				.willThrow(new BadRequestException(PostExceptionCode.POST_NOT_FOUND));
 
 		// when, then
 		RestAssuredMockMvc.given().log().all()
@@ -367,7 +366,7 @@ class PostApiControllerTest extends ControllerTest {
 		Long postId = 1L;
 
 		given(postService.deletePost(eq(postId), any(Member.class)))
-				.willThrow(new BadRequestException(PostExceptionType.NOT_POST_AUTHOR));
+				.willThrow(new BadRequestException(PostExceptionCode.NOT_POST_AUTHOR));
 
 		// when, then
 		RestAssuredMockMvc.given().log().all()

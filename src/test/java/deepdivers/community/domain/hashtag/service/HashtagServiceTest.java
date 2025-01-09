@@ -3,8 +3,8 @@ package deepdivers.community.domain.hashtag.service;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.hashtag.model.Hashtag;
-import deepdivers.community.domain.post.model.Post;
+import deepdivers.community.domain.hashtag.entity.Hashtag;
+import deepdivers.community.domain.post.entity.Post;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -4,22 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.controller.api.MemberApiController;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.dto.response.ImageUploadResponse;
-import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.response.statustype.MemberStatusType;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.model.vo.MemberRole;
-import deepdivers.community.domain.member.repository.MemberQueryRepository;
-import deepdivers.community.domain.post.repository.PostQueryRepository;
+import deepdivers.community.domain.member.dto.code.MemberStatusCode;
+import deepdivers.community.domain.member.entity.Member;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -27,10 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.web.multipart.MultipartFile;
 
 @WebMvcTest(controllers = MemberApiController.class)
 class MemberApiControllerTest extends ControllerTest {
@@ -49,7 +38,7 @@ class MemberApiControllerTest extends ControllerTest {
         // given
         MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "", "EMPTY");
         Member member = memberService.getMemberWithThrow(1L);
-        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
+        NoContent mockResponse = NoContent.from(MemberStatusCode.UPDATE_PROFILE_SUCCESS);
         given(memberService.updateProfile(member, request)).willReturn(mockResponse);
 
         // when
@@ -91,7 +80,7 @@ class MemberApiControllerTest extends ControllerTest {
         // given
         MemberProfileRequest request = new MemberProfileRequest("test", null, "", "010-1234-5678", "", "", "EMPTY");
         Member member = memberService.getMemberWithThrow(1L);
-        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
+        NoContent mockResponse = NoContent.from(MemberStatusCode.UPDATE_PROFILE_SUCCESS);
         given(memberService.updateProfile(member, request)).willReturn(mockResponse);
 
         // when, then
@@ -135,7 +124,7 @@ class MemberApiControllerTest extends ControllerTest {
         // given
         UpdatePasswordRequest request = new UpdatePasswordRequest("test", "test");
         Member member = memberService.getMemberWithThrow(1L);
-        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
+        NoContent mockResponse = NoContent.from(MemberStatusCode.UPDATE_PASSWORD_SUCCESS);
         given(memberService.changePassword(member, request)).willReturn(mockResponse);
 
         // when

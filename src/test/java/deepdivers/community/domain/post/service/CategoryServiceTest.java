@@ -5,21 +5,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.exception.CategoryExceptionType;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.post.model.vo.CategoryStatus;
-import deepdivers.community.domain.post.repository.CategoryRepository;
-import deepdivers.community.global.config.LocalStackTestConfig;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.post.exception.CategoryExceptionCode;
+import deepdivers.community.domain.post.entity.PostCategory;
+import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 class CategoryServiceTest extends IntegrationTest {
 
@@ -34,8 +28,8 @@ class CategoryServiceTest extends IntegrationTest {
 
 	@BeforeEach
 	void setUp() {
-		category1 = PostCategory.createCategory("Category 1", "Description 1", CategoryStatus.ACTIVE);
-		category2 = PostCategory.createCategory("Category 2", "Description 2", CategoryStatus.ACTIVE);
+		category1 = PostCategory.createCategory("Category 1", "Description 1");
+		category2 = PostCategory.createCategory("Category 2", "Description 2");
 
 		categoryRepository.save(category1);
 		categoryRepository.save(category2);
@@ -82,7 +76,7 @@ class CategoryServiceTest extends IntegrationTest {
 		// When & Then
 		assertThatThrownBy(() -> categoryService.getCategoryById(invalidCategoryId))
 				.isInstanceOf(BadRequestException.class)
-				.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionType.CATEGORY_NOT_FOUND);
+				.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionCode.CATEGORY_NOT_FOUND);
 	}
 
 }

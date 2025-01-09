@@ -4,24 +4,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.request.EditCommentRequest;
-import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
-import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
-import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
-import deepdivers.community.domain.post.exception.CommentExceptionType;
-import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.model.vo.CommentStatus;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.domain.comment.service.CommentService;
+import deepdivers.community.domain.common.dto.response.NoContent;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.comment.dto.request.EditCommentRequest;
+import deepdivers.community.domain.comment.dto.request.RemoveCommentRequest;
+import deepdivers.community.domain.comment.dto.request.WriteCommentRequest;
+import deepdivers.community.domain.comment.dto.request.WriteReplyRequest;
+import deepdivers.community.domain.comment.dto.code.CommentStatusCode;
+import deepdivers.community.domain.comment.exception.CommentExceptionCode;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
+import deepdivers.community.domain.comment.entity.CommentStatus;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class CommentServiceTest extends IntegrationTest {
 
-    @Autowired CommentService commentService;
+    @Autowired
+    CommentService commentService;
 
     @Test
     void 댓글_작성이_성공한다() {
@@ -33,7 +35,7 @@ class CommentServiceTest extends IntegrationTest {
         NoContent result = commentService.writeComment(member, request);
 
         // then
-        NoContent expected = NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        NoContent expected = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
         assertThat(expected).usingRecursiveComparison().isEqualTo(result);
     }
 
@@ -75,7 +77,7 @@ class CommentServiceTest extends IntegrationTest {
         // when & then
         assertThatThrownBy(() -> commentService.writeComment(member, request))
             .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+            .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
     @Test
@@ -88,7 +90,7 @@ class CommentServiceTest extends IntegrationTest {
         NoContent result = commentService.writeReply(member, request);
 
         // then
-        NoContent expected = NoContent.from(CommentStatusType.REPLY_CREATE_SUCCESS);
+        NoContent expected = NoContent.from(CommentStatusCode.REPLY_CREATE_SUCCESS);
         assertThat(expected).usingRecursiveComparison().isEqualTo(result);
     }
 
@@ -145,7 +147,7 @@ class CommentServiceTest extends IntegrationTest {
         // when & then
         assertThatThrownBy(() -> commentService.writeReply(member, request))
             .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionType.NOT_FOUND_COMMENT);
+            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionCode.NOT_FOUND_COMMENT);
     }
 
     @Test
@@ -172,7 +174,7 @@ class CommentServiceTest extends IntegrationTest {
         // when & then
         assertThatThrownBy(() -> commentService.updateComment(member, request))
             .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionType.NOT_FOUND_COMMENT);
+            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionCode.NOT_FOUND_COMMENT);
     }
 
     @Test
@@ -185,7 +187,7 @@ class CommentServiceTest extends IntegrationTest {
         // when & then
         assertThatThrownBy(() -> commentService.updateComment(member, request))
             .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionType.INVALID_ACCESS);
+            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionCode.INVALID_ACCESS);
     }
 
     @Test
@@ -241,7 +243,7 @@ class CommentServiceTest extends IntegrationTest {
         // when & then
         assertThatThrownBy(() -> commentService.removeComment(member, removeCommentRequest))
             .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionType.NOT_FOUND_COMMENT);
+            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionCode.NOT_FOUND_COMMENT);
     }
 
     @Test
@@ -253,7 +255,7 @@ class CommentServiceTest extends IntegrationTest {
         // when & then
         assertThatThrownBy(() -> commentService.removeComment(member, removeCommentRequest))
             .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionType.INVALID_ACCESS);
+            .hasFieldOrPropertyWithValue("exceptionType", CommentExceptionCode.INVALID_ACCESS);
     }
 
 }

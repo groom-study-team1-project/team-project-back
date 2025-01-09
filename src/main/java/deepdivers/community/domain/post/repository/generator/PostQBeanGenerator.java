@@ -2,12 +2,12 @@ package deepdivers.community.domain.post.repository.generator;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.QBean;
-import deepdivers.community.domain.member.model.QMember;
+import deepdivers.community.domain.like.entity.QLike;
+import deepdivers.community.domain.member.entity.QMember;
 import deepdivers.community.domain.post.dto.response.AuthorInformationResponse;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.post.model.QPost;
-import deepdivers.community.domain.post.model.like.QLike;
+import deepdivers.community.domain.post.entity.QPost;
 
 public class PostQBeanGenerator {
 
@@ -35,7 +35,7 @@ public class PostQBeanGenerator {
     public static QBean<PostDetailResponse> createPostDetail(
         final QPost post, 
         final QMember member, 
-        final QLike like, 
+        final QLike like,
         final Long viewerId
     ) {
         return Projections.fields(

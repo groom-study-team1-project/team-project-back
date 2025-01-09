@@ -1,11 +1,11 @@
 package deepdivers.community.domain.token.service;
 
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.domain.token.dto.TokenStatusType;
-import deepdivers.community.domain.token.exception.TokenExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
+import deepdivers.community.domain.token.dto.code.TokenStatusCode;
+import deepdivers.community.domain.token.exception.TokenExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.security.AuthHelper;
 import deepdivers.community.global.security.AuthPayload;
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class TokenService {
         final AuthPayload authPayload = validateRefreshToken(accessToken, refreshToken);
         final TokenResponse response = generateToken(authPayload);
 
-        return API.of(TokenStatusType.RE_ISSUE_SUCCESS, response);
+        return API.of(TokenStatusCode.RE_ISSUE_SUCCESS, response);
     }
 
     private TokenResponse generateToken(final AuthPayload memberInfo) {
@@ -63,7 +63,7 @@ public class TokenService {
         final AuthPayload refreshTokenPayload = authHelper.parseToken(refreshToken);
 
         if (!accessTokenPayload.memberId().equals(refreshTokenPayload.memberId())) {
-            throw new BadRequestException(TokenExceptionType.MALFORMED_TOKEN);
+            throw new BadRequestException(TokenExceptionCode.MALFORMED_TOKEN);
         }
 
         return accessTokenPayload;

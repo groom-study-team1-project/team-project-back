@@ -1,6 +1,6 @@
 package deepdivers.community.domain.hashtag.repository.jpa;
 
-import deepdivers.community.domain.hashtag.model.Hashtag;
+import deepdivers.community.domain.hashtag.entity.Hashtag;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

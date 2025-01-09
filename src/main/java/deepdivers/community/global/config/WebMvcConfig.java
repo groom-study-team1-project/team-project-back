@@ -24,9 +24,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(final InterceptorRegistry registry) {
         registry.addInterceptor(authorizationInterceptor)
                 .addPathPatterns("/api/**");
+
         registry.addInterceptor(optionalAuthorizationInterceptor)
             .addPathPatterns("/open/posts/**")
-            .addPathPatterns("/open/members/me/**");
+            .addPathPatterns("/open/members/me/**")
+            .addPathPatterns("/open/comments/**");
     }
 
     @Override

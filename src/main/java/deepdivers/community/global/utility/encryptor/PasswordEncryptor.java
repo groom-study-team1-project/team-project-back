@@ -1,15 +1,8 @@
 package deepdivers.community.global.utility.encryptor;
 
-import org.mindrot.jbcrypt.BCrypt;
+public interface PasswordEncryptor {
 
-public class PasswordEncryptor implements Encryptor {
-
-    public String encrypt(final String plainText) {
-        return BCrypt.hashpw(plainText, BCrypt.gensalt());
-    }
-
-    public Boolean matches(final String plainText, final String encodedText) {
-        return BCrypt.checkpw(plainText, encodedText);
-    }
+    String encrypt(String plainText);
+    Boolean matches(String plainText, String encodedText);
 
 }

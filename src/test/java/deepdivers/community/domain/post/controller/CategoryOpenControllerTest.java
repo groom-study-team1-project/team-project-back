@@ -4,10 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.post.controller.open.CategoryOpenController;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
+import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.service.CategoryService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -45,7 +44,7 @@ class CategoryOpenControllerTest extends ControllerTest {
 	void getAllCategoriesSuccessfullyReturns200OKForOpen() {
 		// given
 		List<CategoryResponse> mockCategoryResponses = Arrays.asList(mockCategoryResponse, mockCategoryResponse); // 여러 카테고리 생성
-		API<List<CategoryResponse>> mockResponse = API.of(PostStatusType.POST_VIEW_SUCCESS, mockCategoryResponses);
+		API<List<CategoryResponse>> mockResponse = API.of(PostStatusCode.POST_VIEW_SUCCESS, mockCategoryResponses);
 
 		given(categoryService.getAllCategories()).willReturn(mockCategoryResponses);
 

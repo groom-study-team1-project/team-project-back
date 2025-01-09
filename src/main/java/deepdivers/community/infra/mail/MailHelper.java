@@ -1,6 +1,6 @@
 package deepdivers.community.infra.mail;
 
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 
 public interface MailHelper {
 

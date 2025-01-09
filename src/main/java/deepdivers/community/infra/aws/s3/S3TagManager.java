@@ -3,7 +3,7 @@ package deepdivers.community.infra.aws.s3;
 
 import static deepdivers.community.infra.aws.s3.exception.S3Exception.NOT_FOUND_FILE;
 
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.infra.aws.s3.properties.S3Properties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
