@@ -15,8 +15,7 @@ import deepdivers.community.domain.token.dto.response.TokenResponse;
 import deepdivers.community.domain.token.service.TokenService;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import deepdivers.community.infra.aws.s3.S3TagManager;
 import java.util.Locale;
@@ -29,8 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MemberService {
 
-    @EncryptorBean
-    private final Encryptor encryptor;
+    private final PasswordEncryptor passwordEncryptor;
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
     private final S3TagManager s3TagManager;
@@ -39,7 +37,7 @@ public class MemberService {
     public NoContent signUp(final MemberSignUpRequest request) {
         signUpValidate(request);
 
-        final Member member = Member.of(request, encryptor);
+        final Member member = Member.of(request, passwordEncryptor);
         useProfileImage(member, request.imageKey());
         memberRepository.save(member);
 
@@ -93,21 +91,21 @@ public class MemberService {
     }
 
     public NoContent changePassword(final Member member, final UpdatePasswordRequest request) {
-        member.changePassword(encryptor, request);
+        member.changePassword(passwordEncryptor, request);
         memberRepository.save(member);
         return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
     }
 
     protected NoContent resetPassword(final Member member, final ResetPasswordRequest request) {
         // todo test
-        member.resetPassword(encryptor, request.password());
+        member.resetPassword(passwordEncryptor, request.password());
         memberRepository.save(member);
         return NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
     }
 
     private Member authenticateMember(final String email, final String password) {
         return memberRepository.findByEmailValue(email)
-            .filter(member -> encryptor.matches(password, member.getPassword()))
+            .filter(member -> passwordEncryptor.matches(password, member.getPassword()))
             .orElseThrow(() -> new NotFoundException(MemberExceptionType.NOT_FOUND_ACCOUNT));
     }
 

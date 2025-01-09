@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PasswordTest {
 
     @Mock
-    private Encryptor encryptor;
+    private PasswordEncryptor passwordEncryptor;
 
     @Test
     @DisplayName("패스워드 생성을 확인한다.")
@@ -28,7 +28,7 @@ class PasswordTest {
         String passwordValue = "testPassword1!";
 
         // when
-        Password encryptedPassword = new Password(encryptor, passwordValue);
+        Password encryptedPassword = new Password(passwordEncryptor, passwordValue);
 
         // then
         assertThat(encryptedPassword).isNotNull();
@@ -40,10 +40,10 @@ class PasswordTest {
         // given
         String passwordValue = "testPassword1!";
         String encryptedPasswordValue = "encryptedPassword";
-        when(encryptor.encrypt(passwordValue)).thenReturn(encryptedPasswordValue);
+        when(passwordEncryptor.encrypt(passwordValue)).thenReturn(encryptedPasswordValue);
 
         // when
-        Password encryptedPassword = new Password(encryptor, passwordValue);
+        Password encryptedPassword = new Password(passwordEncryptor, passwordValue);
 
         // then
         assertThat(encryptedPassword.getValue()).isEqualTo(encryptedPasswordValue);
@@ -54,7 +54,7 @@ class PasswordTest {
     @DisplayName("패스워드 생성 중 유효성 검증에 통과하지 못할 시 예외 발생을 확인한다.")
     void fromWithInvalidPasswordShouldThrowException(String invalidPassword) {
         // given, when, then
-        assertThatThrownBy(() -> new Password(encryptor, invalidPassword))
+        assertThatThrownBy(() -> new Password(passwordEncryptor, invalidPassword))
                 .isInstanceOf(BadRequestException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD_FORMAT);
     }
@@ -65,7 +65,7 @@ class PasswordTest {
     void fromWithIfBothEndsContainsSpacesShouldCreateTrimmedPassword(String passwordWithSpace) {
         // given
         // when, then
-        assertThatThrownBy(() -> new Password(encryptor, passwordWithSpace))
+        assertThatThrownBy(() -> new Password(passwordEncryptor, passwordWithSpace))
             .isInstanceOf(BadRequestException.class)
             .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD_FORMAT);
     }

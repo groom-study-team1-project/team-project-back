@@ -3,9 +3,7 @@ package deepdivers.community.utility.encryptor;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import deepdivers.community.global.config.EncryptorConfig;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
-import deepdivers.community.global.utility.encryptor.EncryptorTypes;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +12,12 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 @SpringJUnitConfig
 @ContextConfiguration(classes = {EncryptorConfig.class})
-class EncryptorTest {
+class PasswordEncryptorTest {
 
-    private static final String IP = "192.168.0.1";
-    private static final String DIFFERENT_IP = "192.168.0.2";
     private static final String PASSWORD = "testPassword";
 
     @Autowired
-    @EncryptorBean
-    private Encryptor passwordEncryptor;
-
-    @Autowired
-    @EncryptorBean(EncryptorTypes.IP)
-    private Encryptor ipEncryptor;
+    private PasswordEncryptor passwordEncryptor;
 
     @Test
     @DisplayName("PASSWORD의 BCRYPT 알고리즘 암호화된 결과를 반환하는지 확인한다.")
@@ -61,40 +52,6 @@ class EncryptorTest {
         String encryptedPassword1 = passwordEncryptor.encrypt(PASSWORD);
 
         assertThat(passwordEncryptor.matches(password2, encryptedPassword1)).isFalse();
-    }
-
-    @Test
-    @DisplayName("IP의 SHA-256 알고리즘 암호화를 확인한다.")
-    void ipEncryptShouldReturnEncryptedString() {
-        String encryptedIp = ipEncryptor.encrypt(IP);
-
-        assertThat(encryptedIp).isNotNull();
-        assertThat(encryptedIp).isNotEqualTo(IP);
-    }
-
-    @Test
-    @DisplayName("동일한 IP를 SHA-256 알고리즘 암호화 시 동일한 암호화가 되는지 확인한다.")
-    void encryptShouldReturnSameValueForSameInput() {
-        String firstEncryption = ipEncryptor.encrypt(IP);
-        String secondEncryption = ipEncryptor.encrypt(IP);
-
-        assertThat(firstEncryption).isEqualTo(secondEncryption);
-    }
-
-    @Test
-    @DisplayName("평문 IP를 암호화 후 같은 평문 IP와 동일성을 확인한다.")
-    void matchesShouldReturnTrueForMatchingIpAndEncryptedIp() {
-        String encryptedIp = ipEncryptor.encrypt(IP);
-
-        assertThat(ipEncryptor.matches(IP, encryptedIp)).isTrue();
-    }
-
-    @Test
-    @DisplayName("평문 IP를 암호화 후 다른 평문 IP와 동일성을 확인한다.")
-    void matches_shouldReturnFalseForNonMatchingIpAndEncryptedIp() {
-        String encryptedIp = ipEncryptor.encrypt(IP);
-
-        assertThat(ipEncryptor.matches(DIFFERENT_IP, encryptedIp)).isFalse();
     }
 
 }

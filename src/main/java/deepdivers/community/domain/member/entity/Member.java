@@ -6,7 +6,7 @@ import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -82,9 +82,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String job;
 
-    private Member(final MemberSignUpRequest request, final Encryptor encryptor) {
+    private Member(final MemberSignUpRequest request, final PasswordEncryptor passwordEncryptor) {
         this.email = new Email(request.email());
-        this.password = new Password(encryptor, request.password());
+        this.password = new Password(passwordEncryptor, request.password());
         this.nickname = new Nickname(request.nickname());
         this.phoneNumber = new PhoneNumber(request.phoneNumber());
         this.activityStats = ActivityStats.createDefault();
@@ -97,8 +97,8 @@ public class Member extends BaseEntity {
         this.job = StringUtils.EMPTY;
     }
 
-    public static Member of(final MemberSignUpRequest request, final Encryptor encryptor) {
-        return new Member(request, encryptor);
+    public static Member of(final MemberSignUpRequest request, final PasswordEncryptor passwordEncryptor) {
+        return new Member(request, passwordEncryptor);
     }
 
     public String getPassword() {
@@ -133,20 +133,20 @@ public class Member extends BaseEntity {
         }
     }
 
-    public void resetPassword(final Encryptor encryptor, final String password) {
+    public void resetPassword(final PasswordEncryptor passwordEncryptor, final String password) {
         // todo test
-        this.password.reset(encryptor, password);
+        this.password.reset(passwordEncryptor, password);
     }
 
-    public void changePassword(final Encryptor encryptor, final UpdatePasswordRequest request) {
+    public void changePassword(final PasswordEncryptor passwordEncryptor, final UpdatePasswordRequest request) {
         // todo test
-        if (!encryptor.matches(request.currentPassword(), this.getPassword())) {
+        if (!passwordEncryptor.matches(request.currentPassword(), this.getPassword())) {
             throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD);
         }
-        if (encryptor.matches(request.newPassword(), this.getPassword())) {
+        if (passwordEncryptor.matches(request.newPassword(), this.getPassword())) {
             throw new BadRequestException(MemberExceptionType.ALREADY_USING_PASSWORD);
         }
-        resetPassword(encryptor, request.newPassword());
+        resetPassword(passwordEncryptor, request.newPassword());
     }
 
     public void incrementCommentCount() {

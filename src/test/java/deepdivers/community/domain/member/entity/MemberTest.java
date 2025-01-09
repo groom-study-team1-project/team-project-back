@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MemberTest {
 
     @Mock
-    private Encryptor encryptor;
+    private PasswordEncryptor passwordEncryptor;
 
     @Test
     @DisplayName("유효한 사용자 계정 생성을 확인한다.")
@@ -33,10 +33,10 @@ class MemberTest {
         String encryptedPassword = "encryptedPasswordValue";
         MemberSignUpRequest request = new MemberSignUpRequest(email, password, nickname, imageUrl, phoneNumber);
 
-        when(encryptor.encrypt(password)).thenReturn(encryptedPassword);
+        when(passwordEncryptor.encrypt(password)).thenReturn(encryptedPassword);
 
         // when
-        Member member = Member.of(request, encryptor);
+        Member member = Member.of(request, passwordEncryptor);
 
         // then
         assertThat(member).isNotNull();
@@ -58,7 +58,7 @@ class MemberTest {
         // given
         MemberSignUpRequest request = new MemberSignUpRequest(email, password, nickname, imageUrl, phoneNumber);
         // when, then
-        assertThatThrownBy(() -> Member.of(request, encryptor))
+        assertThatThrownBy(() -> Member.of(request, passwordEncryptor))
                 .isInstanceOf(BadRequestException.class);
     }
 

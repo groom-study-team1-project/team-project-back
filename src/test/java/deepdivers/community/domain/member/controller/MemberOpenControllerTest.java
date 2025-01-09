@@ -43,7 +43,7 @@ class MemberOpenControllerTest extends ControllerTest {
         MemberSignUpRequest request = new MemberSignUpRequest("test@email.com", "test1234!", "test", "test",
             "010-1234-5678");
 
-        Member account = Member.of(request, this.encryptor);
+        Member account = Member.of(request, this.passwordEncryptor);
         NoContent mockResponse = NoContent.from(MemberStatusType.MEMBER_SIGN_UP_SUCCESS);
         given(memberService.signUp(any(MemberSignUpRequest.class))).willReturn(mockResponse);
 

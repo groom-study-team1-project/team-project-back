@@ -11,8 +11,7 @@ import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
-import deepdivers.community.global.utility.encryptor.EncryptorBean;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -24,17 +23,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 class PostTest {
 
 	@Autowired
-	@EncryptorBean
-	private Encryptor encryptor;
+    private PasswordEncryptor passwordEncryptor;
 
 	private Member member;
 	private PostCategory category;
 
 	@BeforeEach
 	void setUp() {
-		encryptor = mock(Encryptor.class);
+		passwordEncryptor = mock(PasswordEncryptor.class);
 
-		when(encryptor.encrypt(anyString())).thenReturn("encryptedPassword");
+		when(passwordEncryptor.encrypt(anyString())).thenReturn("encryptedPassword");
 
 		MemberSignUpRequest signUpRequest = new MemberSignUpRequest(
 				"test@mail.com",
@@ -43,7 +41,7 @@ class PostTest {
 				"http://image.url",
 				"010-1234-5678"
 		);
-		member = Member.of(signUpRequest, encryptor);
+		member = Member.of(signUpRequest, passwordEncryptor);
 
 		category = PostCategory.createCategory("Category", "Description", CategoryStatus.ACTIVE);
 	}

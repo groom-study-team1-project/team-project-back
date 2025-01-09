@@ -2,7 +2,7 @@ package deepdivers.community.domain.member.entity;
 
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.utility.encryptor.Encryptor;
+import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
@@ -27,14 +27,14 @@ public class Password {
         }
     }
 
-    protected Password(final Encryptor encryptor, final String password) {
+    protected Password(final PasswordEncryptor passwordEncryptor, final String password) {
         validatePassword(password);
-        this.value = encryptor.encrypt(password);
+        this.value = passwordEncryptor.encrypt(password);
     }
 
-    protected void reset(final Encryptor encryptor, final String password) {
+    protected void reset(final PasswordEncryptor passwordEncryptor, final String password) {
         validatePassword(password);
-        this.value = encryptor.encrypt(password);
+        this.value = passwordEncryptor.encrypt(password);
     }
 
 }
