@@ -13,6 +13,7 @@ import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.model.vo.PostSortType;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.global.config.JpaConfig;
 import deepdivers.community.global.config.LocalStackTestConfig;
@@ -182,6 +183,42 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
         assertThatThrownBy(() -> postQueryRepository.readPostByPostId(postId, viewerId))
             .isInstanceOf(NotFoundException.class)
             .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+    }
+
+    @Test
+    void 게시글_조회_수를_기준으로_조회할_수_있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.HOT, null);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result.getFirst().getPostId()).isEqualTo(8);
+    }
+
+    @Test
+    void 게시글_댓글_수를_기준으로_조회할_수_있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.COMMENT, null);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result.getFirst().getCommentCount()).isEqualTo(2);
+    }
+
+    @Test
+    void 게시글_인기_수를_기준으로_조회할_수_있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, null);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result.getFirst().getPostId()).isEqualTo(10);
     }
 
 }
