@@ -42,7 +42,7 @@ VALUES (6, '여섯 번째 게시글', '여섯 번째 게시글의 내용입니�
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (7, '일곱 번째 게시글', '일곱 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 7, 4);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (8, '여덟 번째 게시글', '여덟 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 8, 1);
+VALUES (8, '여덟 번째 게시글', '여덟 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 4, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 8, 1);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9, 2);
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)

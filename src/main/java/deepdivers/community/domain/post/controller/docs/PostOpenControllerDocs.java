@@ -1,6 +1,7 @@
 package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
@@ -39,7 +40,7 @@ public interface PostOpenControllerDocs {
 		description = "해당 게시글을 찾을 수 없습니다.",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<List<PostPreviewResponse>>> getAllPosts(Long categoryId, Long lastPostId);
+	ResponseEntity<API<List<PostPreviewResponse>>> getAllPosts(GetPostsRequest request);
 
 	@Operation(summary = "내가 작성한 게시글", description = "내가 작성한 게시글을 조회하는 기능")
 	@ApiResponse(
@@ -55,6 +56,6 @@ public interface PostOpenControllerDocs {
                     """,
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<List<PostPreviewResponse>>> getMyAllPosts(Long memberId, Long categoryId, Long lastPostId);
+	ResponseEntity<API<List<PostPreviewResponse>>> getMyAllPosts(Long memberId, GetPostsRequest dto);
 
 }

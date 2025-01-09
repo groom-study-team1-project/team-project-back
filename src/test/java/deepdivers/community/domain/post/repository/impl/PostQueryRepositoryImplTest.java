@@ -9,9 +9,11 @@ import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRe
 import deepdivers.community.domain.hashtag.repository.HashtagQueryRepositoryImpl;
 import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
 import deepdivers.community.domain.image.repository.ImageQueryRepositoryImpl;
+import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.model.vo.PostSortType;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.global.config.JpaConfig;
 import deepdivers.community.global.config.LocalStackTestConfig;
@@ -31,21 +33,25 @@ import org.springframework.test.annotation.DirtiesContext;
 class PostQueryRepositoryImplTest extends RepositoryTest {
 
     @Test
-    void 삭제되지_않은_게시글_목록을_가져온다() {
+    void 전쳬_게시글_목록을_가져온다() {
         // given, test.sql
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null);
+
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, null, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
 
         // then
-        assertThat(result).hasSize(9);
+        assertThat(result).hasSize(5);
     }
 
     @Test
     @DisplayName("카테고리 정보만 있을 경우 카테고리 별 삭제되지 않은 전체 게시글 목록이 조회가 된다.")
     void givenNullLastPostIdAndCategoryIdWhenFindAllPostsThenReturnPostsByCategory() {
         // given, test.sql
+        GetPostsRequest dto = new GetPostsRequest(1L, null, null, null);
+
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, null, 1L);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
 
         // then
         assertThat(result).hasSize(3);
@@ -55,9 +61,10 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @DisplayName("마지막 포스트 정보만 있을 경우 모든 카테고리의 삭제되지 않은 게시글 목록이 조회가 된다.")
     void givenLastPostIdAndNullCategoryIdWhenFindAllPostsThenReturnPostsAmongPostIdSmallerThanLastPostId() {
         // given, test.sql
+        GetPostsRequest dto = new GetPostsRequest(null, 5L, null, null);
 
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, 5L, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
 
         // then
         assertThat(result).hasSize(3);
@@ -67,8 +74,10 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @DisplayName("마지막 포스트 정보와 카테 고리 정보가 있을 경우 카테고리 별 삭제되지 않은 게시글 목록이 조회가 된다.")
     void givenLastPostIdAndCategoryIdWhenFindAllPostsThenReturnNoDeletePosts() {
         // given, test.sql
+        GetPostsRequest dto = new GetPostsRequest(1L, 5L, null, null);
+
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, 5L, 1L);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
 
         // then
         assertThat(result).hasSize(2);
@@ -78,10 +87,10 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @DisplayName("마지막 게시글 id가 1번일 경우, 조회 시 0개가 조회된다.")
     void givenLastPostIdWhenFindAllPostsThenReturnEmptyPosts() {
         // given
-        Long lastPostId = 1L;
+        GetPostsRequest dto = new GetPostsRequest(null, 1L, null, null);
 
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, lastPostId, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
 
         // then
         assertThat(result).hasSize(0);
@@ -90,10 +99,10 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 특정_사용자의_게시글_작성_목록을_가져올_수_있다() {
         // given
-        Long memberId = 1L;
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null);
 
         // when
-        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(memberId, null, null);
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(1L, dto);
 
         // then
         assertThat(result).hasSize(1);
@@ -174,6 +183,42 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
         assertThatThrownBy(() -> postQueryRepository.readPostByPostId(postId, viewerId))
             .isInstanceOf(NotFoundException.class)
             .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+    }
+
+    @Test
+    void 게시글_조회_수를_기준으로_조회할_수_있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.HOT, null);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result.getFirst().getPostId()).isEqualTo(8);
+    }
+
+    @Test
+    void 게시글_댓글_수를_기준으로_조회할_수_있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.COMMENT, null);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result.getFirst().getCommentCount()).isEqualTo(2);
+    }
+
+    @Test
+    void 게시글_인기_수를_기준으로_조회할_수_있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, null);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result.getFirst().getPostId()).isEqualTo(10);
     }
 
 }

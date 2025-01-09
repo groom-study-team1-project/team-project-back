@@ -7,15 +7,18 @@ import static deepdivers.community.domain.post.model.QPost.post;
 import static deepdivers.community.domain.post.model.like.QLike.like;
 
 import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRepository;
 import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
+import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.exception.PostExceptionType;
 import deepdivers.community.domain.post.model.vo.LikeTarget;
+import deepdivers.community.domain.post.model.vo.PostSortType;
 import deepdivers.community.domain.post.model.vo.PostStatus;
 import deepdivers.community.domain.post.repository.PostQueryRepository;
 import deepdivers.community.domain.post.repository.generator.PostQBeanGenerator;
@@ -30,15 +33,16 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PostQueryRepositoryImpl implements PostQueryRepository {
 
+    private static final int GET_POSTS_DEFAULT_LIMIT_COUNT = 5;
+    private static final int GET_POSTS_MAX_LIMIT_COUNT = 30;
+
     private final JPAQueryFactory queryFactory;
     private final HashtagQueryRepository hashtagQueryRepository;
     private final ImageQueryRepository imageQueryRepository;
 
-    // todo: 몇개 씩 조회할 지 정하기
-    // todo: 정렬 순서 정하기
     @Override
-    public List<PostPreviewResponse> findAllPosts(final Long memberId, final Long lastPostId, final Long categoryId) {
-        final List<PostPreviewResponse> postPreviewResponses = extractPostPreview(memberId, lastPostId, categoryId);
+    public List<PostPreviewResponse> findAllPosts(final Long memberId, final GetPostsRequest dto) {
+        final List<PostPreviewResponse> postPreviewResponses = extractPostPreview(memberId, dto);
         final List<Long> postIds = postPreviewResponses.stream().map(PostPreviewResponse::getPostId).toList();
         final Map<Long, List<String>> hashtagsByPostId = findAllHashtagByPosts(postIds);
 
@@ -83,24 +87,37 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 .as(GroupBy.list(hashtag1.hashtag)));
     }
 
-
-    private List<PostPreviewResponse> extractPostPreview(
-        final Long memberId,
-        final Long lastPostId,
-        final Long categoryId
-    ) {
+    private List<PostPreviewResponse> extractPostPreview(final Long memberId, final GetPostsRequest dto) {
         return queryFactory.select(PostQBeanGenerator.createPostPreview(post, member))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(
                 determineAuthorCheckingCondition(memberId),
-                deterMineLastContentCondition(lastPostId),
-                determineCategoryCondition(categoryId),
+                deterMineLastContentCondition(dto.lastPostId()),
+                determineCategoryCondition(dto.categoryId()),
                 post.status.eq(PostStatus.ACTIVE)
             )
-            .orderBy(post.id.desc())
-            .limit(10)
+            .orderBy(determinePostSortCondition(dto.postSortType()))
+            .limit(getLimitOrDefault(dto.limit()))
             .fetch();
+    }
+
+    private static int getLimitOrDefault(final Integer limit) {
+        if (limit == null || limit <= GET_POSTS_DEFAULT_LIMIT_COUNT) {
+            return GET_POSTS_DEFAULT_LIMIT_COUNT;
+        }
+        if (limit > GET_POSTS_MAX_LIMIT_COUNT) {
+            return GET_POSTS_MAX_LIMIT_COUNT;
+        }
+        return limit;
+    }
+
+    private static OrderSpecifier<?>[] determinePostSortCondition(final PostSortType sortType) {
+        return switch (sortType) {
+            case HOT -> new OrderSpecifier<?>[]{ post.viewCount.desc(), post.id.desc() };
+            case COMMENT -> new OrderSpecifier<?>[]{ post.commentCount.desc(), post.id.desc() };
+            case null, default -> new OrderSpecifier<?>[]{ post.id.desc() };
+        };
     }
 
     private static Predicate deterMineLastContentCondition(final Long lastContentId) {
