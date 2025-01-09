@@ -1,12 +1,12 @@
 package deepdivers.community.domain.post.controller;
 
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.post.aspect.IncreaseViewCount;
 import deepdivers.community.domain.post.controller.docs.PostOpenControllerDocs;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.post.dto.code.PostStatusType;
+import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.global.security.Auth;
 import java.util.List;
@@ -32,13 +32,13 @@ public class PostOpenController implements PostOpenControllerDocs {
 		@Auth final Long viewerId
 	) {
 		final PostDetailResponse postDetailResponse = postQueryRepository.readPostByPostId(postId, viewerId);
-		return ResponseEntity.ok(API.of(PostStatusType.POST_VIEW_SUCCESS, postDetailResponse));
+		return ResponseEntity.ok(API.of(PostStatusCode.POST_VIEW_SUCCESS, postDetailResponse));
 	}
 
 	@GetMapping
 	public ResponseEntity<API<List<PostPreviewResponse>>> getAllPosts(@ModelAttribute final GetPostsRequest dto) {
 		return ResponseEntity.ok(API.of(
-			PostStatusType.POST_VIEW_SUCCESS,
+			PostStatusCode.POST_VIEW_SUCCESS,
 			postQueryRepository.findAllPosts(null, dto)
 		));
 	}
@@ -49,7 +49,7 @@ public class PostOpenController implements PostOpenControllerDocs {
 		@ModelAttribute final GetPostsRequest dto
 	) {
 		return ResponseEntity.ok(API.of(
-			PostStatusType.MY_POSTS_GETTING_SUCCESS,
+			PostStatusCode.MY_POSTS_GETTING_SUCCESS,
 			postQueryRepository.findAllPosts(memberId, dto)
 		));
 	}

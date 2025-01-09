@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.entity;
 
-import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -34,13 +34,13 @@ public class PostContent {
 
 	private static void validateContentNotNull(final String content) {
 		if (content == null) {
-			throw new BadRequestException(PostExceptionType.VALUE_CANNOT_BE_NULL);
+			throw new BadRequestException(PostExceptionCode.VALUE_CANNOT_BE_NULL);
 		}
 	}
 
 	private static void validateContentLength(final String content) {
 		if (content.length() < MIN_LENGTH) {
-			throw new BadRequestException(PostExceptionType.INVALID_CONTENT_LENGTH);
+			throw new BadRequestException(PostExceptionCode.INVALID_CONTENT_LENGTH);
 		}
 	}
 

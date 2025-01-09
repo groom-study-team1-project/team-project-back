@@ -1,7 +1,7 @@
 package deepdivers.community.domain.hashtag.entity;
 
-import deepdivers.community.domain.hashtag.exception.HashtagExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.hashtag.exception.HashtagExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -49,13 +49,13 @@ public class Hashtag {
 
 	private static void validateHashTagFormat(String hashtag) {
 		if (!hashtag.matches("^[\\p{L}\\p{N}]{1,10}$")) {
-			throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
+			throw new BadRequestException(HashtagExceptionCode.INVALID_HASHTAG_FORMAT);
 		}
 	}
 
 	private static void validateHashtagNullOrBlank(String hashtag) {
 		if (hashtag == null || hashtag.isBlank()) {
-			throw new BadRequestException(HashtagExceptionType.INVALID_HASHTAG_FORMAT);
+			throw new BadRequestException(HashtagExceptionCode.INVALID_HASHTAG_FORMAT);
 		}
 	}
 

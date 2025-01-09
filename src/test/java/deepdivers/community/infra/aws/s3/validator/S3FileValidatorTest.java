@@ -3,7 +3,7 @@ package deepdivers.community.infra.aws.s3.validator;
 import static deepdivers.community.infra.aws.s3.exception.S3Exception.INVALID_IMAGE_FORMAT;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;

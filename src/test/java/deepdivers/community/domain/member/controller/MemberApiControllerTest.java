@@ -7,10 +7,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.dto.code.MemberStatusType;
+import deepdivers.community.domain.member.dto.code.MemberStatusCode;
 import deepdivers.community.domain.member.entity.Member;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -38,7 +38,7 @@ class MemberApiControllerTest extends ControllerTest {
         // given
         MemberProfileRequest request = new MemberProfileRequest("test", "test", "", "010-1234-5678", "", "", "EMPTY");
         Member member = memberService.getMemberWithThrow(1L);
-        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
+        NoContent mockResponse = NoContent.from(MemberStatusCode.UPDATE_PROFILE_SUCCESS);
         given(memberService.updateProfile(member, request)).willReturn(mockResponse);
 
         // when
@@ -80,7 +80,7 @@ class MemberApiControllerTest extends ControllerTest {
         // given
         MemberProfileRequest request = new MemberProfileRequest("test", null, "", "010-1234-5678", "", "", "EMPTY");
         Member member = memberService.getMemberWithThrow(1L);
-        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PROFILE_SUCCESS);
+        NoContent mockResponse = NoContent.from(MemberStatusCode.UPDATE_PROFILE_SUCCESS);
         given(memberService.updateProfile(member, request)).willReturn(mockResponse);
 
         // when, then
@@ -124,7 +124,7 @@ class MemberApiControllerTest extends ControllerTest {
         // given
         UpdatePasswordRequest request = new UpdatePasswordRequest("test", "test");
         Member member = memberService.getMemberWithThrow(1L);
-        NoContent mockResponse = NoContent.from(MemberStatusType.UPDATE_PASSWORD_SUCCESS);
+        NoContent mockResponse = NoContent.from(MemberStatusCode.UPDATE_PASSWORD_SUCCESS);
         given(memberService.changePassword(member, request)).willReturn(mockResponse);
 
         // when

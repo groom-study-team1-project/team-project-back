@@ -1,7 +1,7 @@
 package deepdivers.community.domain.member.entity;
 
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
@@ -24,7 +24,7 @@ public class PhoneNumber {
 
     private void validatePhoneNumber(final String phoneNumber) {
         if (!PATTERN.matcher(phoneNumber).matches()) {
-            throw new BadRequestException(MemberExceptionType.INVALID_PHONE_NUMBER_FORMAT);
+            throw new BadRequestException(MemberExceptionCode.INVALID_PHONE_NUMBER_FORMAT);
         }
     }
 

@@ -17,12 +17,12 @@ import deepdivers.community.domain.post.controller.interfaces.PostQueryRepositor
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.like.entity.LikeTarget;
 import deepdivers.community.domain.post.entity.PostSortType;
 import deepdivers.community.domain.post.entity.PostStatus;
 import deepdivers.community.domain.post.repository.generator.PostQBeanGenerator;
-import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +68,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .fetchOne();
 
         if (postDetailResponse == null) {
-            throw new NotFoundException(PostExceptionType.POST_NOT_FOUND);
+            throw new NotFoundException(PostExceptionCode.POST_NOT_FOUND);
         }
 
         postDetailResponse.setHashtags(hashtagQueryRepository.findAllHashtagByPost(postId));

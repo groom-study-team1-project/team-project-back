@@ -4,16 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
-import deepdivers.community.domain.post.exception.CategoryExceptionType;
-import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.exception.CategoryExceptionCode;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.entity.Post;
 import deepdivers.community.domain.post.entity.PostStatus;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -63,7 +63,7 @@ class PostServiceTest extends IntegrationTest {
         // When, Then
         assertThatThrownBy(() -> postService.createPost(request, member))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionType.CATEGORY_NOT_FOUND);
+                .hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionCode.CATEGORY_NOT_FOUND);
     }
 
     @Test
@@ -92,7 +92,7 @@ class PostServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> postService.updatePost(999L, request, member))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
     @Test
@@ -105,7 +105,7 @@ class PostServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> postService.updatePost(1L, request, member))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.NOT_POST_AUTHOR);
+                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.NOT_POST_AUTHOR);
     }
 
     @Test
@@ -118,7 +118,7 @@ class PostServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> postService.updatePost(1L, request, member))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionType.CATEGORY_NOT_FOUND);
+                .hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionCode.CATEGORY_NOT_FOUND);
     }
 
     @Test
@@ -145,7 +145,7 @@ class PostServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> postService.deletePost(invalidPostId, member))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
     @Test
@@ -157,7 +157,7 @@ class PostServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> postService.deletePost(1L, member))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.NOT_POST_AUTHOR);
+                .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.NOT_POST_AUTHOR);
     }
 
     @Test

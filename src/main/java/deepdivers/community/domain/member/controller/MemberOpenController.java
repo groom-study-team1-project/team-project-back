@@ -1,12 +1,12 @@
 package deepdivers.community.domain.member.controller;
 
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.controller.docs.MemberOpenControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.response.MemberProfileResponse;
-import deepdivers.community.domain.member.dto.code.MemberStatusType;
+import deepdivers.community.domain.member.dto.code.MemberStatusCode;
 import deepdivers.community.domain.member.controller.interfaces.MemberQueryRepository;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.domain.token.dto.response.TokenResponse;
@@ -51,7 +51,7 @@ public class MemberOpenController implements MemberOpenControllerDocs {
         @Auth final Long viewerId
     ) {
         final MemberProfileResponse memberProfile = memberQueryRepository.getMemberProfile(memberId, viewerId);
-        return ResponseEntity.ok(API.of(MemberStatusType.GET_PROFILE_SUCCESS, memberProfile));
+        return ResponseEntity.ok(API.of(MemberStatusCode.GET_PROFILE_SUCCESS, memberProfile));
     }
 
 }

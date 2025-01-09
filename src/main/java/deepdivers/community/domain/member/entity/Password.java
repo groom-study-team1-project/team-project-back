@@ -1,7 +1,7 @@
 package deepdivers.community.domain.member.entity;
 
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -23,7 +23,7 @@ public class Password {
 
     private void validatePassword(final String password) {
         if (!PATTERN.matcher(password).matches()) {
-            throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD_FORMAT);
+            throw new BadRequestException(MemberExceptionCode.INVALID_PASSWORD_FORMAT);
         }
     }
 

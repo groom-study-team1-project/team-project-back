@@ -1,7 +1,7 @@
 package deepdivers.community.domain.comment.entity;
 
-import deepdivers.community.domain.comment.exception.CommentExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.comment.exception.CommentExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -25,7 +25,7 @@ public class CommentContent {
 
     private void checkText(final String contentText) {
         if (contentText == null || contentText.isEmpty() || contentText.length() > NAX_COMMENT_LENGTH) {
-            throw new BadRequestException(CommentExceptionType.INVALID_COMMENT_CONTENT);
+            throw new BadRequestException(CommentExceptionCode.INVALID_COMMENT_CONTENT);
         }
     }
 

@@ -3,8 +3,8 @@ package deepdivers.community.domain.member.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,7 +34,7 @@ class PhoneNumberTest {
         // given, when, then
         assertThatThrownBy(() -> new PhoneNumber(invalidPhoneNumber))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PHONE_NUMBER_FORMAT);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.INVALID_PHONE_NUMBER_FORMAT);
     }
 
 }

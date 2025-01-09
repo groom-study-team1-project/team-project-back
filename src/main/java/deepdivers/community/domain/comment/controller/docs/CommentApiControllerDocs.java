@@ -1,13 +1,13 @@
 package deepdivers.community.domain.comment.controller.docs;
 
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.comment.dto.request.EditCommentRequest;
 import deepdivers.community.domain.like.dto.LikeRequest;
 import deepdivers.community.domain.comment.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.comment.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.comment.dto.request.WriteReplyRequest;
-import deepdivers.community.global.exception.dto.response.ExceptionResponse;
+import deepdivers.community.domain.common.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

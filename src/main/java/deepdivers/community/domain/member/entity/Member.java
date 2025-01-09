@@ -1,11 +1,11 @@
 package deepdivers.community.domain.member.entity;
 
-import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.common.entity.TimeBaseEntity;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -38,7 +38,7 @@ import org.hibernate.annotations.DynamicUpdate;
 )
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
-public class Member extends BaseEntity {
+public class Member extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -128,8 +128,8 @@ public class Member extends BaseEntity {
 
     public void validateStatus() {
         switch (this.status) {
-            case DORMANCY -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_DORMANCY);
-            case UNREGISTERED -> throw new BadRequestException(MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+            case DORMANCY -> throw new BadRequestException(MemberExceptionCode.MEMBER_LOGIN_DORMANCY);
+            case UNREGISTERED -> throw new BadRequestException(MemberExceptionCode.MEMBER_LOGIN_UNREGISTER);
         }
     }
 
@@ -141,10 +141,10 @@ public class Member extends BaseEntity {
     public void changePassword(final PasswordEncryptor passwordEncryptor, final UpdatePasswordRequest request) {
         // todo test
         if (!passwordEncryptor.matches(request.currentPassword(), this.getPassword())) {
-            throw new BadRequestException(MemberExceptionType.INVALID_PASSWORD);
+            throw new BadRequestException(MemberExceptionCode.INVALID_PASSWORD);
         }
         if (passwordEncryptor.matches(request.newPassword(), this.getPassword())) {
-            throw new BadRequestException(MemberExceptionType.ALREADY_USING_PASSWORD);
+            throw new BadRequestException(MemberExceptionCode.ALREADY_USING_PASSWORD);
         }
         resetPassword(passwordEncryptor, request.newPassword());
     }

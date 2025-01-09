@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.like.dto.LikeRequest;
-import deepdivers.community.domain.like.dto.code.LikeStatusType;
+import deepdivers.community.domain.like.dto.code.LikeStatusCode;
 import deepdivers.community.domain.like.service.LikeService;
-import deepdivers.community.domain.like.exception.LikeExceptionType;
+import deepdivers.community.domain.like.exception.LikeExceptionCode;
 import deepdivers.community.domain.like.repository.LikeRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +42,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.likeComment(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 반영 확인
-        NoContent expect = NoContent.from(LikeStatusType.COMMENT_LIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusCode.COMMENT_LIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 
@@ -55,7 +55,7 @@ class LikeServiceIntTest extends IntegrationTest {
         // When & Then: 중복 좋아요 요청 시 예외 발생 확인
         assertThatThrownBy(() -> likeService.likeComment(likeRequest, memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
 
     @Test
@@ -68,7 +68,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.unlikeComment(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 삭제 확인
-        NoContent expect = NoContent.from(LikeStatusType.COMMENT_UNLIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusCode.COMMENT_UNLIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 
@@ -78,7 +78,7 @@ class LikeServiceIntTest extends IntegrationTest {
         // When & Then: 좋아요가 없는 상태에서 취소 요청 시 예외 발생 확인
         assertThatThrownBy(() -> likeService.unlikeComment(likeRequest, memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
 
     @Test
@@ -89,7 +89,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.likePost(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 반영 확인
-        NoContent expect = NoContent.from(LikeStatusType.POST_LIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusCode.POST_LIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 
@@ -103,7 +103,7 @@ class LikeServiceIntTest extends IntegrationTest {
         // When & Then: 중복 요청 시 예외 발생 확인
         assertThatThrownBy(() -> likeService.likePost(likeRequest, memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
 
     @Test
@@ -116,7 +116,7 @@ class LikeServiceIntTest extends IntegrationTest {
         NoContent result = likeService.unlikePost(likeRequest, memberId);
 
         // Then: 요청 성공 및 데이터베이스 삭제 확인
-        NoContent expect = NoContent.from(LikeStatusType.POST_UNLIKE_SUCCESS);
+        NoContent expect = NoContent.from(LikeStatusCode.POST_UNLIKE_SUCCESS);
         assertThat(result).isEqualTo(expect);
     }
 
@@ -128,7 +128,7 @@ class LikeServiceIntTest extends IntegrationTest {
         // When & Then: 중복 취소 요청 시 예외 발생 확인
         assertThatThrownBy(() -> likeService.unlikePost(likeRequest, memberId))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionType.INVALID_ACCESS);
+                .hasFieldOrPropertyWithValue("exceptionType", LikeExceptionCode.INVALID_ACCESS);
     }
 
 }

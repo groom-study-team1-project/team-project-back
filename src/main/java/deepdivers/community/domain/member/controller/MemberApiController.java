@@ -1,6 +1,6 @@
 package deepdivers.community.domain.member.controller;
 
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.controller.docs.MemberApiControllerDocs;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;

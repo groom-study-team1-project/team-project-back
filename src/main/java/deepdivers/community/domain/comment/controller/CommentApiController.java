@@ -1,6 +1,6 @@
 package deepdivers.community.domain.comment.controller;
 
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.comment.controller.docs.CommentApiControllerDocs;
 import deepdivers.community.domain.comment.dto.request.EditCommentRequest;

@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class PasswordTest {
         // given, when, then
         assertThatThrownBy(() -> new Password(passwordEncryptor, invalidPassword))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD_FORMAT);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.INVALID_PASSWORD_FORMAT);
     }
 
     @ParameterizedTest
@@ -67,7 +67,7 @@ class PasswordTest {
         // when, then
         assertThatThrownBy(() -> new Password(passwordEncryptor, passwordWithSpace))
             .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD_FORMAT);
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.INVALID_PASSWORD_FORMAT);
     }
 
 }

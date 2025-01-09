@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.entity;
 
-import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.common.entity.TimeBaseEntity;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @DynamicUpdate
-public class Post extends BaseEntity {
+public class Post extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

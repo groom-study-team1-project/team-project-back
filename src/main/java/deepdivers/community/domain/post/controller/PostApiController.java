@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.controller;
 
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.like.dto.LikeRequest;

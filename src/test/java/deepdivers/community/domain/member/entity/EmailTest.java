@@ -3,8 +3,8 @@ package deepdivers.community.domain.member.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +38,6 @@ class EmailTest {
         // given & When & Then
         assertThatThrownBy(() -> new Email(email))
             .isInstanceOf(BadRequestException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_EMAIL_FORMAT);
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.INVALID_EMAIL_FORMAT);
     }
 }

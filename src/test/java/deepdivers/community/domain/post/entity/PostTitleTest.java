@@ -3,8 +3,8 @@ package deepdivers.community.domain.post.entity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -29,6 +29,6 @@ class PostTitleTest {
 		// given, when, then
 		assertThatThrownBy(() -> PostTitle.of(invalidTitle))
 			.isInstanceOf(BadRequestException.class)
-			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.INVALID_TITLE_LENGTH);
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.INVALID_TITLE_LENGTH);
 	}
 }

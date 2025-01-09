@@ -1,6 +1,6 @@
 package deepdivers.community.domain.hashtag.entity;
 
-import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.common.entity.TimeBaseEntity;
 import deepdivers.community.domain.post.entity.Post;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 		@Index(name = "idx_post_hashtag_hashtag_id", columnList = "hashtag_id")
 	}
 )
-public class PostHashtag extends BaseEntity {
+public class PostHashtag extends TimeBaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,6 +1,6 @@
 package deepdivers.community.domain.image.repository.entity;
 
-import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.common.entity.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode(of = "id", callSuper = false)
 @Getter
-public class Image extends BaseEntity {
+public class Image extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

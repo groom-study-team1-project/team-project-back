@@ -5,9 +5,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.token.dto.response.TokenResponse;
-import deepdivers.community.domain.token.dto.code.TokenStatusType;
+import deepdivers.community.domain.token.dto.code.TokenStatusCode;
 import deepdivers.community.domain.token.service.TokenService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -37,7 +37,7 @@ class TokenControllerTest extends ControllerTest {
         String accessToken = "Bearer accessToken";
         String refreshToken = "refreshToken";
         TokenResponse tokenRes = TokenResponse.of("new access", "new refresh");
-        API<TokenResponse> mockRes = API.of(TokenStatusType.RE_ISSUE_SUCCESS, tokenRes);
+        API<TokenResponse> mockRes = API.of(TokenStatusCode.RE_ISSUE_SUCCESS, tokenRes);
         given(tokenService.reIssueAccessToken(anyString(), anyString())).willReturn(mockRes);
 
         // when
@@ -54,8 +54,8 @@ class TokenControllerTest extends ControllerTest {
 
         // then
         assertThat(response).isNotNull();
-        assertThat(response.status().code()).isEqualTo(TokenStatusType.RE_ISSUE_SUCCESS.getCode());
-        assertThat(response.status().message()).isEqualTo(TokenStatusType.RE_ISSUE_SUCCESS.getMessage());
+        assertThat(response.status().code()).isEqualTo(TokenStatusCode.RE_ISSUE_SUCCESS.getCode());
+        assertThat(response.status().message()).isEqualTo(TokenStatusCode.RE_ISSUE_SUCCESS.getMessage());
         assertThat(response.result().accessToken()).isEqualTo("new access");
         assertThat(response.result().refreshToken()).isEqualTo("new refresh");
         assertThat(response).usingRecursiveComparison().isEqualTo(mockRes);

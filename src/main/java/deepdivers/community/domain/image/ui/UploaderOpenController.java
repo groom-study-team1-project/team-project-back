@@ -1,9 +1,9 @@
 package deepdivers.community.domain.image.ui;
 
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
 import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
-import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusType;
+import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusCode;
 import deepdivers.community.domain.image.ui.docs.UploaderOpenControllerDocs;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import jakarta.validation.Valid;
@@ -31,7 +31,7 @@ public class UploaderOpenController implements UploaderOpenControllerDocs {
         final String accessUrl = s3PresignManager.generateAccessUrl(key);
 
         return ResponseEntity.ok(API.of(
-            UploaderStatusType.GENERATE_PRESIGN_SUCCESS,
+            UploaderStatusCode.GENERATE_PRESIGN_SUCCESS,
             GetPresignResponse.of(key, presignedUrl, accessUrl)
         ));
     }

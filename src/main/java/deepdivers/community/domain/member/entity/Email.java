@@ -1,7 +1,7 @@
 package deepdivers.community.domain.member.entity;
 
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.regex.Pattern;
@@ -23,7 +23,7 @@ public class Email {
 
     private void validateEmail(final String email) {
         if (!PATTERN.matcher(email).matches()) {
-            throw new BadRequestException(MemberExceptionType.INVALID_EMAIL_FORMAT);
+            throw new BadRequestException(MemberExceptionCode.INVALID_EMAIL_FORMAT);
         }
     }
 

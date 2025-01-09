@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.controller;
 
-import static deepdivers.community.domain.post.dto.code.PostStatusType.POST_VIEW_SUCCESS;
+import static deepdivers.community.domain.post.dto.code.PostStatusCode.POST_VIEW_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -10,12 +10,12 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.post.aspect.ViewCountAspect;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.post.dto.code.PostStatusType;
+import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import deepdivers.community.utils.PostDtoGenerator;
@@ -163,7 +163,7 @@ class PostOpenControllerTest extends ControllerTest {
 			});
 
 		// then
-		API<List<PostPreviewResponse>> mockResponse = API.of(PostStatusType.MY_POSTS_GETTING_SUCCESS, mockQueryResult);
+		API<List<PostPreviewResponse>> mockResponse = API.of(PostStatusCode.MY_POSTS_GETTING_SUCCESS, mockQueryResult);
 		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
 	}
 

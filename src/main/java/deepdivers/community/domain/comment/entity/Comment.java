@@ -1,7 +1,7 @@
 package deepdivers.community.domain.comment.entity;
 
 import deepdivers.community.domain.comment.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.common.entity.TimeBaseEntity;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.entity.Post;
 import jakarta.persistence.*;
@@ -21,7 +21,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicInsert
 @DynamicUpdate
-public class Comment extends BaseEntity {
+public class Comment extends TimeBaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

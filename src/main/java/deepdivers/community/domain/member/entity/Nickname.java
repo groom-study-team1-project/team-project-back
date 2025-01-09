@@ -1,7 +1,7 @@
 package deepdivers.community.domain.member.entity;
 
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Locale;
@@ -34,13 +34,13 @@ public class Nickname {
 
     private void validateNicknameLength(final String nickname) {
         if (nickname.length() < MIN_LENGTH || nickname.length() > MAX_LENGTH) {
-            throw new BadRequestException(MemberExceptionType.INVALID_NICKNAME_LENGTH);
+            throw new BadRequestException(MemberExceptionCode.INVALID_NICKNAME_LENGTH);
         }
     }
 
     private void validateNickNameFormat(final String nickname) {
         if (!PATTERN.matcher(nickname).matches()) {
-            throw new BadRequestException(MemberExceptionType.INVALID_NICKNAME_FORMAT);
+            throw new BadRequestException(MemberExceptionCode.INVALID_NICKNAME_FORMAT);
         }
     }
 

@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -1,10 +1,10 @@
 package deepdivers.community.domain.comment.controller;
 
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.comment.controller.docs.CommentOpenControllerDocs;
 import deepdivers.community.domain.comment.dto.response.ContentResponse;
 import deepdivers.community.domain.comment.dto.response.GetCommentResponse;
-import deepdivers.community.domain.comment.dto.code.CommentStatusType;
+import deepdivers.community.domain.comment.dto.code.CommentStatusCode;
 import deepdivers.community.domain.comment.controller.interfaces.CommentQueryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class CommentOpenController implements CommentOpenControllerDocs {
     ) {
         final List<GetCommentResponse> response =
             commentQueryRepository.findTop5CommentsByPost(postId, memberId, lastCommentId);
-        return ResponseEntity.ok(API.of(CommentStatusType.COMMENT_GET_SUCCESS, response));
+        return ResponseEntity.ok(API.of(CommentStatusCode.COMMENT_GET_SUCCESS, response));
     }
 
     @GetMapping("/replies/{commentId}")
@@ -41,7 +41,7 @@ public class CommentOpenController implements CommentOpenControllerDocs {
     ) {
         final List<ContentResponse> response =
             commentQueryRepository.findTop5RepliesByComment(commentId, memberId, lastCommentId);
-        return ResponseEntity.ok(API.of(CommentStatusType.REPLY_GET_SUCCESS, response));
+        return ResponseEntity.ok(API.of(CommentStatusCode.REPLY_GET_SUCCESS, response));
     }
 
 }

@@ -7,11 +7,11 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.ResetPasswordRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
-import deepdivers.community.domain.member.dto.code.AccountStatusType;
+import deepdivers.community.domain.member.dto.code.AccountStatusCode;
 import deepdivers.community.domain.member.service.AccountService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -38,7 +38,7 @@ class AccountOpenControllerTest extends ControllerTest {
     void validateNicknameSuccessfullyReturns200OK() {
         // given
         String nickname = "안녕하세요";
-        NoContent mockResponse = NoContent.from(AccountStatusType.NICKNAME_VALIDATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(AccountStatusCode.NICKNAME_VALIDATE_SUCCESS);
         given(accountService.verifyNickname(anyString())).willReturn(mockResponse);
 
         NoContent response = RestAssuredMockMvc.given().log().all()
@@ -77,7 +77,7 @@ class AccountOpenControllerTest extends ControllerTest {
     void authenticateEmailSuccessfullyReturns200OK() {
         // given
         AuthenticateEmailRequest request = new AuthenticateEmailRequest("email@test.com");
-        NoContent mockResponse = NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
+        NoContent mockResponse = NoContent.from(AccountStatusCode.SEND_VERIFY_CODE_SUCCESS);
         given(accountService.emailAuthentication(request)).willReturn(mockResponse);
 
         // when
@@ -138,7 +138,7 @@ class AccountOpenControllerTest extends ControllerTest {
     void verifyEmailSuccessfullyReturns200OK() {
         // given
         VerifyEmailRequest request = new VerifyEmailRequest("email@test.com", "111111");
-        NoContent mockResponse = NoContent.from(AccountStatusType.VERIFY_EMAIL_SUCCESS);
+        NoContent mockResponse = NoContent.from(AccountStatusCode.VERIFY_EMAIL_SUCCESS);
         given(accountService.verifyEmail(request)).willReturn(mockResponse);
 
         // when
@@ -213,7 +213,7 @@ class AccountOpenControllerTest extends ControllerTest {
     void 비밀번호_찾기_인증_요청이_성공한다() {
         // given
         AuthenticateEmailRequest request = new AuthenticateEmailRequest("email@test.com");
-        NoContent mockResponse = NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
+        NoContent mockResponse = NoContent.from(AccountStatusCode.SEND_VERIFY_CODE_SUCCESS);
         given(accountService.passwordAuthentication(request)).willReturn(mockResponse);
 
         // when
@@ -268,7 +268,7 @@ class AccountOpenControllerTest extends ControllerTest {
     void 비밀번호_재설정이_성공한다() {
         // given
         ResetPasswordRequest request = new ResetPasswordRequest("email@test.com", "111111");
-        NoContent mockResponse = NoContent.from(AccountStatusType.VERIFY_EMAIL_SUCCESS);
+        NoContent mockResponse = NoContent.from(AccountStatusCode.VERIFY_EMAIL_SUCCESS);
         given(accountService.resetPassword(request)).willReturn(mockResponse);
 
         // when

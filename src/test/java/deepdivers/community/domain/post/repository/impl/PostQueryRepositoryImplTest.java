@@ -7,9 +7,9 @@ import deepdivers.community.domain.RepositoryTest;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.entity.PostSortType;
-import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -166,7 +166,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
         // when & then
         assertThatThrownBy(() -> postQueryRepository.readPostByPostId(postId, viewerId))
             .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", PostExceptionType.POST_NOT_FOUND);
+            .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
     @Test

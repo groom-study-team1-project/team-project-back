@@ -5,11 +5,11 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.exception.CategoryExceptionType;
+import deepdivers.community.domain.post.exception.CategoryExceptionCode;
 import deepdivers.community.domain.post.entity.PostCategory;
 import deepdivers.community.domain.post.entity.CategoryStatus;
 import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -77,7 +77,7 @@ class CategoryServiceTest extends IntegrationTest {
 		// When & Then
 		assertThatThrownBy(() -> categoryService.getCategoryById(invalidCategoryId))
 				.isInstanceOf(BadRequestException.class)
-				.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionType.CATEGORY_NOT_FOUND);
+				.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionCode.CATEGORY_NOT_FOUND);
 	}
 
 }

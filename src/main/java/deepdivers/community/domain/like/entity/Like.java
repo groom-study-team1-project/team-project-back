@@ -1,6 +1,6 @@
 package deepdivers.community.domain.like.entity;
 
-import deepdivers.community.domain.common.BaseEntity;
+import deepdivers.community.domain.common.entity.TimeBaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "deepdive_community_like")
-public class Like extends BaseEntity {
+public class Like extends TimeBaseEntity {
 
     @EmbeddedId
     private LikeId id;

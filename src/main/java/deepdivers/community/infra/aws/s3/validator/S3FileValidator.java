@@ -2,7 +2,7 @@ package deepdivers.community.infra.aws.s3.validator;
 
 import static deepdivers.community.infra.aws.s3.exception.S3Exception.INVALID_IMAGE_FORMAT;
 
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

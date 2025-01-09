@@ -5,21 +5,21 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.common.StatusResponse;
-import deepdivers.community.domain.common.StatusType;
+import deepdivers.community.domain.common.dto.response.API;
+import deepdivers.community.domain.common.dto.response.NoContent;
+import deepdivers.community.domain.common.dto.response.StatusResponse;
+import deepdivers.community.domain.common.dto.code.StatusCode;
 import deepdivers.community.domain.member.dto.request.MemberLoginRequest;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.dto.code.MemberStatusType;
-import deepdivers.community.domain.member.exception.MemberExceptionType;
+import deepdivers.community.domain.member.dto.code.MemberStatusCode;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.member.entity.MemberRole;
 import deepdivers.community.domain.token.dto.response.TokenResponse;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.global.security.AuthHelper;
 import deepdivers.community.global.security.AuthPayload;
 import deepdivers.community.infra.aws.s3.exception.S3Exception;
@@ -59,8 +59,8 @@ class MemberServiceTest extends IntegrationTest {
         NoContent result = memberService.signUp(request);
 
         // Then
-        assertThat(result.status().code()).isEqualTo(MemberStatusType.MEMBER_SIGN_UP_SUCCESS.getCode());
-        assertThat(result.status().message()).isEqualTo(MemberStatusType.MEMBER_SIGN_UP_SUCCESS.getMessage());
+        assertThat(result.status().code()).isEqualTo(MemberStatusCode.MEMBER_SIGN_UP_SUCCESS.getCode());
+        assertThat(result.status().message()).isEqualTo(MemberStatusCode.MEMBER_SIGN_UP_SUCCESS.getMessage());
     }
 
     @Test
@@ -76,7 +76,7 @@ class MemberServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> memberService.validateUniqueNickname(expectedNickname))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.ALREADY_REGISTERED_NICKNAME);
     }
 
     @Test
@@ -102,7 +102,7 @@ class MemberServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_EMAIL);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.ALREADY_REGISTERED_EMAIL);
     }
 
     @Test
@@ -114,7 +114,7 @@ class MemberServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> memberService.signUp(request))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.ALREADY_REGISTERED_NICKNAME);
     }
 
     /*
@@ -130,12 +130,12 @@ class MemberServiceTest extends IntegrationTest {
         API<TokenResponse> response = memberService.login(loginRequest);
 
         // Then, test.sql
-        StatusType statusType = MemberStatusType.MEMBER_LOGIN_SUCCESS;
+        StatusCode statusCode = MemberStatusCode.MEMBER_LOGIN_SUCCESS;
         TokenResponse responseResult = response.result();
 
         assertThat(response).isNotNull();
-        assertThat(response.status().code()).isEqualTo(statusType.getCode());
-        assertThat(response.status().message()).isEqualTo(statusType.getMessage());
+        assertThat(response.status().code()).isEqualTo(statusCode.getCode());
+        assertThat(response.status().message()).isEqualTo(statusCode.getMessage());
 
         assertThat(responseResult.accessToken()).isNotNull().isNotEmpty();
         assertThat(responseResult.accessToken()).matches("^[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.[A-Za-z0-9-_.+/=]*$");
@@ -158,7 +158,7 @@ class MemberServiceTest extends IntegrationTest {
         // When
         assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(NotFoundException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.NOT_FOUND_ACCOUNT);
     }
 
     @Test
@@ -170,7 +170,7 @@ class MemberServiceTest extends IntegrationTest {
         // When
         assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(NotFoundException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.NOT_FOUND_ACCOUNT);
     }
 
     @Test
@@ -182,7 +182,7 @@ class MemberServiceTest extends IntegrationTest {
         // When
         assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_DORMANCY);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.MEMBER_LOGIN_DORMANCY);
     }
 
     @Test
@@ -194,7 +194,7 @@ class MemberServiceTest extends IntegrationTest {
         // When, Then
         assertThatThrownBy(() -> memberService.login(loginRequest))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.MEMBER_LOGIN_UNREGISTER);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.MEMBER_LOGIN_UNREGISTER);
     }
 
     /*
@@ -224,7 +224,7 @@ class MemberServiceTest extends IntegrationTest {
         // When, Then
         assertThatThrownBy(() -> memberService.getMemberWithThrow(memberId))
                 .isInstanceOf(NotFoundException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_MEMBER);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.NOT_FOUND_MEMBER);
     }
 
     @Test
@@ -241,8 +241,8 @@ class MemberServiceTest extends IntegrationTest {
         NoContent result = memberService.updateProfile(member, request);
 
         // then
-        assertThat(result.status().code()).isEqualTo(MemberStatusType.UPDATE_PROFILE_SUCCESS.getCode());
-        assertThat(result.status().message()).isEqualTo(MemberStatusType.UPDATE_PROFILE_SUCCESS.getMessage());
+        assertThat(result.status().code()).isEqualTo(MemberStatusCode.UPDATE_PROFILE_SUCCESS.getCode());
+        assertThat(result.status().message()).isEqualTo(MemberStatusCode.UPDATE_PROFILE_SUCCESS.getMessage());
     }
 
     /*
@@ -260,7 +260,7 @@ class MemberServiceTest extends IntegrationTest {
 
         // then
         StatusResponse responseStatus = response.status();
-        MemberStatusType status = MemberStatusType.UPDATE_PASSWORD_SUCCESS;
+        MemberStatusCode status = MemberStatusCode.UPDATE_PASSWORD_SUCCESS;
         assertThat(responseStatus.code()).isEqualTo(status.getCode());
         assertThat(responseStatus.message()).isEqualTo(status.getMessage());
     }
@@ -275,7 +275,7 @@ class MemberServiceTest extends IntegrationTest {
         // When, then
         assertThatThrownBy(() -> memberService.changePassword(member, request))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_USING_PASSWORD);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.ALREADY_USING_PASSWORD);
     }
 
     @Test
@@ -288,7 +288,7 @@ class MemberServiceTest extends IntegrationTest {
         // When, then
         assertThatThrownBy(() -> memberService.changePassword(member, request))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.INVALID_PASSWORD);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.INVALID_PASSWORD);
     }
 
     /*
@@ -303,7 +303,7 @@ class MemberServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.ALREADY_REGISTERED_NICKNAME);
     }
 
     @Test
@@ -326,7 +326,7 @@ class MemberServiceTest extends IntegrationTest {
         // When & Then
         assertThatThrownBy(() -> memberService.validateUniqueNickname(nickname))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.ALREADY_REGISTERED_NICKNAME);
+                .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.ALREADY_REGISTERED_NICKNAME);
     }
 
 

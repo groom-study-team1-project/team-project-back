@@ -1,21 +1,21 @@
 package deepdivers.community.domain.comment.service;
 
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.comment.dto.request.EditCommentRequest;
 import deepdivers.community.domain.comment.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.comment.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.comment.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.comment.dto.code.CommentStatusType;
-import deepdivers.community.domain.comment.exception.CommentExceptionType;
-import deepdivers.community.domain.post.exception.PostExceptionType;
+import deepdivers.community.domain.comment.dto.code.CommentStatusCode;
+import deepdivers.community.domain.comment.exception.CommentExceptionCode;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.entity.Post;
 import deepdivers.community.domain.comment.entity.Comment;
 import deepdivers.community.domain.comment.entity.CommentStatus;
 import deepdivers.community.domain.comment.repository.jpa.CommentRepository;
 import deepdivers.community.domain.post.repository.jpa.PostRepository;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,12 +36,12 @@ public class CommentService {
         postRepository.incrementCommentCount(post.getId());
         commentRepository.save(comment);
 
-        return NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        return NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
     }
 
     private Post getPostWithoutException(WriteCommentRequest request) {
         return postRepository.findById(request.postId())
-            .orElseThrow(() -> new NotFoundException(PostExceptionType.POST_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(PostExceptionCode.POST_NOT_FOUND));
     }
 
     public NoContent writeReply(final Member member, final WriteReplyRequest request) {
@@ -53,7 +53,7 @@ public class CommentService {
         commentRepository.incrementReplyCount(reply.getParentCommentId());
         commentRepository.save(reply);
 
-        return NoContent.from(CommentStatusType.REPLY_CREATE_SUCCESS);
+        return NoContent.from(CommentStatusCode.REPLY_CREATE_SUCCESS);
     }
 
     public NoContent updateComment(final Member member, final EditCommentRequest request) {
@@ -63,18 +63,18 @@ public class CommentService {
         comment.updateComment(request.content());
         commentRepository.save(comment);
 
-        return NoContent.from(CommentStatusType.COMMENT_EDIT_SUCCESS);
+        return NoContent.from(CommentStatusCode.COMMENT_EDIT_SUCCESS);
     }
 
     private void validateAuthor(final Member member, final Member author) {
         if (!member.equals(author)) {
-            throw new BadRequestException(CommentExceptionType.INVALID_ACCESS);
+            throw new BadRequestException(CommentExceptionCode.INVALID_ACCESS);
         }
     }
 
     private Comment getCommentWithThrow(final Long id) {
         return commentRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException(CommentExceptionType.NOT_FOUND_COMMENT));
+            .orElseThrow(() -> new NotFoundException(CommentExceptionCode.NOT_FOUND_COMMENT));
     }
 
     public NoContent removeComment(final Member member, final RemoveCommentRequest request) {
@@ -85,7 +85,7 @@ public class CommentService {
         postRepository.decrementCommentCount(comment.getPost().getId());
         decrementReplyCount(comment);
 
-        return NoContent.from(CommentStatusType.COMMENT_REMOVE_SUCCESS);
+        return NoContent.from(CommentStatusCode.COMMENT_REMOVE_SUCCESS);
     }
 
     private void decrementReplyCount(final Comment comment) {

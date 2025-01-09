@@ -8,8 +8,8 @@ import static org.mockito.Mockito.when;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import deepdivers.community.domain.token.exception.TokenExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.token.exception.TokenExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.utility.time.TimeProvider;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -151,7 +151,7 @@ class AuthHelperTest {
         // When & Then
         assertThatThrownBy(() -> authHelper.validationTokenWithThrow(token))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionType.EXPIRED_TOKEN);
+                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionCode.EXPIRED_TOKEN);
     }
 
     @Test
@@ -165,7 +165,7 @@ class AuthHelperTest {
         // When & Then
         assertThatThrownBy(() -> authHelper.validationTokenWithThrow(unsupportedToken))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionType.UNSUPPORTED_TOKEN);
+                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionCode.UNSUPPORTED_TOKEN);
     }
 
     @Test
@@ -177,7 +177,7 @@ class AuthHelperTest {
         // When & Then
         assertThatThrownBy(() -> authHelper.validationTokenWithThrow(malformedToken))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionType.MALFORMED_TOKEN);
+                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionCode.MALFORMED_TOKEN);
     }
 
     @Test
@@ -192,7 +192,7 @@ class AuthHelperTest {
         // When & Then
         assertThatThrownBy(() -> authHelper.validationTokenWithThrow(invalidSignatureToken))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionType.SIGNATURE_TOKEN);
+                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionCode.SIGNATURE_TOKEN);
     }
 
     @Test
@@ -204,7 +204,7 @@ class AuthHelperTest {
         // When & Then
         assertThatThrownBy(() -> authHelper.validationTokenWithThrow(unknownToken))
                 .isInstanceOf(BadRequestException.class)
-                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionType.UNKNOWN_TOKEN);
+                .hasFieldOrPropertyWithValue("exceptionType", TokenExceptionCode.UNKNOWN_TOKEN);
     }
 
 }

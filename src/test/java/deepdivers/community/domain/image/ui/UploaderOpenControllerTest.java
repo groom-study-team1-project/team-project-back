@@ -8,10 +8,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
 import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
-import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusType;
+import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusCode;
 import deepdivers.community.infra.aws.s3.KeyType;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import io.restassured.common.mapper.TypeRef;
@@ -35,7 +35,7 @@ class UploaderOpenControllerTest extends ControllerTest {
     void givenMockingWhenRequestThenReturnResponseEqualToMockResponse() {
         // given
         GetPresignResponse presignResponse = new GetPresignResponse("key", "presign", "access");
-        API<GetPresignResponse> mockResponse = API.of(UploaderStatusType.GENERATE_PRESIGN_SUCCESS, presignResponse);
+        API<GetPresignResponse> mockResponse = API.of(UploaderStatusCode.GENERATE_PRESIGN_SUCCESS, presignResponse);
         given(s3PresignManager.generateKey(anyString(), any(KeyType.class))).willReturn("key");
         given(s3PresignManager.generatePreSignedUrl(anyString(), anyString())).willReturn("presign");
         given(s3PresignManager.generateAccessUrl(anyString())).willReturn("access");

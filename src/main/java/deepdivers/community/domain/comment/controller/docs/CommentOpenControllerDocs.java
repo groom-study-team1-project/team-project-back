@@ -1,9 +1,9 @@
 package deepdivers.community.domain.comment.controller.docs;
 
-import deepdivers.community.domain.common.API;
+import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.comment.dto.response.ContentResponse;
 import deepdivers.community.domain.comment.dto.response.GetCommentResponse;
-import deepdivers.community.global.exception.dto.response.ExceptionResponse;
+import deepdivers.community.domain.common.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

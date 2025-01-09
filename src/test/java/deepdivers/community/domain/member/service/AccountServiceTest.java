@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
-import deepdivers.community.domain.member.dto.code.AccountStatusType;
-import deepdivers.community.domain.member.exception.MemberExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
-import deepdivers.community.global.exception.model.NotFoundException;
+import deepdivers.community.domain.member.dto.code.AccountStatusCode;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.infra.mail.MailException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,7 @@ class AccountServiceTest extends IntegrationTest {
         NoContent result = accountService.verifyNickname(nickname);
 
         // then
-        NoContent expectedResult = NoContent.from(AccountStatusType.NICKNAME_VALIDATE_SUCCESS);
+        NoContent expectedResult = NoContent.from(AccountStatusCode.NICKNAME_VALIDATE_SUCCESS);
         assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
@@ -53,7 +53,7 @@ class AccountServiceTest extends IntegrationTest {
         NoContent result = accountService.emailAuthentication(request);
 
         // then
-        NoContent expectedResult = NoContent.from(AccountStatusType.SEND_VERIFY_CODE_SUCCESS);
+        NoContent expectedResult = NoContent.from(AccountStatusCode.SEND_VERIFY_CODE_SUCCESS);
         assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
@@ -71,7 +71,7 @@ class AccountServiceTest extends IntegrationTest {
         NoContent result = accountService.verifyEmail(request);
 
         // then
-        NoContent expectedResult = NoContent.from(AccountStatusType.VERIFY_EMAIL_SUCCESS);
+        NoContent expectedResult = NoContent.from(AccountStatusCode.VERIFY_EMAIL_SUCCESS);
         assertThat(result).usingRecursiveComparison().isEqualTo(expectedResult);
     }
 
@@ -121,7 +121,7 @@ class AccountServiceTest extends IntegrationTest {
         // when & then
         assertThatThrownBy(() -> accountService.passwordAuthentication(request))
             .isInstanceOf(NotFoundException.class)
-            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionType.NOT_FOUND_ACCOUNT);
+            .hasFieldOrPropertyWithValue("exceptionType", MemberExceptionCode.NOT_FOUND_ACCOUNT);
     }
 
 }

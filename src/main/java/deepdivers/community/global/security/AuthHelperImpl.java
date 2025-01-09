@@ -3,9 +3,9 @@ package deepdivers.community.global.security;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.utility.time.TimeProvider;
-import deepdivers.community.domain.token.exception.TokenExceptionType;
+import deepdivers.community.domain.token.exception.TokenExceptionCode;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -79,15 +79,15 @@ public class AuthHelperImpl implements AuthHelper {
                 .build()
                 .parseSignedClaims(token);
         } catch (final ExpiredJwtException e) {
-            throw new BadRequestException(TokenExceptionType.EXPIRED_TOKEN);
+            throw new BadRequestException(TokenExceptionCode.EXPIRED_TOKEN);
         } catch (final SignatureException e) {
-            throw new BadRequestException(TokenExceptionType.SIGNATURE_TOKEN);
+            throw new BadRequestException(TokenExceptionCode.SIGNATURE_TOKEN);
         }  catch (final UnsupportedJwtException e) {
-            throw new BadRequestException(TokenExceptionType.UNSUPPORTED_TOKEN);
+            throw new BadRequestException(TokenExceptionCode.UNSUPPORTED_TOKEN);
         } catch (final MalformedJwtException e) {
-            throw new BadRequestException(TokenExceptionType.MALFORMED_TOKEN);
+            throw new BadRequestException(TokenExceptionCode.MALFORMED_TOKEN);
         } catch (final Exception e) {
-            throw new BadRequestException(TokenExceptionType.UNKNOWN_TOKEN);
+            throw new BadRequestException(TokenExceptionCode.UNKNOWN_TOKEN);
         }
     }
 
@@ -96,7 +96,7 @@ public class AuthHelperImpl implements AuthHelper {
             return bearerAccessToken.split(BLANK)[1];
         }
 
-        throw new BadRequestException(TokenExceptionType.NOT_FOUND_TOKEN);
+        throw new BadRequestException(TokenExceptionCode.NOT_FOUND_TOKEN);
     }
 
 

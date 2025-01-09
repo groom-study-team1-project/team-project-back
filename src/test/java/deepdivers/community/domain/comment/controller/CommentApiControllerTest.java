@@ -8,14 +8,14 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
-import deepdivers.community.domain.common.NoContent;
+import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.comment.dto.request.EditCommentRequest;
 import deepdivers.community.domain.like.dto.LikeRequest;
 import deepdivers.community.domain.comment.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.comment.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.comment.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.comment.dto.code.CommentStatusType;
+import deepdivers.community.domain.comment.dto.code.CommentStatusCode;
 import deepdivers.community.domain.comment.service.CommentService;
 import deepdivers.community.domain.like.service.LikeService;
 import io.restassured.common.mapper.TypeRef;
@@ -44,7 +44,7 @@ class CommentApiControllerTest extends ControllerTest {
     void 댓글_작성_요청이_성공한다() {
         // given
         WriteCommentRequest request = new WriteCommentRequest(1L, "content");
-        NoContent mockResponse = NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
         given(commentService.writeComment(any(Member.class), any(WriteCommentRequest.class)))
             .willReturn(mockResponse);
 
@@ -100,7 +100,7 @@ class CommentApiControllerTest extends ControllerTest {
     void 답글_작성_요청이_성공한다() {
         // given
         WriteReplyRequest request = new WriteReplyRequest(1L, "content");
-        NoContent mockResponse = NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
         given(commentService.writeReply(any(Member.class), any(WriteReplyRequest.class)))
             .willReturn(mockResponse);
 
@@ -156,7 +156,7 @@ class CommentApiControllerTest extends ControllerTest {
     void 댓글_삭제_요청이_성공한다() {
         // given
         RemoveCommentRequest request = new RemoveCommentRequest(1L);
-        NoContent mockResponse = NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
         given(commentService.removeComment(any(Member.class), any(RemoveCommentRequest.class)))
             .willReturn(mockResponse);
 
@@ -195,7 +195,7 @@ class CommentApiControllerTest extends ControllerTest {
     void 댓글_수정_요청이_성공한다() {
         // given
         EditCommentRequest request = new EditCommentRequest(1L, "content");
-        NoContent mockResponse = NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
         given(commentService.updateComment(any(Member.class), any(EditCommentRequest.class)))
             .willReturn(mockResponse);
 
@@ -251,7 +251,7 @@ class CommentApiControllerTest extends ControllerTest {
     void 댓글_좋아요_요청이_성공한다() {
         // given
         LikeRequest request = new LikeRequest(1L);
-        NoContent mockResponse = NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
         given(likeService.likeComment(any(LikeRequest.class), anyLong())).willReturn(mockResponse);
 
         // when
@@ -289,7 +289,7 @@ class CommentApiControllerTest extends ControllerTest {
     void 댓글_좋아요_취소_요청이_성공한다() {
         // given
         LikeRequest request = new LikeRequest(1L);
-        NoContent mockResponse = NoContent.from(CommentStatusType.COMMENT_CREATE_SUCCESS);
+        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
         given(likeService.unlikeComment(any(LikeRequest.class), anyLong())).willReturn(mockResponse);
 
         // when

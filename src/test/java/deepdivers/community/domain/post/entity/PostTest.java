@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
-import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.global.exception.model.BadRequestException;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,7 +86,7 @@ class PostTest {
 		// when, then
 		assertThatThrownBy(() -> Post.of(request, category, member))
 				.isInstanceOf(BadRequestException.class)
-				.hasMessageContaining(PostExceptionType.VALUE_CANNOT_BE_NULL.getMessage());
+				.hasMessageContaining(PostExceptionCode.VALUE_CANNOT_BE_NULL.getMessage());
 	}
 
 	@Test
