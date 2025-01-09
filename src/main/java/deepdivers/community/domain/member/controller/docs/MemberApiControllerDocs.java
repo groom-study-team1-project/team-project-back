@@ -1,18 +1,15 @@
 package deepdivers.community.domain.member.controller.docs;
 
-import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.MemberProfileRequest;
 import deepdivers.community.domain.member.dto.request.UpdatePasswordRequest;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
+import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.global.exception.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "02. 회원 - 토큰", description = "토큰 정보가 필요한 회원 관련 API")

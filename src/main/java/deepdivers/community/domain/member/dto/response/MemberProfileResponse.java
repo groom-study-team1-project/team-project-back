@@ -1,6 +1,6 @@
 package deepdivers.community.domain.member.dto.response;
 
-import deepdivers.community.domain.member.model.vo.MemberRole;
+import deepdivers.community.domain.member.entity.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

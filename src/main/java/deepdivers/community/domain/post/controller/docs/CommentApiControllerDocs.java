@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.controller.docs;
 
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.EditCommentRequest;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;

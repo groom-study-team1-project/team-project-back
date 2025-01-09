@@ -7,7 +7,7 @@ import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
-import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
+import deepdivers.community.domain.member.dto.code.AccountStatusType;
 import deepdivers.community.domain.member.exception.MemberExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;

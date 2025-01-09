@@ -6,20 +6,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.post.model.vo.CategoryStatus;
-import deepdivers.community.domain.post.repository.CategoryRepository;
-import deepdivers.community.global.config.LocalStackTestConfig;
+import deepdivers.community.domain.post.entity.PostCategory;
+import deepdivers.community.domain.post.entity.CategoryStatus;
+import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 class CategoryServiceTest extends IntegrationTest {
 

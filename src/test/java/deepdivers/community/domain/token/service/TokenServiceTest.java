@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.token.dto.TokenResponse;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.security.AuthHelper;

@@ -1,19 +1,19 @@
 package deepdivers.community.domain;
 
 
-import deepdivers.community.domain.hashtag.model.Hashtag;
-import deepdivers.community.domain.hashtag.model.PostHashtag;
+import deepdivers.community.domain.hashtag.entity.Hashtag;
+import deepdivers.community.domain.hashtag.entity.PostHashtag;
 import deepdivers.community.domain.hashtag.repository.jpa.HashtagRepository;
 import deepdivers.community.domain.hashtag.repository.jpa.PostHashtagRepository;
 import deepdivers.community.domain.image.repository.entity.ImageType;
 import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.image.repository.jpa.JpaImageRepository;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.member.repository.MemberRepository;
-import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.comment.Comment;
-import deepdivers.community.domain.post.repository.CommentRepository;
-import deepdivers.community.domain.post.repository.PostRepository;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.member.repository.jpa.MemberRepository;
+import deepdivers.community.domain.post.entity.Post;
+import deepdivers.community.domain.post.entity.comment.Comment;
+import deepdivers.community.domain.post.repository.jpa.CommentRepository;
+import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import deepdivers.community.infra.aws.s3.properties.S3Properties;

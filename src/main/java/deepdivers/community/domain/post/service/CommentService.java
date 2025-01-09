@@ -1,19 +1,19 @@
 package deepdivers.community.domain.post.service;
 
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.EditCommentRequest;
 import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
+import deepdivers.community.domain.post.dto.code.CommentStatusType;
 import deepdivers.community.domain.post.exception.CommentExceptionType;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.model.Post;
-import deepdivers.community.domain.post.model.comment.Comment;
-import deepdivers.community.domain.post.model.vo.CommentStatus;
-import deepdivers.community.domain.post.repository.CommentRepository;
-import deepdivers.community.domain.post.repository.PostRepository;
+import deepdivers.community.domain.post.entity.Post;
+import deepdivers.community.domain.post.entity.comment.Comment;
+import deepdivers.community.domain.post.entity.comment.CommentStatus;
+import deepdivers.community.domain.post.repository.jpa.CommentRepository;
+import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.exception.model.NotFoundException;
 import lombok.RequiredArgsConstructor;

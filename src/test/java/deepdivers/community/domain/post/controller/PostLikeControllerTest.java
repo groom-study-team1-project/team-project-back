@@ -5,9 +5,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.post.controller.api.PostApiController;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
+import deepdivers.community.domain.post.dto.code.PostStatusType;
 import deepdivers.community.domain.post.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
 import deepdivers.community.global.security.resolver.AuthorizationResolver;

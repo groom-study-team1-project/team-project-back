@@ -1,9 +1,9 @@
 package deepdivers.community.domain.token.service;
 
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.member.model.Member;
-import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.domain.token.dto.TokenStatusType;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
+import deepdivers.community.domain.token.dto.code.TokenStatusType;
 import deepdivers.community.domain.token.exception.TokenExceptionType;
 import deepdivers.community.global.exception.model.BadRequestException;
 import deepdivers.community.global.security.AuthHelper;

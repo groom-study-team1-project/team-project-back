@@ -6,20 +6,15 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.NoContent;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
-import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
+import deepdivers.community.domain.post.dto.code.CommentStatusType;
+import deepdivers.community.domain.post.dto.code.PostStatusType;
 import deepdivers.community.domain.post.exception.LikeExceptionType;
-import deepdivers.community.domain.post.repository.LikeRepository;
-import deepdivers.community.global.config.LocalStackTestConfig;
+import deepdivers.community.domain.post.repository.jpa.LikeRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 
 class LikeServiceIntTest extends IntegrationTest {
 

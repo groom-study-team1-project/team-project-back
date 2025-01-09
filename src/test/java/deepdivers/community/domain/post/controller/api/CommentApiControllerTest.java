@@ -9,13 +9,14 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.post.controller.CommentApiController;
 import deepdivers.community.domain.post.dto.request.EditCommentRequest;
 import deepdivers.community.domain.post.dto.request.LikeRequest;
 import deepdivers.community.domain.post.dto.request.RemoveCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteCommentRequest;
 import deepdivers.community.domain.post.dto.request.WriteReplyRequest;
-import deepdivers.community.domain.post.dto.response.statustype.CommentStatusType;
+import deepdivers.community.domain.post.dto.code.CommentStatusType;
 import deepdivers.community.domain.post.service.CommentService;
 import deepdivers.community.domain.post.service.LikeService;
 import io.restassured.common.mapper.TypeRef;

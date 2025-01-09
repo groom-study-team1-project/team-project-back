@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.dto.request;
 
-import deepdivers.community.domain.post.model.vo.PostSortType;
+import deepdivers.community.domain.post.entity.PostSortType;
 
 public record GetPostsRequest(
     Long categoryId,

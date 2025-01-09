@@ -6,8 +6,8 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.token.dto.TokenResponse;
-import deepdivers.community.domain.token.dto.TokenStatusType;
+import deepdivers.community.domain.token.dto.response.TokenResponse;
+import deepdivers.community.domain.token.dto.code.TokenStatusType;
 import deepdivers.community.domain.token.service.TokenService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;

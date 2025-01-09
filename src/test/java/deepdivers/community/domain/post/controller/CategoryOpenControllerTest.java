@@ -5,9 +5,8 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
-import deepdivers.community.domain.post.controller.open.CategoryOpenController;
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
+import deepdivers.community.domain.post.dto.code.PostStatusType;
 import deepdivers.community.domain.post.service.CategoryService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;

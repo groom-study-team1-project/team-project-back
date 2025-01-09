@@ -6,7 +6,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
-import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.global.security.AuthHelper;
 import deepdivers.community.global.security.AuthPayload;

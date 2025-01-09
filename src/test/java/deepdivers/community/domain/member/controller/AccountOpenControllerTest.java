@@ -8,11 +8,10 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.NoContent;
-import deepdivers.community.domain.member.controller.open.AccountOpenController;
 import deepdivers.community.domain.member.dto.request.AuthenticateEmailRequest;
 import deepdivers.community.domain.member.dto.request.ResetPasswordRequest;
 import deepdivers.community.domain.member.dto.request.VerifyEmailRequest;
-import deepdivers.community.domain.member.dto.response.statustype.AccountStatusType;
+import deepdivers.community.domain.member.dto.code.AccountStatusType;
 import deepdivers.community.domain.member.service.AccountService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;

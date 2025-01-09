@@ -1,6 +1,6 @@
 package deepdivers.community.global.security.resolver;
 
-import deepdivers.community.domain.member.model.Member;
+import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.member.service.MemberService;
 import deepdivers.community.global.security.Auth;
 import deepdivers.community.global.security.AuthHelper;

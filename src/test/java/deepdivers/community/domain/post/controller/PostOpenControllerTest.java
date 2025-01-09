@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.controller;
 
-import static deepdivers.community.domain.post.dto.response.statustype.PostStatusType.POST_VIEW_SUCCESS;
+import static deepdivers.community.domain.post.dto.code.PostStatusType.POST_VIEW_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -12,13 +12,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.aspect.ViewCountAspect;
-import deepdivers.community.domain.post.controller.open.PostOpenController;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
-import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.domain.post.repository.PostRepository;
+import deepdivers.community.domain.post.dto.code.PostStatusType;
+import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
+import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import deepdivers.community.utils.PostDtoGenerator;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -30,10 +29,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @WebMvcTest(controllers = PostOpenController.class)
 @Import(ViewCountAspect.class)

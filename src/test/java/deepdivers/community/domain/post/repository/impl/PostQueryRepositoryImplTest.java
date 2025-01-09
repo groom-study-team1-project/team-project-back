@@ -3,32 +3,16 @@ package deepdivers.community.domain.post.repository.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.RepositoryTest;
-import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRepository;
-import deepdivers.community.domain.hashtag.repository.HashtagQueryRepositoryImpl;
-import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
-import deepdivers.community.domain.image.repository.ImageQueryRepositoryImpl;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.exception.PostExceptionType;
-import deepdivers.community.domain.post.model.vo.PostSortType;
-import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.global.config.JpaConfig;
-import deepdivers.community.global.config.LocalStackTestConfig;
-import deepdivers.community.global.config.QueryDslConfig;
+import deepdivers.community.domain.post.entity.PostSortType;
 import deepdivers.community.global.exception.model.NotFoundException;
-import jakarta.persistence.EntityManager;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 
 class PostQueryRepositoryImplTest extends RepositoryTest {
 

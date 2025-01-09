@@ -1,6 +1,6 @@
 package deepdivers.community.domain.member.dto.response;
 
-import deepdivers.community.domain.member.model.ActivityStats;
+import deepdivers.community.domain.member.entity.ActivityStats;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "사용자 활동 통계")

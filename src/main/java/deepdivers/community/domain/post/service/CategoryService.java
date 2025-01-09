@@ -2,8 +2,8 @@ package deepdivers.community.domain.post.service;
 
 import deepdivers.community.domain.post.dto.response.CategoryResponse;
 import deepdivers.community.domain.post.exception.CategoryExceptionType;
-import deepdivers.community.domain.post.model.PostCategory;
-import deepdivers.community.domain.post.repository.CategoryRepository;
+import deepdivers.community.domain.post.entity.PostCategory;
+import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
 import deepdivers.community.global.exception.model.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

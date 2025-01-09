@@ -1,14 +1,14 @@
 package deepdivers.community.domain;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRepository;
+import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
 import deepdivers.community.domain.hashtag.repository.HashtagQueryRepositoryImpl;
 import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
 import deepdivers.community.domain.image.repository.ImageQueryRepositoryImpl;
-import deepdivers.community.domain.member.repository.MemberQueryRepository;
-import deepdivers.community.domain.member.repository.impl.MemberQueryRepositoryImpl;
-import deepdivers.community.domain.post.repository.PostQueryRepository;
-import deepdivers.community.domain.post.repository.impl.PostQueryRepositoryImpl;
+import deepdivers.community.domain.member.controller.interfaces.MemberQueryRepository;
+import deepdivers.community.domain.member.repository.MemberQueryRepositoryImpl;
+import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
+import deepdivers.community.domain.post.repository.PostQueryRepositoryImpl;
 import deepdivers.community.global.config.JpaConfig;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.config.QueryDslConfig;

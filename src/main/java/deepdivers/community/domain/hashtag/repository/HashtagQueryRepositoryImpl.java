@@ -1,14 +1,11 @@
 package deepdivers.community.domain.hashtag.repository;
 
-import static deepdivers.community.domain.hashtag.model.QHashtag.hashtag1;
-import static deepdivers.community.domain.hashtag.model.QPostHashtag.postHashtag;
-import static deepdivers.community.domain.post.model.QPost.post;
+import static deepdivers.community.domain.hashtag.entity.QHashtag.hashtag1;
+import static deepdivers.community.domain.hashtag.entity.QPostHashtag.postHashtag;
 
-import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import deepdivers.community.domain.hashtag.application.interfaces.HashtagQueryRepository;
+import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
