@@ -2,6 +2,7 @@ package deepdivers.community.domain.post.controller;
 
 import static deepdivers.community.domain.post.dto.response.statustype.PostStatusType.POST_VIEW_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
@@ -12,6 +13,7 @@ import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.API;
 import deepdivers.community.domain.post.aspect.ViewCountAspect;
 import deepdivers.community.domain.post.controller.open.PostOpenController;
+import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.dto.response.statustype.PostStatusType;
@@ -68,7 +70,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 전체_게시글을_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(isNull(), anyLong(), anyLong())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), any(GetPostsRequest.class))).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -90,7 +92,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 조회_조건이_없어도_조회를_할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(isNull(), isNull(), isNull())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), any(GetPostsRequest.class))).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -110,7 +112,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 조회_조건이_카테고리_ID만_존재할_경우_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(isNull(), isNull(), anyLong())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), any(GetPostsRequest.class))).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -131,7 +133,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 조회_조건이_마지막_게시글_정보만_있을_경우에도_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(isNull(), anyLong(), isNull())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(isNull(), any(GetPostsRequest.class))).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
@@ -152,7 +154,7 @@ class PostOpenControllerTest extends ControllerTest {
 	void 내가_쓴_게시글_목록에_대해_조회할_수_있다() {
 		// given
 		List<PostPreviewResponse> mockQueryResult = List.of(PostDtoGenerator.generatePostPreview());
-		given(postQueryRepository.findAllPosts(anyLong(), isNull(), isNull())).willReturn(mockQueryResult);
+		given(postQueryRepository.findAllPosts(anyLong(), any(GetPostsRequest.class))).willReturn(mockQueryResult);
 
 		// when
 		API<List<PostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
