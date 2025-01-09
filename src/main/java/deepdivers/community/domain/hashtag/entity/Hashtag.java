@@ -26,6 +26,8 @@ import lombok.NoArgsConstructor;
 )
 public class Hashtag {
 
+	private static final String HASHTAG_REG_EXP = "^[\\p{L}\\p{N}]{1,10}$";
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -33,7 +35,7 @@ public class Hashtag {
 	@Column(nullable = false, length = 50)
 	private String hashtag;
 
-	public Hashtag(final String hashtag) {
+	protected Hashtag(final String hashtag) {
 		validate(hashtag);
 		this.hashtag = hashtag;
 	}
@@ -48,7 +50,7 @@ public class Hashtag {
 	}
 
 	private static void validateHashTagFormat(String hashtag) {
-		if (!hashtag.matches("^[\\p{L}\\p{N}]{1,10}$")) {
+		if (!hashtag.matches(HASHTAG_REG_EXP)) {
 			throw new BadRequestException(HashtagExceptionCode.INVALID_HASHTAG_FORMAT);
 		}
 	}

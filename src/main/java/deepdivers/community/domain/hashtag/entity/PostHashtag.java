@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@EqualsAndHashCode(callSuper = false, of = {"post", "hashtag"}) // 중복 방지를 위해 equals와 hashCode 수정
+@EqualsAndHashCode(callSuper = false, of = {"post", "hashtag"})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	indexes = {
@@ -41,18 +41,13 @@ public class PostHashtag extends TimeBaseEntity {
 	@JoinColumn(name = "hashtag_id")
 	private Hashtag hashtag;
 
-	@Builder
-	public PostHashtag(final Post post, final Hashtag hashtag) {
+	protected PostHashtag(final Post post, final Hashtag hashtag) {
 		this.post = post;
 		this.hashtag = hashtag;
 	}
 
 	public static PostHashtag of(final Post post, final Hashtag hashtag) {
 		return new PostHashtag(post, hashtag);
-	}
-
-	public String getHashtagName() {
-		return hashtag.getHashtag();
 	}
 
 }

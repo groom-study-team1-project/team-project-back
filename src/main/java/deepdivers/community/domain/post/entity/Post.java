@@ -58,8 +58,7 @@ public class Post extends TimeBaseEntity {
     @Column(nullable = false)
     private PostStatus status;
 
-    @Builder
-    public Post(final PostSaveRequest request, final PostCategory category, final Member member) {
+    protected Post(final PostSaveRequest request, final PostCategory category, final Member member) {
         this.title = PostTitle.of(request.title());
         this.content = PostContent.of(request.content());
         this.thumbnail = request.thumbnailImageUrl();
