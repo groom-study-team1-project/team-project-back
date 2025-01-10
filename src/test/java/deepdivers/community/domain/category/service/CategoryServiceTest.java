@@ -1,13 +1,14 @@
-package deepdivers.community.domain.post.service;
+package deepdivers.community.domain.category.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.exception.CategoryExceptionCode;
-import deepdivers.community.domain.post.entity.PostCategory;
-import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
+import deepdivers.community.domain.category.CategoryExceptionCode;
+import deepdivers.community.domain.category.CategoryRepository;
+import deepdivers.community.domain.category.CategoryService;
+import deepdivers.community.domain.category.dto.CategoryResponse;
+import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.common.exception.BadRequestException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;

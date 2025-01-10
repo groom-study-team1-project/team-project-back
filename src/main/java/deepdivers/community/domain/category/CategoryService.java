@@ -1,9 +1,7 @@
-package deepdivers.community.domain.post.service;
+package deepdivers.community.domain.category;
 
-import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.exception.CategoryExceptionCode;
-import deepdivers.community.domain.post.entity.PostCategory;
-import deepdivers.community.domain.post.repository.jpa.CategoryRepository;
+import deepdivers.community.domain.category.dto.CategoryResponse;
+import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

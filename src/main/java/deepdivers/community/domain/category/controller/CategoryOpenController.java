@@ -1,10 +1,10 @@
-package deepdivers.community.domain.post.controller;
+package deepdivers.community.domain.category.controller;
 
-import deepdivers.community.domain.post.controller.docs.CategoryOpenControllerDocs;
-import deepdivers.community.domain.post.dto.response.CategoryResponse;
-import deepdivers.community.domain.post.service.CategoryService;
+import deepdivers.community.domain.category.controller.docs.CategoryOpenControllerDocs;
+import deepdivers.community.domain.category.dto.CategoryResponse;
+import deepdivers.community.domain.category.CategoryService;
 import deepdivers.community.domain.common.dto.response.API;
-import deepdivers.community.domain.post.dto.code.CategoryStatusCode; // 상태 타입 임포트
+import deepdivers.community.domain.category.dto.CategoryStatusCode; // 상태 타입 임포트
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

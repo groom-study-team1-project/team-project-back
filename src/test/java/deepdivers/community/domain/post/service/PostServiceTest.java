@@ -9,7 +9,7 @@ import deepdivers.community.domain.image.repository.entity.Image;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
-import deepdivers.community.domain.post.exception.CategoryExceptionCode;
+import deepdivers.community.domain.category.CategoryExceptionCode;
 import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.entity.Post;
 import deepdivers.community.domain.post.entity.PostStatus;

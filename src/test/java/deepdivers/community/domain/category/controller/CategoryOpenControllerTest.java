@@ -1,13 +1,13 @@
-package deepdivers.community.domain.post.controller;
+package deepdivers.community.domain.category.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
+import deepdivers.community.domain.category.CategoryService;
 import deepdivers.community.domain.common.dto.response.API;
-import deepdivers.community.domain.post.dto.response.CategoryResponse;
+import deepdivers.community.domain.category.dto.CategoryResponse;
 import deepdivers.community.domain.post.dto.code.PostStatusCode;
-import deepdivers.community.domain.post.service.CategoryService;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.Arrays;
