@@ -1,6 +1,7 @@
 package deepdivers.community.domain.category.controller.docs;
 
 import deepdivers.community.domain.category.dto.response.CategoryResponse;
+import deepdivers.community.domain.category.dto.response.MemberPostCountByCategoryResponse;
 import deepdivers.community.domain.common.dto.response.API;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,4 +24,7 @@ public interface CategoryOpenControllerDocs {
 		@ApiResponse(responseCode = "500", description = "서버 내부 오류가 발생했습니다.", content = @Content)
 	})
 	ResponseEntity<API<List<CategoryResponse>>> getAllCategories();
+
+	ResponseEntity<API<List<MemberPostCountByCategoryResponse>>> getMemberPostCountByCategory(Long memberId);
+
 }

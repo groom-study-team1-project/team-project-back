@@ -2,12 +2,14 @@ package deepdivers.community.domain.category.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.category.controller.interfaces.CategoryQueryRepository;
 import deepdivers.community.domain.category.dto.code.CategoryStatusCode;
 import deepdivers.community.domain.category.dto.response.CategoryResponse;
+import deepdivers.community.domain.category.dto.response.MemberPostCountByCategoryResponse;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import io.restassured.common.mapper.TypeRef;
@@ -47,4 +49,29 @@ class CategoryOpenControllerTest extends ControllerTest {
 		API<List<CategoryResponse>> mockResponse = API.of(CategoryStatusCode.CATEGORY_VIEW_SUCCESS, mockCategoryResponses);
 		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
 	}
+
+	@Test
+	void 카테고리별_게시글_조회_요청이_된다() {
+		// given
+		List<MemberPostCountByCategoryResponse> mockCategoryResponses
+			= List.of(new MemberPostCountByCategoryResponse(1L, "title", 1L));
+		given(categoryQueryRepository.countMemberPostsByCategory(anyLong())).willReturn(mockCategoryResponses);
+
+		// when
+		API<List<MemberPostCountByCategoryResponse>> response = RestAssuredMockMvc
+			.given().log().all()
+			.contentType(MediaType.APPLICATION_JSON)
+			.pathParam("memberId", 1L)
+			.when().get("/open/categories/members/{memberId}/posts/count")
+			.then().log().all()
+			.status(HttpStatus.OK)
+			.extract()
+			.as(new TypeRef<>() {});
+
+		// then
+		API<List<MemberPostCountByCategoryResponse>> mockResponse =
+			API.of(CategoryStatusCode.POST_COUNT_BY_CATEGORY_VIEW_SUCCESS, mockCategoryResponses);
+		assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
+	}
+
 }
