@@ -1,6 +1,6 @@
 package deepdivers.community.domain.category.controller.docs;
 
-import deepdivers.community.domain.category.dto.CategoryResponse;
+import deepdivers.community.domain.category.dto.response.CategoryResponse;
 import deepdivers.community.domain.common.dto.response.API;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

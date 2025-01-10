@@ -1,4 +1,4 @@
-package deepdivers.community.domain.category;
+package deepdivers.community.domain.category.exception;
 
 import deepdivers.community.domain.common.dto.code.ExceptionCode;
 import lombok.AllArgsConstructor;

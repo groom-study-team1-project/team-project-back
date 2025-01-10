@@ -1,6 +1,6 @@
 package deepdivers.community.domain.post.service;
 
-import deepdivers.community.domain.category.CategoryService;
+import deepdivers.community.domain.category.service.CategoryService;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.hashtag.service.HashtagService;

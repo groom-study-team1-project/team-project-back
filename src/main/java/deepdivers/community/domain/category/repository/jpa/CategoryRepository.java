@@ -1,4 +1,4 @@
-package deepdivers.community.domain.category;
+package deepdivers.community.domain.category.repository.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

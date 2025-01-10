@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.category.CategoryExceptionCode;
-import deepdivers.community.domain.category.CategoryRepository;
-import deepdivers.community.domain.category.CategoryService;
-import deepdivers.community.domain.category.dto.CategoryResponse;
+import deepdivers.community.domain.category.exception.CategoryExceptionCode;
+import deepdivers.community.domain.category.repository.jpa.CategoryRepository;
+import deepdivers.community.domain.category.dto.response.CategoryResponse;
 import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,12 +47,12 @@ class CategoryServiceTest extends IntegrationTest {
 		assertThat(responses).hasSize(6);
 
 		CategoryResponse response1 = responses.get(4);
-		assertThat(response1.title()).isEqualTo(category1.getTitle());
-		assertThat(response1.description()).isEqualTo(category1.getDescription());
+		assertThat(response1.getTitle()).isEqualTo(category1.getTitle());
+		assertThat(response1.getDescription()).isEqualTo(category1.getDescription());
 
 		CategoryResponse response2 = responses.get(5);
-		assertThat(response2.title()).isEqualTo(category2.getTitle());
-		assertThat(response2.description()).isEqualTo(category2.getDescription());
+		assertThat(response2.getTitle()).isEqualTo(category2.getTitle());
+		assertThat(response2.getDescription()).isEqualTo(category2.getDescription());
 	}
 
 	@Test
@@ -76,7 +76,7 @@ class CategoryServiceTest extends IntegrationTest {
 
 		// When & Then
 		assertThatThrownBy(() -> categoryService.getCategoryById(invalidCategoryId))
-				.isInstanceOf(BadRequestException.class)
+				.isInstanceOf(NotFoundException.class)
 				.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionCode.CATEGORY_NOT_FOUND);
 	}
 

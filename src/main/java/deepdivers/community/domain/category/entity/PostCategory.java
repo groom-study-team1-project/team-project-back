@@ -17,13 +17,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
-    name = "category",
+    name = "deepdive_commnuity_post_category",
     uniqueConstraints = @UniqueConstraint(columnNames = "title")
 )
 public class PostCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
     private Long id;
 
     @Column(nullable = false, length = 50)

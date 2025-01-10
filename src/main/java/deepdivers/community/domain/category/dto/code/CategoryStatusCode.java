@@ -1,4 +1,4 @@
-package deepdivers.community.domain.category.dto;
+package deepdivers.community.domain.category.dto.code;
 
 import deepdivers.community.domain.common.dto.code.StatusCode;
 import lombok.AllArgsConstructor;
