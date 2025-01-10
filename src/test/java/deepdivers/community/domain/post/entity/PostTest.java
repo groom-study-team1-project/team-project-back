@@ -6,21 +6,17 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.exception.PostExceptionCode;
-import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 class PostTest {
 
@@ -35,7 +31,7 @@ class PostTest {
 			new MemberSignUpRequest("test@email.com", "test1234!", "test", "test", "010-1234-5678"),
 			passwordEncryptor
 		);
-		postCategory = new PostCategory();
+		postCategory = PostCategory.createCategory("", "");
 	}
 
 	@Test
@@ -78,7 +74,7 @@ class PostTest {
 		Post post = Post.of(request, postCategory, member);
 
 		PostSaveRequest updateReq = new PostSaveRequest("newTitle", "newContent", "newUrl", 2L, List.of(), List.of(""));
-		PostCategory newPostCategory = new PostCategory();
+		PostCategory newPostCategory = PostCategory.createCategory("new", "new");
 
 		// when
 		post = post.updatePost(updateReq, newPostCategory);
@@ -86,7 +82,7 @@ class PostTest {
 		// then
 		assertThat(post.getTitle().getTitle()).isEqualTo("newTitle");
 		assertThat(post.getContent().getContent()).isEqualTo("newContent");
-		assertThat(post.getCategory()).isEqualTo(postCategory);
+		assertThat(post.getCategory()).isEqualTo(newPostCategory);
 		assertThat(post.getMember()).isEqualTo(member);
 	}
 

@@ -1,7 +1,7 @@
 package deepdivers.community.domain.post.entity;
 
+import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.common.entity.TimeBaseEntity;
-import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;

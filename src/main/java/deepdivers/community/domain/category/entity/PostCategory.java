@@ -1,9 +1,7 @@
-package deepdivers.community.domain.post.entity;
+package deepdivers.community.domain.category.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,13 +17,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
-    name = "category",
+    name = "deepdive_commnuity_post_category",
     uniqueConstraints = @UniqueConstraint(columnNames = "title")
 )
 public class PostCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "category_id")
     private Long id;
 
     @Column(nullable = false, length = 50)

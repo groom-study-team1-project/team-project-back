@@ -1,6 +1,8 @@
 package deepdivers.community.domain;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import deepdivers.community.domain.category.controller.interfaces.CategoryQueryRepository;
+import deepdivers.community.domain.category.repository.CategoryQueryRepositoryImpl;
 import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
 import deepdivers.community.domain.hashtag.repository.HashtagQueryRepositoryImpl;
 import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
@@ -28,6 +30,7 @@ import org.springframework.test.annotation.DirtiesContext;
     PostQueryRepositoryImpl.class,
     MemberQueryRepositoryImpl.class,
     ImageQueryRepositoryImpl.class,
+    CategoryQueryRepositoryImpl.class,
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext
@@ -38,5 +41,6 @@ public class RepositoryTest {
     @Autowired protected ImageQueryRepository imageQueryRepository;
     @Autowired protected PostQueryRepository postQueryRepository;
     @Autowired protected MemberQueryRepository memberQueryRepository;
+    @Autowired protected CategoryQueryRepository categoryQueryRepository;
 
 }

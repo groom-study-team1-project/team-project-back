@@ -1,5 +1,6 @@
 package deepdivers.community.domain.post.service;
 
+import deepdivers.community.domain.category.service.CategoryService;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.hashtag.service.HashtagService;
@@ -10,7 +11,7 @@ import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.entity.Post;
-import deepdivers.community.domain.post.entity.PostCategory;
+import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.post.entity.PostStatus;
 import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import deepdivers.community.domain.common.exception.BadRequestException;
