@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostApiController implements PostApiControllerDocs {
 
 	private final PostService postService;
-	private final LikeService likeService;
 
 	@Override
 	@PostMapping("/upload")
@@ -58,28 +57,6 @@ public class PostApiController implements PostApiControllerDocs {
 	) {
 		final NoContent response = postService.deletePost(postId, member);
 		return ResponseEntity.ok(response);
-	}
-
-	@PostMapping("/like")
-	public ResponseEntity<NoContent> likePost(
-			@Auth final Member member,
-			@RequestBody final LikeRequest request
-	) {
-		final NoContent response = likeService.likePost(request, member.getId());
-		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(response);
-	}
-
-	@PostMapping("/unlike")
-	public ResponseEntity<NoContent> unlikePost(
-			@Auth final Member member,
-			@RequestBody final LikeRequest request
-	) {
-		final NoContent response = likeService.unlikePost(request, member.getId());
-		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(response);
 	}
 
 }

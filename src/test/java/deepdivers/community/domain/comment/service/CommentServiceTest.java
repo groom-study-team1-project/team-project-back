@@ -1,10 +1,9 @@
-package deepdivers.community.domain.post.service;
+package deepdivers.community.domain.comment.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.comment.service.CommentService;
 import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.comment.dto.request.EditCommentRequest;

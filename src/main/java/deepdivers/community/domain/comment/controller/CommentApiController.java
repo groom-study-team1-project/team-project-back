@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentApiController implements CommentApiControllerDocs {
 
     private final CommentService commentService;
-    private final LikeService likeService;
 
     @PostMapping("/write")
     public ResponseEntity<NoContent> writeCommentOnPosts(
@@ -61,24 +60,6 @@ public class CommentApiController implements CommentApiControllerDocs {
         @RequestBody @Valid final EditCommentRequest request
     ) {
         final NoContent response = commentService.updateComment(member, request);
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/like")
-    public ResponseEntity<NoContent> likeComment(
-        @Auth final Member member,
-        @Valid @RequestBody final LikeRequest request
-    ) {
-        final NoContent response = likeService.likeComment(request, member.getId());
-        return ResponseEntity.ok(response);
-    }
-
-    @PostMapping("/unlike")
-    public ResponseEntity<NoContent> unlikeComment(
-        @Auth final Member member,
-        @Valid @RequestBody final LikeRequest request
-    ) {
-        final NoContent response = likeService.unlikeComment(request, member.getId());
         return ResponseEntity.ok(response);
     }
 

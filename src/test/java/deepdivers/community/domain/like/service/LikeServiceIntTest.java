@@ -1,4 +1,4 @@
-package deepdivers.community.domain.post.service;
+package deepdivers.community.domain.like.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -7,7 +7,6 @@ import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.like.dto.LikeRequest;
 import deepdivers.community.domain.like.dto.code.LikeStatusCode;
-import deepdivers.community.domain.like.service.LikeService;
 import deepdivers.community.domain.like.exception.LikeExceptionCode;
 import deepdivers.community.domain.like.repository.LikeRepository;
 import deepdivers.community.domain.common.exception.BadRequestException;
@@ -20,9 +19,6 @@ class LikeServiceIntTest extends IntegrationTest {
 
     @Autowired
     private LikeService likeService;
-
-    @Autowired
-    private LikeRepository likeRepository;
 
     private Long memberId;
     private Long postId;
