@@ -1,8 +1,8 @@
-package deepdivers.community.domain.image.application;
+package deepdivers.community.domain.file.application;
 
-import deepdivers.community.domain.image.repository.entity.ImageType;
-import deepdivers.community.domain.image.repository.jpa.JpaImageRepository;
-import deepdivers.community.domain.image.repository.entity.Image;
+import deepdivers.community.domain.file.repository.entity.File;
+import deepdivers.community.domain.file.repository.entity.FileType;
+import deepdivers.community.domain.file.repository.jpa.JpaFileRepository;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import deepdivers.community.infra.aws.s3.S3TagManager;
 import java.util.List;
@@ -13,29 +13,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ImageService {
+public class FileService {
 
-    private final JpaImageRepository imageRepository;
+    private final JpaFileRepository imageRepository;
     private final S3PresignManager s3PresignManager;
     private final S3TagManager s3TagManager;
 
     public void createPostContentImage(final List<String> imageKeys, final Long postId) {
-        final List<Image> postImages = imageKeys.stream()
+        final List<File> postFiles = imageKeys.stream()
             .map(imageKey -> {
                 s3TagManager.removeDeleteTag(imageKey);
                 final String imageUrl = s3PresignManager.generateAccessUrl(imageKey);
-                return Image.createPostContentImage(imageKey, imageUrl, postId);
+                return File.createPostContentImage(imageKey, imageUrl, postId);
             })
             .toList();
 
-        imageRepository.saveAll(postImages);
+        imageRepository.saveAll(postFiles);
     }
 
     public void updatePostContentImage(final List<String> newImageKeys, final Long postId) {
-        imageRepository.findAllByReferenceIdAndImageType(postId, ImageType.POST_CONTENT)
-            .forEach(image -> s3TagManager.markAsDeleted(image.getImageKey()));
+        imageRepository.findAllByReferenceIdAndFileType(postId, FileType.POST_CONTENT)
+            .forEach(image -> s3TagManager.markAsDeleted(image.getFileKey()));
 
-        imageRepository.deleteAllByReferenceIdAndImageType(postId, ImageType.POST_CONTENT);
+        imageRepository.deleteAllByReferenceIdAndFileType(postId, FileType.POST_CONTENT);
         createPostContentImage(newImageKeys, postId);
     }
 

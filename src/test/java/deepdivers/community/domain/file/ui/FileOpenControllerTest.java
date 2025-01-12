@@ -1,4 +1,4 @@
-package deepdivers.community.domain.image.ui;
+package deepdivers.community.domain.file.ui;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -9,9 +9,9 @@ import static org.mockito.BDDMockito.given;
 
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.dto.response.API;
-import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
-import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
-import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusCode;
+import deepdivers.community.domain.file.application.dto.request.GetPresignRequest;
+import deepdivers.community.domain.file.application.dto.response.GetPresignResponse;
+import deepdivers.community.domain.file.application.dto.response.statustype.FileStatusCode;
 import deepdivers.community.infra.aws.s3.KeyType;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import io.restassured.common.mapper.TypeRef;
@@ -25,8 +25,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
-@WebMvcTest(controllers = UploaderOpenController.class)
-class UploaderOpenControllerTest extends ControllerTest {
+@WebMvcTest(controllers = FileOpenController.class)
+class FileOpenControllerTest extends ControllerTest {
 
     @MockBean private S3PresignManager s3PresignManager;
 
@@ -35,7 +35,7 @@ class UploaderOpenControllerTest extends ControllerTest {
     void givenMockingWhenRequestThenReturnResponseEqualToMockResponse() {
         // given
         GetPresignResponse presignResponse = new GetPresignResponse("key", "presign", "access");
-        API<GetPresignResponse> mockResponse = API.of(UploaderStatusCode.GENERATE_PRESIGN_SUCCESS, presignResponse);
+        API<GetPresignResponse> mockResponse = API.of(FileStatusCode.GENERATE_PRESIGN_SUCCESS, presignResponse);
         given(s3PresignManager.generateKey(anyString(), any(KeyType.class))).willReturn("key");
         given(s3PresignManager.generatePreSignedUrl(anyString(), anyString())).willReturn("presign");
         given(s3PresignManager.generateAccessUrl(anyString())).willReturn("access");
@@ -44,7 +44,7 @@ class UploaderOpenControllerTest extends ControllerTest {
         API<GetPresignResponse> response = RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .body(new GetPresignRequest("contentType", KeyType.POST))
-            .when().post("/open/uploader/presigned-url-generation")
+            .when().post("/open/file/presigned-url-generation")
             .then().log().all()
             .status(HttpStatus.OK)
             .extract()
@@ -65,7 +65,7 @@ class UploaderOpenControllerTest extends ControllerTest {
         RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .body(new GetPresignRequest(contentType, KeyType.POST))
-            .when().post("/open/uploader/presigned-url-generation")
+            .when().post("/open/file/presigned-url-generation")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
@@ -80,7 +80,7 @@ class UploaderOpenControllerTest extends ControllerTest {
         RestAssuredMockMvc.given().log().all()
             .contentType(ContentType.JSON)
             .body(new GetPresignRequest("contentType", null))
-            .when().post("/open/uploader/presigned-url-generation")
+            .when().post("/open/file/presigned-url-generation")
             .then().log().all()
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))

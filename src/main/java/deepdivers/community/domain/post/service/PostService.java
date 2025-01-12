@@ -4,7 +4,7 @@ import deepdivers.community.domain.category.service.CategoryService;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.hashtag.service.HashtagService;
-import deepdivers.community.domain.image.application.ImageService;
+import deepdivers.community.domain.file.application.FileService;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
@@ -29,7 +29,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final CategoryService categoryService;
     private final HashtagService hashtagService;
-    private final ImageService imageService;
+    private final FileService fileService;
 
     public API<PostSaveResponse> createPost(final PostSaveRequest request, final Member member) {
         final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
@@ -37,7 +37,7 @@ public class PostService {
 
         final Post savedPost = postRepository.save(post);
         hashtagService.createPostHashtags(post, request.hashtags());
-        imageService.createPostContentImage(request.imageKeys(), savedPost.getId());
+        fileService.createPostContentImage(request.imageKeys(), savedPost.getId());
 
         return API.of(PostStatusCode.POST_CREATE_SUCCESS, PostSaveResponse.from(savedPost));
     }
@@ -49,7 +49,7 @@ public class PostService {
 
         final Post updatedPost = post.updatePost(request, postCategory);
         hashtagService.updatePostHashtags(updatedPost, request.hashtags());
-        imageService.updatePostContentImage(request.imageKeys(), updatedPost.getId());
+        fileService.updatePostContentImage(request.imageKeys(), updatedPost.getId());
 
         return API.of(PostStatusCode.POST_UPDATE_SUCCESS, PostSaveResponse.from(updatedPost));
     }

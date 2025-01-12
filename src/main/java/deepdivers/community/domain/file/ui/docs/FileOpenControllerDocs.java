@@ -1,8 +1,8 @@
-package deepdivers.community.domain.image.ui.docs;
+package deepdivers.community.domain.file.ui.docs;
 
 import deepdivers.community.domain.common.dto.response.API;
-import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
-import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
+import deepdivers.community.domain.file.application.dto.request.GetPresignRequest;
+import deepdivers.community.domain.file.application.dto.response.GetPresignResponse;
 import deepdivers.community.domain.common.dto.response.ExceptionResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
 @Tag(name = "10. 업로더", description = "업로더 관련 API")
-public interface UploaderOpenControllerDocs {
+public interface FileOpenControllerDocs {
 
     @Operation(summary = "서명된 S3 업로드 URL 생성", description = "S3 업로드를 위한 URL을 생성합니다.")
     @ApiResponse(responseCode = "4000", description = "서명된 URL을 성공적으로 생성했습니다.")

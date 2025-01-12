@@ -1,10 +1,10 @@
-package deepdivers.community.domain.image.ui;
+package deepdivers.community.domain.file.ui;
 
 import deepdivers.community.domain.common.dto.response.API;
-import deepdivers.community.domain.image.application.dto.request.GetPresignRequest;
-import deepdivers.community.domain.image.application.dto.response.GetPresignResponse;
-import deepdivers.community.domain.image.application.dto.response.statustype.UploaderStatusCode;
-import deepdivers.community.domain.image.ui.docs.UploaderOpenControllerDocs;
+import deepdivers.community.domain.file.application.dto.request.GetPresignRequest;
+import deepdivers.community.domain.file.application.dto.response.GetPresignResponse;
+import deepdivers.community.domain.file.application.dto.response.statustype.FileStatusCode;
+import deepdivers.community.domain.file.ui.docs.FileOpenControllerDocs;
 import deepdivers.community.infra.aws.s3.S3PresignManager;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/open/uploader")
-public class UploaderOpenController implements UploaderOpenControllerDocs {
+@RequestMapping("/open/file")
+public class FileOpenController implements FileOpenControllerDocs {
 
     private final S3PresignManager s3PresignManager;
 
@@ -31,7 +31,7 @@ public class UploaderOpenController implements UploaderOpenControllerDocs {
         final String accessUrl = s3PresignManager.generateAccessUrl(key);
 
         return ResponseEntity.ok(API.of(
-            UploaderStatusCode.GENERATE_PRESIGN_SUCCESS,
+            FileStatusCode.GENERATE_PRESIGN_SUCCESS,
             GetPresignResponse.of(key, presignedUrl, accessUrl)
         ));
     }

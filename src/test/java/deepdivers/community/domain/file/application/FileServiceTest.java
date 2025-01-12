@@ -1,17 +1,18 @@
-package deepdivers.community.domain.image.application;
+package deepdivers.community.domain.file.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import deepdivers.community.domain.IntegrationTest;
-import deepdivers.community.domain.image.repository.entity.Image;
+import deepdivers.community.domain.file.repository.entity.File;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class ImageServiceTest extends IntegrationTest {
+class FileServiceTest extends IntegrationTest {
 
-    @Autowired ImageService imageService;
+    @Autowired
+    FileService fileService;
 
     @BeforeEach
     void setUp() {
@@ -27,10 +28,10 @@ class ImageServiceTest extends IntegrationTest {
         Long postId = 2L;
 
         // when
-        imageService.createPostContentImage(imageKeys, postId);
+        fileService.createPostContentImage(imageKeys, postId);
 
         // then
-        List<String> savedImageKeys = getPostContentImages(postId).stream().map(Image::getImageKey).toList();
+        List<String> savedImageKeys = getPostContentImages(postId).stream().map(File::getFileKey).toList();
         assertThat(savedImageKeys).isEqualTo(imageKeys);
     }
 
@@ -41,11 +42,11 @@ class ImageServiceTest extends IntegrationTest {
         Long postId = 2L;
 
         // when
-        imageService.createPostContentImage(imageKeys, postId);
+        fileService.createPostContentImage(imageKeys, postId);
 
         // then
         List<String> accessUrls = imageKeys.stream().map(this::generateAccessUrl).toList();
-        List<String> savedImageUrls = getPostContentImages(postId).stream().map(Image::getImageUrl).toList();
+        List<String> savedImageUrls = getPostContentImages(postId).stream().map(File::getFileUrl).toList();
         assertThat(savedImageUrls).isEqualTo(accessUrls);
     }
 
@@ -56,7 +57,7 @@ class ImageServiceTest extends IntegrationTest {
         Long postId = 1L;
 
         // when
-        imageService.createPostContentImage(imageKeys, postId);
+        fileService.createPostContentImage(imageKeys, postId);
 
         // then
         assertThat(getTag(imageKeys.getFirst())).isEmpty();
@@ -68,15 +69,15 @@ class ImageServiceTest extends IntegrationTest {
         // given
         List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
         Long postId = 2L;
-        imageService.createPostContentImage(imageKeys, postId);
+        fileService.createPostContentImage(imageKeys, postId);
 
         List<String> newImageKeys = List.of("posts/content1.png", "posts/content3.png");
 
         // when
-        imageService.updatePostContentImage(newImageKeys, postId);
+        fileService.updatePostContentImage(newImageKeys, postId);
 
         // then
-        List<String> savedImageKeys = getPostContentImages(postId).stream().map(Image::getImageKey).toList();
+        List<String> savedImageKeys = getPostContentImages(postId).stream().map(File::getFileKey).toList();
         assertThat(savedImageKeys).isEqualTo(newImageKeys);
     }
 
@@ -85,12 +86,12 @@ class ImageServiceTest extends IntegrationTest {
         // given
         List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
         Long postId = 2L;
-        imageService.createPostContentImage(imageKeys, postId);
+        fileService.createPostContentImage(imageKeys, postId);
 
         List<String> newImageKeys = List.of("posts/content1.png", "posts/content3.png");
 
         // when
-        imageService.updatePostContentImage(newImageKeys, postId);
+        fileService.updatePostContentImage(newImageKeys, postId);
 
         // then
         assertThat(getTag("posts/content2.png").getFirst().key()).isEqualTo("Status");

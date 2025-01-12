@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.exception.NotFoundException;
-import deepdivers.community.domain.image.repository.entity.Image;
+import deepdivers.community.domain.file.repository.entity.File;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
@@ -192,8 +192,8 @@ class PostServiceTest extends IntegrationTest {
         postService.updatePost(1L, request, member);
 
         // Then
-        List<Image> postContentImages = getPostContentImages(1L);
-        List<String> imageKeys = postContentImages.stream().map(Image::getImageKey).toList();
+        List<File> postContentFiles = getPostContentImages(1L);
+        List<String> imageKeys = postContentFiles.stream().map(File::getFileKey).toList();
         assertThat(imageKeys).isEqualTo(List.of("posts/image2.png", "posts/image3.png"));
     }
 

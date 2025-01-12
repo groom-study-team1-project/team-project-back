@@ -12,7 +12,7 @@ import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
-import deepdivers.community.domain.image.application.interfaces.ImageQueryRepository;
+import deepdivers.community.domain.file.application.interfaces.FileQueryRepository;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
@@ -38,7 +38,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
 
     private final JPAQueryFactory queryFactory;
     private final HashtagQueryRepository hashtagQueryRepository;
-    private final ImageQueryRepository imageQueryRepository;
+    private final FileQueryRepository fileQueryRepository;
 
     @Override
     public List<PostPreviewResponse> findAllPosts(final Long memberId, final GetPostsRequest dto) {
@@ -72,7 +72,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         }
 
         postDetailResponse.setHashtags(hashtagQueryRepository.findAllHashtagByPost(postId));
-        postDetailResponse.setImageUrls(imageQueryRepository.findAllImageUrlsByPost(postId));
+        postDetailResponse.setImageUrls(fileQueryRepository.findAllImageUrlsByPost(postId));
 
         return postDetailResponse;
     }
