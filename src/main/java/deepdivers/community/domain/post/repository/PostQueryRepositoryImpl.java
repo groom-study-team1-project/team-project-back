@@ -142,9 +142,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     }
 
     private BooleanExpression hasLike(final Long memberId) {
-        if (memberId == null) {
-            return null;
-        }
         return post.id
             .eq(like.id.targetId)
             .and(like.id.targetType.eq(LikeTarget.POST))

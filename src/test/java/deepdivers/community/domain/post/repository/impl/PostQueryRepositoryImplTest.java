@@ -205,4 +205,16 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
         assertThat(result.getFirst().getPostId()).isEqualTo(10);
     }
 
+    @Test
+    void 최대_조회개수가_정해져있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, 100);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result).hasSizeLessThan(31);
+    }
+
 }
