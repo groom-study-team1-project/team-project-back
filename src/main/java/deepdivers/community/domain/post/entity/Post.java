@@ -2,6 +2,7 @@ package deepdivers.community.domain.post.entity;
 
 import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.common.entity.TimeBaseEntity;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
@@ -77,11 +78,20 @@ public class Post extends TimeBaseEntity {
     }
 
     public Post update(final PostCreator creator) {
+        validateSameCategory(creator.getCategory());
+
         this.title = creator.getTitle();
         this.content = creator.getContent();
         this.thumbnail = creator.getThumbnailUrl();
         this.category = creator.getCategory();
+
         return this;
+    }
+
+    private void validateSameCategory(final PostCategory otherCategory) {
+        if (!category.isSameCategoryType(otherCategory)) {
+            throw new BadRequestException(PostExceptionCode.INVALID_UPDATE_INFORMATION);
+        }
     }
 
     public void deletePost() {

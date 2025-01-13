@@ -9,12 +9,15 @@ import static org.mockito.Mockito.when;
 import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.common.PostRequestFactory;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.member.dto.request.MemberSignUpRequest;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.domain.PostCreator;
 import deepdivers.community.domain.post.domain.adaptor.GeneralPostAdaptor;
+import deepdivers.community.domain.post.domain.adaptor.ProjectPostAdaptor;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.dto.request.ProjectPostRequest;
 import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.global.utility.encryptor.PasswordEncryptor;
 import java.util.List;
@@ -39,8 +42,7 @@ class PostTest {
 	}
 
 	@Test
-	@DisplayName("유효한 게시글 생성")
-	void createValidPost() {
+	void 범용_게시글_생성() {
 		// given
 		PostSaveRequest request = PostRequestFactory.createPostSaveRequest();
 		PostCreator postCreator = new GeneralPostAdaptor(request, postCategory, member);
@@ -52,6 +54,28 @@ class PostTest {
 		assertThat(post.getTitle().getTitle()).isEqualTo("Post Title");
 		assertThat(post.getContent().getContent()).isEqualTo("Post Content");
 		assertThat(post.getCategory()).isEqualTo(postCategory);
+		assertThat(post.getCategory().getCategoryType()).isEqualTo(CategoryType.GENERAL);
+		assertThat(post.getMember()).isEqualTo(member);
+		assertThat(post.getStatus()).isEqualTo(PostStatus.ACTIVE);
+		assertThat(post.getCommentCount()).isZero();
+		assertThat(post.getViewCount()).isZero();
+		assertThat(post.getLikeCount()).isZero();
+	}
+	@Test
+	void 프로젝트_게시글_생성() {
+		// given
+		ProjectPostRequest request = PostRequestFactory.createProjectPostRequest();
+		postCategory = new PostCategory("", "", CategoryType.PROJECT);
+		PostCreator postCreator = new ProjectPostAdaptor(request, postCategory, member);
+
+		// when
+		Post post = Post.of(postCreator);
+
+		// then
+		assertThat(post.getTitle().getTitle()).isEqualTo("Post Title");
+		assertThat(post.getContent().getContent()).isEqualTo("Post Content");
+		assertThat(post.getCategory()).isEqualTo(postCategory);
+		assertThat(post.getCategory().getCategoryType()).isEqualTo(CategoryType.PROJECT);
 		assertThat(post.getMember()).isEqualTo(member);
 		assertThat(post.getStatus()).isEqualTo(PostStatus.ACTIVE);
 		assertThat(post.getCommentCount()).isZero();
@@ -80,7 +104,7 @@ class PostTest {
 		PostCreator postCreator = new GeneralPostAdaptor(request, postCategory, member);
 		Post post = Post.of(postCreator);
 
-		PostSaveRequest updateReq = new PostSaveRequest("newTitle", "newContent", "newUrl", 2L, List.of(), List.of(""));
+		PostSaveRequest updateReq = new PostSaveRequest("newTitle", "newContent", "newUrl", 3L, List.of(), List.of(""));
 		PostCategory newPostCategory = new PostCategory("new", "new", CategoryType.GENERAL);
 		PostCreator postUpdateCreator = new GeneralPostAdaptor(updateReq, newPostCategory, member);
 
@@ -91,7 +115,23 @@ class PostTest {
 		assertThat(post.getTitle().getTitle()).isEqualTo("newTitle");
 		assertThat(post.getContent().getContent()).isEqualTo("newContent");
 		assertThat(post.getCategory()).isEqualTo(newPostCategory);
-		assertThat(post.getMember()).isEqualTo(member);
+	}
+
+	@Test
+	void 다른_카테고리_정보로_게시글을_업데이트하면_예외가_발생한다() {
+		// given
+		PostSaveRequest request = PostRequestFactory.createPostSaveRequest();
+		PostCreator postCreator = new GeneralPostAdaptor(request, postCategory, member);
+		Post post = Post.of(postCreator);
+
+		PostSaveRequest updateReq = new PostSaveRequest("newTitle", "newContent", "newUrl", 3L, List.of(), List.of(""));
+		PostCategory newPostCategory = new PostCategory("new", "new", CategoryType.PROJECT);
+		PostCreator postUpdateCreator = new GeneralPostAdaptor(updateReq, newPostCategory, member);
+
+		// when & then
+		assertThatThrownBy(() -> post.update(postUpdateCreator))
+			.isInstanceOf(BadRequestException.class)
+			.hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.INVALID_UPDATE_INFORMATION);
 	}
 
 	@Test

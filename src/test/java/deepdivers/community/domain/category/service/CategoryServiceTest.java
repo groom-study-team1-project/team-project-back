@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.category.exception.CategoryExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ class CategoryServiceTest extends IntegrationTest {
 
 		// When & Then
 		assertThatThrownBy(() -> categoryService.validateGeneralCategory(category))
-			.isInstanceOf(NotFoundException.class)
+			.isInstanceOf(BadRequestException.class)
 			.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionCode.INVALID_GENERAL_CATEGORY);
 	}
 	@Test
@@ -53,8 +54,8 @@ class CategoryServiceTest extends IntegrationTest {
 		PostCategory category = categoryService.getCategoryById(1L);
 
 		// When & Then
-		assertThatThrownBy(() -> categoryService.validateGeneralCategory(category))
-			.isInstanceOf(NotFoundException.class)
+		assertThatThrownBy(() -> categoryService.validateProjectCategory(category))
+			.isInstanceOf(BadRequestException.class)
 			.hasFieldOrPropertyWithValue("exceptionType", CategoryExceptionCode.INVALID_PROJECT_CATEGORY);
 	}
 

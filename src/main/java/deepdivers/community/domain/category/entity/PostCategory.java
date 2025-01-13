@@ -1,5 +1,8 @@
 package deepdivers.community.domain.category.entity;
 
+import deepdivers.community.domain.category.exception.CategoryExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.post.domain.PostCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -51,6 +54,10 @@ public class PostCategory {
 
     public boolean isProjectCategory() {
         return categoryType == CategoryType.PROJECT;
+    }
+
+    public boolean isSameCategoryType(final PostCategory category) {
+        return categoryType == category.getCategoryType();
     }
 
 }
