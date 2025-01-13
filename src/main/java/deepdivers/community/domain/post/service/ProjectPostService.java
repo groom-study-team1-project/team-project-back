@@ -5,6 +5,7 @@ import deepdivers.community.domain.category.service.CategoryService;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.file.application.FileService;
 import deepdivers.community.domain.file.repository.entity.FileType;
 import deepdivers.community.domain.hashtag.service.HashtagService;
@@ -74,7 +75,7 @@ public class ProjectPostService {
 
     private Post getPostByIdWithThrow(final Long postId) {
         return postRepository.findByIdAndStatus(postId, PostStatus.ACTIVE)
-            .orElseThrow(() -> new BadRequestException(PostExceptionCode.POST_NOT_FOUND));
+            .orElseThrow(() -> new NotFoundException(PostExceptionCode.POST_NOT_FOUND));
     }
 
     private void validatePostAuthor(final Member member, final Post post) {

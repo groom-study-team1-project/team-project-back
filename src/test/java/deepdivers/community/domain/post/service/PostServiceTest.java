@@ -93,7 +93,7 @@ class PostServiceTest extends IntegrationTest {
 
         // When & Then
         assertThatThrownBy(() -> postService.updatePost(999L, request, member))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
@@ -146,7 +146,7 @@ class PostServiceTest extends IntegrationTest {
 
         // When & Then
         assertThatThrownBy(() -> postService.deletePost(invalidPostId, member))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
