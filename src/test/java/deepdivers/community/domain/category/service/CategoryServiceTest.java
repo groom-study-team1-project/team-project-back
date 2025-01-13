@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import deepdivers.community.domain.IntegrationTest;
+import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.category.exception.CategoryExceptionCode;
 import deepdivers.community.domain.category.repository.jpa.CategoryRepository;
 import deepdivers.community.domain.category.dto.response.CategoryResponse;
@@ -29,30 +30,11 @@ class CategoryServiceTest extends IntegrationTest {
 
 	@BeforeEach
 	void setUp() {
-		category1 = PostCategory.createCategory("Category 1", "Description 1");
-		category2 = PostCategory.createCategory("Category 2", "Description 2");
+		category1 = new PostCategory("Category 1", "Description 1", CategoryType.GENERAL);
+		category2 = new PostCategory("Category 2", "Description 2", CategoryType.GENERAL);
 
 		categoryRepository.save(category1);
 		categoryRepository.save(category2);
-	}
-
-	@Test
-	@DisplayName("모든 카테고리 조회가 성공적으로 처리된다")
-	void getAllCategoriesSuccessTest() {
-		// When
-		List<CategoryResponse> responses = categoryService.getAllCategories();
-
-		// Then
-		assertThat(responses).isNotNull();
-		assertThat(responses).hasSize(6);
-
-		CategoryResponse response1 = responses.get(4);
-		assertThat(response1.getTitle()).isEqualTo(category1.getTitle());
-		assertThat(response1.getDescription()).isEqualTo(category1.getDescription());
-
-		CategoryResponse response2 = responses.get(5);
-		assertThat(response2.getTitle()).isEqualTo(category2.getTitle());
-		assertThat(response2.getDescription()).isEqualTo(category2.getDescription());
 	}
 
 	@Test

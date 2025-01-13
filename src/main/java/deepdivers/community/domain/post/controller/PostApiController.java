@@ -6,6 +6,7 @@ import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.like.dto.LikeRequest;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.dto.request.ProjectPostRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.like.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;

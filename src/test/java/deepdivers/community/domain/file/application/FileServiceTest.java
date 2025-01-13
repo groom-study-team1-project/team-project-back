@@ -4,10 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.file.repository.entity.File;
+import deepdivers.community.domain.file.repository.entity.FileType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import software.amazon.awssdk.services.s3.model.Tag;
 
 class FileServiceTest extends IntegrationTest {
 
@@ -28,10 +30,10 @@ class FileServiceTest extends IntegrationTest {
         Long postId = 2L;
 
         // when
-        fileService.createPostContentImage(imageKeys, postId);
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
 
         // then
-        List<String> savedImageKeys = getPostContentImages(postId).stream().map(File::getFileKey).toList();
+        List<String> savedImageKeys = getPostImages(postId, FileType.POST_CONTENT).stream().map(File::getFileKey).toList();
         assertThat(savedImageKeys).isEqualTo(imageKeys);
     }
 
@@ -42,11 +44,11 @@ class FileServiceTest extends IntegrationTest {
         Long postId = 2L;
 
         // when
-        fileService.createPostContentImage(imageKeys, postId);
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
 
         // then
         List<String> accessUrls = imageKeys.stream().map(this::generateAccessUrl).toList();
-        List<String> savedImageUrls = getPostContentImages(postId).stream().map(File::getFileUrl).toList();
+        List<String> savedImageUrls = getPostImages(postId, FileType.POST_CONTENT).stream().map(File::getFileUrl).toList();
         assertThat(savedImageUrls).isEqualTo(accessUrls);
     }
 
@@ -57,7 +59,7 @@ class FileServiceTest extends IntegrationTest {
         Long postId = 1L;
 
         // when
-        fileService.createPostContentImage(imageKeys, postId);
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
 
         // then
         assertThat(getTag(imageKeys.getFirst())).isEmpty();
@@ -69,15 +71,15 @@ class FileServiceTest extends IntegrationTest {
         // given
         List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
         Long postId = 2L;
-        fileService.createPostContentImage(imageKeys, postId);
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
 
         List<String> newImageKeys = List.of("posts/content1.png", "posts/content3.png");
 
         // when
-        fileService.updatePostContentImage(newImageKeys, postId);
+        fileService.updatePostImage(newImageKeys, postId, FileType.POST_CONTENT);
 
         // then
-        List<String> savedImageKeys = getPostContentImages(postId).stream().map(File::getFileKey).toList();
+        List<String> savedImageKeys = getPostImages(postId,FileType.POST_CONTENT).stream().map(File::getFileKey).toList();
         assertThat(savedImageKeys).isEqualTo(newImageKeys);
     }
 
@@ -86,16 +88,76 @@ class FileServiceTest extends IntegrationTest {
         // given
         List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
         Long postId = 2L;
-        fileService.createPostContentImage(imageKeys, postId);
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
 
         List<String> newImageKeys = List.of("posts/content1.png", "posts/content3.png");
 
         // when
-        fileService.updatePostContentImage(newImageKeys, postId);
+        fileService.updatePostImage(newImageKeys, postId, FileType.POST_CONTENT);
 
         // then
-        assertThat(getTag("posts/content2.png").getFirst().key()).isEqualTo("Status");
-        assertThat(getTag("posts/content2.png").getFirst().value()).isEqualTo("Deleted");
+        Tag tag = Tag.builder().key("Status").value("Deleted").build();
+        assertThat(getTag("posts/content2.png").getFirst()).isEqualTo(tag);
+    }
+
+    @Test
+    void 게시글_이미지가_S3에서_제거된다() {
+        // given
+        List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
+        Long postId = 2L;
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
+
+        // when
+        fileService.deletePostImage(postId, FileType.POST_CONTENT);
+
+        // then
+        Tag tag = Tag.builder().key("Status").value("Deleted").build();
+        assertThat(getTag("posts/content1.png").getFirst()).isEqualTo(tag);
+        assertThat(getTag("posts/content2.png").getFirst()).isEqualTo(tag);
+    }
+
+    @Test
+    void 게시글_이미지가_DB에서_제거된다() {
+        // given
+        List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
+        Long postId = 2L;
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
+
+        // when
+        fileService.deletePostImage(postId, FileType.POST_CONTENT);
+
+        // then
+        List<File> postImages = getPostImages(postId, FileType.POST_CONTENT);
+        assertThat(postImages).isEmpty();
+    }
+
+    @Test
+    void 슬라이드_이미지_또한_잘된다() {
+        // given
+        List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
+        Long postId = 2L;
+        fileService.createPostImage(imageKeys, postId, FileType.POST_CONTENT);
+
+        // when
+        fileService.deletePostImage(postId, FileType.POST_CONTENT);
+
+        // then
+        List<File> postImages = getPostImages(postId, FileType.POST_CONTENT);
+        assertThat(postImages).isEmpty();
+    }
+
+    @Test
+    void 게시글_슬라이드_이미지를_생성할_수_있다() {
+        // given
+        List<String> imageKeys = List.of("posts/content1.png", "posts/content2.png");
+        Long postId = 2L;
+
+        // when
+        fileService.createPostImage(imageKeys, postId, FileType.POST_SLIDE);
+
+        // then
+        List<String> savedImageKeys = getPostImages(postId, FileType.POST_SLIDE).stream().map(File::getFileKey).toList();
+        assertThat(savedImageKeys).isEqualTo(imageKeys);
     }
 
 }

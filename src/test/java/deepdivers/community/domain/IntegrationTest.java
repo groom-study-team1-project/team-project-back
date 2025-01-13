@@ -59,10 +59,10 @@ public class IntegrationTest {
         return postRepository.findById(id).get();
     }
 
-    protected List<File> getPostContentImages(Long id) {
+    protected List<File> getPostImages(Long id, FileType type) {
         return imageRepository.findAll()
             .stream()
-            .filter(image -> image.getReferenceId().equals(id) && image.getFileType() == FileType.POST_CONTENT)
+            .filter(image -> image.getReferenceId().equals(id) && image.getFileType() == type)
             .toList();
     }
 

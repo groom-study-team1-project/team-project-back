@@ -45,8 +45,13 @@ public class File extends TimeBaseEntity {
         this.referenceId = referenceId;
     }
 
-    public static File createPostContentImage(final String fileKey, final String fileUrl, final Long postId) {
-        return new File(fileKey, fileUrl, FileType.POST_CONTENT, postId);
+    public static File createPostContentImage(
+        final String fileKey,
+        final String fileUrl,
+        final FileType fileType,
+        final Long postId
+    ) {
+        return new File(fileKey, fileUrl, fileType, postId);
     }
 
 }

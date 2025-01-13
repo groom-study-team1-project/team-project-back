@@ -19,24 +19,30 @@ public class FileService {
     private final S3PresignManager s3PresignManager;
     private final S3TagManager s3TagManager;
 
-    public void createPostContentImage(final List<String> imageKeys, final Long postId) {
+    public void createPostImage(final List<String> imageKeys, final Long postId, final FileType fileType) {
         final List<File> postFiles = imageKeys.stream()
             .map(imageKey -> {
                 s3TagManager.removeDeleteTag(imageKey);
                 final String imageUrl = s3PresignManager.generateAccessUrl(imageKey);
-                return File.createPostContentImage(imageKey, imageUrl, postId);
+                return File.createPostContentImage(imageKey, imageUrl, fileType, postId);
             })
             .toList();
 
         imageRepository.saveAll(postFiles);
     }
 
-    public void updatePostContentImage(final List<String> newImageKeys, final Long postId) {
-        imageRepository.findAllByReferenceIdAndFileType(postId, FileType.POST_CONTENT)
+    public void updatePostImage(final List<String> newImageKeys, final Long postId, final FileType fileType) {
+        imageRepository.findAllByReferenceIdAndFileType(postId, fileType)
             .forEach(image -> s3TagManager.markAsDeleted(image.getFileKey()));
 
-        imageRepository.deleteAllByReferenceIdAndFileType(postId, FileType.POST_CONTENT);
-        createPostContentImage(newImageKeys, postId);
+        imageRepository.deleteAllByReferenceIdAndFileType(postId, fileType);
+        createPostImage(newImageKeys, postId, fileType);
+    }
+
+    public void deletePostImage(final Long postId, final FileType fileType) {
+        final List<File> allImage = imageRepository.findAllByReferenceIdAndFileType(postId, fileType);
+        allImage.forEach(image -> s3TagManager.markAsDeleted(image.getFileKey()));
+        imageRepository.deleteAll(allImage);
     }
 
 }

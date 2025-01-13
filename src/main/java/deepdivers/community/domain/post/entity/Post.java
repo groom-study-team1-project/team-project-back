@@ -6,6 +6,7 @@ import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.exception.PostExceptionCode;
+import deepdivers.community.domain.post.domain.PostCreator;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -58,28 +59,28 @@ public class Post extends TimeBaseEntity {
     @Column(nullable = false)
     private PostStatus status;
 
-    protected Post(final PostSaveRequest request, final PostCategory category, final Member member) {
-        this.title = PostTitle.of(request.title());
-        this.content = PostContent.of(request.content());
-        this.thumbnail = request.thumbnailImageUrl();
-        this.category = category;
-        this.member = member;
+    protected Post(final PostCreator creator) {
+        this.title = creator.getTitle();
+        this.content = creator.getContent();
+        this.thumbnail = creator.getThumbnailUrl();
+        this.category = creator.getCategory();
+        this.member = creator.getMember();
         this.commentCount = 0;
         this.likeCount = 0;
         this.viewCount = 0;
         this.status = PostStatus.ACTIVE;
     }
 
-    public static Post of(final PostSaveRequest request, final PostCategory category, final Member member) {
-        member.incrementPostCount();
-        return new Post(request, category, member);
+    public static Post of(final PostCreator creator) {
+        creator.getMember().incrementPostCount();
+        return new Post(creator);
     }
 
-    public Post updatePost(final PostSaveRequest request, final PostCategory category) {
-        this.title = PostTitle.of(request.title());
-        this.content = PostContent.of(request.content());
-        this.thumbnail = request.thumbnailImageUrl();
-        this.category = category;
+    public Post update(final PostCreator creator) {
+        this.title = creator.getTitle();
+        this.content = creator.getContent();
+        this.thumbnail = creator.getThumbnailUrl();
+        this.category = creator.getCategory();
         return this;
     }
 
