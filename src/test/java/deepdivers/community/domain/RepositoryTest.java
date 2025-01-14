@@ -10,7 +10,9 @@ import deepdivers.community.domain.file.repository.FileQueryRepositoryImpl;
 import deepdivers.community.domain.member.controller.interfaces.MemberQueryRepository;
 import deepdivers.community.domain.member.repository.MemberQueryRepositoryImpl;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
+import deepdivers.community.domain.post.controller.interfaces.ProjectPostQueryRepository;
 import deepdivers.community.domain.post.repository.PostQueryRepositoryImpl;
+import deepdivers.community.domain.post.repository.ProjectPostQueryRepositoryImpl;
 import deepdivers.community.global.config.JpaConfig;
 import deepdivers.community.global.config.LocalStackTestConfig;
 import deepdivers.community.global.config.QueryDslConfig;
@@ -24,13 +26,13 @@ import org.springframework.test.annotation.DirtiesContext;
 @Import({
     JpaConfig.class,
     QueryDslConfig.class,
-    LocalStackTestConfig.class,
     HashtagQueryRepositoryImpl.class,
     FileQueryRepositoryImpl.class,
     PostQueryRepositoryImpl.class,
     MemberQueryRepositoryImpl.class,
     FileQueryRepositoryImpl.class,
     CategoryQueryRepositoryImpl.class,
+    ProjectPostQueryRepositoryImpl.class
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext
@@ -42,5 +44,6 @@ public class RepositoryTest {
     @Autowired protected PostQueryRepository postQueryRepository;
     @Autowired protected MemberQueryRepository memberQueryRepository;
     @Autowired protected CategoryQueryRepository categoryQueryRepository;
+    @Autowired protected ProjectPostQueryRepository projectPostQueryRepository;
 
 }

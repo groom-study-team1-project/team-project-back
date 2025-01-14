@@ -4,14 +4,12 @@ import static deepdivers.community.domain.like.entity.QLike.like;
 import static deepdivers.community.domain.member.entity.QMember.member;
 import static deepdivers.community.domain.post.entity.QPost.post;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.file.application.interfaces.FileQueryRepository;
 import deepdivers.community.domain.file.repository.entity.FileType;
 import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
-import deepdivers.community.domain.like.entity.LikeTarget;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
@@ -38,6 +36,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     public List<PostPreviewResponse> findAllPosts(final Long memberId, final GetPostsRequest dto) {
         final List<PostPreviewResponse> postPreviewResponses = extractPostPreview(memberId, dto);
         final List<Long> postIds = postPreviewResponses.stream().map(PostPreviewResponse::getPostId).toList();
+        System.out.println(postIds);
         final Map<Long, List<String>> hashtagsByPosts = hashtagQueryRepository.findAllHashtagByPosts(postIds);
 
         postPreviewResponses.forEach(postPreviewResponse -> {
@@ -54,7 +53,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .select(PostQBeanGenerator.createPostDetail(PostDetailResponse.class, viewerId))
             .from(post)
             .join(member).on(post.member.id.eq(member.id))
-            .leftJoin(like).on(hasLike(viewerId))
+            .leftJoin(like).on(PostQueryUtils.hasLike(viewerId))
             .where(post.id.eq(postId))
             .fetchOne();
 
@@ -82,13 +81,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .orderBy(PostQueryUtils.determinePostSortCondition(dto.postSortType()))
             .limit(PostQueryUtils.getLimitOrDefault(dto.limit()))
             .fetch();
-    }
-
-    private BooleanExpression hasLike(final Long memberId) {
-        return post.id
-            .eq(like.id.targetId)
-            .and(like.id.targetType.eq(LikeTarget.POST))
-            .and(like.id.memberId.eq(memberId));
     }
 
 }

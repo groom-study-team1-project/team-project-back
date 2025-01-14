@@ -1,14 +1,19 @@
 package deepdivers.community.domain.post.repository.utils;
 
 import static com.querydsl.core.types.ExpressionUtils.and;
+import static deepdivers.community.domain.like.entity.QLike.like;
 import static deepdivers.community.domain.post.entity.QPost.post;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import deepdivers.community.domain.category.entity.CategoryType;
+import deepdivers.community.domain.like.entity.LikeTarget;
 import deepdivers.community.domain.post.entity.PostSortType;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostQueryUtils {
 
     private static final int GET_POSTS_DEFAULT_LIMIT_COUNT = 5;
@@ -51,6 +56,13 @@ public class PostQueryUtils {
             return post.category.categoryType.eq(categoryType);
         }
         return and(post.category.id.eq(categoryId), post.category.categoryType.eq(categoryType));
+    }
+
+    public static BooleanExpression hasLike(final Long memberId) {
+        return post.id
+            .eq(like.id.targetId)
+            .and(like.id.targetType.eq(LikeTarget.POST))
+            .and(like.id.memberId.eq(memberId));
     }
 
 }

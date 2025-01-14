@@ -12,7 +12,10 @@ import deepdivers.community.domain.post.dto.response.AuthorInformationResponse;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.entity.QPost;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostQBeanGenerator {
 
     public static <T extends PostPreviewResponse> QBean<T> createPreview(final Class<T> type) {
