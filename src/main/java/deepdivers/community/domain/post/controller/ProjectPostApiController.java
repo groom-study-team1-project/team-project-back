@@ -3,6 +3,7 @@ package deepdivers.community.domain.post.controller;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.dto.response.NoContent;
 import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.post.controller.docs.ProjectPostApiControllerDocs;
 import deepdivers.community.domain.post.dto.request.ProjectPostRequest;
 import deepdivers.community.domain.post.service.ProjectPostService;
 import deepdivers.community.global.security.Auth;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/projects")
 @RestController
 @RequiredArgsConstructor
-public class ProjectPostApiController {
+public class ProjectPostApiController implements ProjectPostApiControllerDocs {
 
     private final ProjectPostService projectPostService;
 

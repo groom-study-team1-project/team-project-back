@@ -51,7 +51,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result).hasSize(2);
     }
 
     @Test

@@ -6,4 +6,5 @@ public interface HashtagQueryRepository {
 
     List<String> findAllHashtagByPost(Long postId);
 
+
 }

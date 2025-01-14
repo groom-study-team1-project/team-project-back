@@ -11,9 +11,11 @@ import deepdivers.community.domain.post.entity.QPost;
 
 public class PostQBeanGenerator {
 
-    public static QBean<PostPreviewResponse> createPostPreview(final QPost post, final QMember member) {
+    public static <T extends PostPreviewResponse> QBean<T> createPreview(
+        Class<T> type, final QPost post, final QMember member
+    ) {
         return Projections.fields(
-            PostPreviewResponse.class,
+            type,
             post.id.as("postId"),
             post.category.id.as("categoryId"),
             post.title.title.as("title"),
