@@ -1,4 +1,4 @@
-package deepdivers.community.domain.post.repository.generator;
+package deepdivers.community.domain.post.repository.utils;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.QBean;

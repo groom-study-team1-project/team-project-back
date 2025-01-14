@@ -4,7 +4,7 @@ import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.dto.response.ExceptionResponse;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
-import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
+import deepdivers.community.domain.post.dto.response.ProjectPostDetailResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostPreviewResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +27,7 @@ public interface ProjectPostOpenControllerDocs {
 		description = "해당 게시글을 찾을 수 없습니다.",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<PostDetailResponse>> getPostById(Long postId, Long viewerId);
+	ResponseEntity<API<ProjectPostDetailResponse>> getPostById(Long postId, Long viewerId);
 
 	@Operation(summary = "모든 게시글 조회", description = "모든 게시글을 조회하는 기능")
 	@ApiResponse(
@@ -51,6 +51,6 @@ public interface ProjectPostOpenControllerDocs {
 		description = "토큰 관련 예외입니다.",
 		content = @Content(schema = @Schema(implementation = ExceptionResponse.class))
 	)
-	ResponseEntity<API<List<PostPreviewResponse>>> getMyAllPosts(Long memberId, GetPostsRequest dto);
+	ResponseEntity<API<List<ProjectPostPreviewResponse>>> getMyAllPosts(Long memberId, GetPostsRequest dto);
 
 }
