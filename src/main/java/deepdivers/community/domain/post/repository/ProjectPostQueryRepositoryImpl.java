@@ -1,20 +1,24 @@
 package deepdivers.community.domain.post.repository;
 
-import static com.querydsl.core.types.ExpressionUtils.and;
+import static deepdivers.community.domain.like.entity.QLike.like;
 import static deepdivers.community.domain.member.entity.QMember.member;
 import static deepdivers.community.domain.post.entity.QPost.post;
 
-import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.category.entity.CategoryType;
+import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.file.application.interfaces.FileQueryRepository;
+import deepdivers.community.domain.file.repository.entity.FileType;
 import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
+import deepdivers.community.domain.like.entity.LikeTarget;
 import deepdivers.community.domain.post.controller.interfaces.ProjectPostQueryRepository;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostDetailResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostPreviewResponse;
 import deepdivers.community.domain.post.entity.PostStatus;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.repository.utils.PostQBeanGenerator;
 import deepdivers.community.domain.post.repository.utils.PostQueryUtils;
 import java.util.Collections;
@@ -47,13 +51,27 @@ public class ProjectPostQueryRepositoryImpl implements ProjectPostQueryRepositor
         return postPreviewResponses;
     }
 
-    @Override
     public ProjectPostDetailResponse readPostByPostId(Long postId, Long viewerId) {
-        return null;
+        final ProjectPostDetailResponse postDetailResponse = queryFactory
+            .select(PostQBeanGenerator.createPostDetail(ProjectPostDetailResponse.class, viewerId))
+            .from(post)
+            .join(member).on(post.member.id.eq(member.id))
+            .leftJoin(like).on(hasLike(viewerId))
+            .where(post.id.eq(postId))
+            .fetchOne();
+
+        if (postDetailResponse == null) {
+            throw new NotFoundException(PostExceptionCode.POST_NOT_FOUND);
+        }
+
+        postDetailResponse.setHashtags(hashtagQueryRepository.findAllHashtagByPost(postId));
+        postDetailResponse.setSlideImageUrls(fileQueryRepository.findAllImageUrlsByPost(postId, FileType.POST_SLIDE));
+
+        return postDetailResponse;
     }
 
     private List<ProjectPostPreviewResponse> extractPostPreview(final Long memberId, final GetPostsRequest dto) {
-        return queryFactory.select(PostQBeanGenerator.createPreview(ProjectPostPreviewResponse.class, post, member))
+        return queryFactory.select(PostQBeanGenerator.createPreview(ProjectPostPreviewResponse.class))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(
@@ -67,5 +85,11 @@ public class ProjectPostQueryRepositoryImpl implements ProjectPostQueryRepositor
             .fetch();
     }
 
+    private BooleanExpression hasLike(final Long memberId) {
+        return post.id
+            .eq(like.id.targetId)
+            .and(like.id.targetType.eq(LikeTarget.POST))
+            .and(like.id.memberId.eq(memberId));
+    }
 
 }

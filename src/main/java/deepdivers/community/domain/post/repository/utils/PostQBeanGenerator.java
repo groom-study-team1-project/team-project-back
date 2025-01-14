@@ -1,5 +1,9 @@
 package deepdivers.community.domain.post.repository.utils;
 
+import static deepdivers.community.domain.like.entity.QLike.like;
+import static deepdivers.community.domain.member.entity.QMember.member;
+import static deepdivers.community.domain.post.entity.QPost.post;
+
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.QBean;
 import deepdivers.community.domain.like.entity.QLike;
@@ -11,9 +15,7 @@ import deepdivers.community.domain.post.entity.QPost;
 
 public class PostQBeanGenerator {
 
-    public static <T extends PostPreviewResponse> QBean<T> createPreview(
-        Class<T> type, final QPost post, final QMember member
-    ) {
+    public static <T extends PostPreviewResponse> QBean<T> createPreview(final Class<T> type) {
         return Projections.fields(
             type,
             post.id.as("postId"),
@@ -34,14 +36,9 @@ public class PostQBeanGenerator {
         );
     }
     
-    public static QBean<PostDetailResponse> createPostDetail(
-        final QPost post, 
-        final QMember member, 
-        final QLike like,
-        final Long viewerId
-    ) {
+    public static <T extends PostPreviewResponse> QBean<T> createPostDetail(final Class<T> type, final Long viewerId) {
         return Projections.fields(
-            PostDetailResponse.class,
+            type,
             post.id.as("postId"),
             post.category.id.as("categoryId"),
             post.title.title.as("title"),

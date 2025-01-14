@@ -19,11 +19,11 @@ public class FileQueryRepositoryImpl implements FileQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<String> findAllImageUrlsByPost(final Long postId) {
+    public List<String> findAllImageUrlsByPost(final Long postId, final FileType fileType) {
         return queryFactory
             .select(file.fileUrl)
             .from(file)
-            .where(file.referenceId.eq(postId), file.fileType.eq(FileType.POST_CONTENT))
+            .where(file.referenceId.eq(postId), file.fileType.eq(fileType))
             .fetch();
     }
 

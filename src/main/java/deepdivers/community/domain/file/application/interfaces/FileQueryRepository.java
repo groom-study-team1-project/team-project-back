@@ -10,7 +10,7 @@ import java.util.Map;
 
 public interface FileQueryRepository {
 
-    List<String> findAllImageUrlsByPost(Long postId);
+    List<String> findAllImageUrlsByPost(Long postId, FileType fileType);
     Map<Long, List<String>> findAllSlideImageUrlByPosts(List<Long> postIds);
 
 }

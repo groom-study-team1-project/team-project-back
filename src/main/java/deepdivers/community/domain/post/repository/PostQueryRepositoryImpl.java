@@ -1,16 +1,15 @@
 package deepdivers.community.domain.post.repository;
 
-import static com.querydsl.core.types.ExpressionUtils.and;
 import static deepdivers.community.domain.like.entity.QLike.like;
 import static deepdivers.community.domain.member.entity.QMember.member;
 import static deepdivers.community.domain.post.entity.QPost.post;
 
-import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.file.application.interfaces.FileQueryRepository;
+import deepdivers.community.domain.file.repository.entity.FileType;
 import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
 import deepdivers.community.domain.like.entity.LikeTarget;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
@@ -52,7 +51,7 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     @Override
     public PostDetailResponse readPostByPostId(final Long postId, final Long viewerId) {
         final PostDetailResponse postDetailResponse = queryFactory
-            .select(PostQBeanGenerator.createPostDetail(post, member, like, viewerId))
+            .select(PostQBeanGenerator.createPostDetail(PostDetailResponse.class, viewerId))
             .from(post)
             .join(member).on(post.member.id.eq(member.id))
             .leftJoin(like).on(hasLike(viewerId))
@@ -64,14 +63,14 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         }
 
         postDetailResponse.setHashtags(hashtagQueryRepository.findAllHashtagByPost(postId));
-        postDetailResponse.setImageUrls(fileQueryRepository.findAllImageUrlsByPost(postId));
+        postDetailResponse.setImageUrls(fileQueryRepository.findAllImageUrlsByPost(postId, FileType.POST_CONTENT));
 
         return postDetailResponse;
     }
 
 
     private List<PostPreviewResponse> extractPostPreview(final Long memberId, final GetPostsRequest dto) {
-        return queryFactory.select(PostQBeanGenerator.createPreview(PostPreviewResponse.class, post, member))
+        return queryFactory.select(PostQBeanGenerator.createPreview(PostPreviewResponse.class))
             .from(post)
             .join(member).on(member.id.eq(post.member.id))
             .where(
