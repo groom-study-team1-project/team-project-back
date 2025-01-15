@@ -26,6 +26,7 @@ public class CategoryQueryRepositoryImpl implements CategoryQueryRepository {
                 CategoryResponse.class,
                 postCategory.id.as("id"),
                 postCategory.title.as("title"),
+                postCategory.categoryType.as("categoryType"),
                 postCategory.description.as("description")
                 )
             )
@@ -41,6 +42,7 @@ public class CategoryQueryRepositoryImpl implements CategoryQueryRepository {
                 MemberPostCountByCategoryResponse.class,
                 postCategory.id.as("categoryId"),
                 postCategory.title.as("categoryTitle"),
+                postCategory.categoryType.as("categoryType"),
                 post.count().coalesce(0L).as("postCount")
             ))
             .from(postCategory)

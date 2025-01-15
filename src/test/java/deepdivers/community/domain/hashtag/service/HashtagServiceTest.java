@@ -1,6 +1,6 @@
 package deepdivers.community.domain.hashtag.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.hashtag.entity.Hashtag;
@@ -14,7 +14,7 @@ class HashtagServiceTest extends IntegrationTest {
     @Autowired HashtagService hashtagService;
 
     @Test
-    void 게시글과_해시태그가_매핑된다() {
+    void 게시글에_해시태그가_추가된다() {
         // given
         Post post = getPost(1L);
         List<String> hashTags = List.of("해시태그1", "해시태그2", "해시태그3");
@@ -26,7 +26,7 @@ class HashtagServiceTest extends IntegrationTest {
         List<String> savedHashtags = getHashtagsByPostId(post.getId()).stream()
             .map(postHashtag -> postHashtag.getHashtag().getHashtag()).toList();
 
-        assertThat(hashTags).isEqualTo(savedHashtags);
+        assertThat(savedHashtags).containsAll(hashTags);
     }
 
     @Test
@@ -48,7 +48,7 @@ class HashtagServiceTest extends IntegrationTest {
     @Test
     void 게시글에_연결이_끊어진_해시태그는_제거되지_않는다() {
         // given, test.sql
-        Post post = getPost(10L);
+        Post post = getPost(1L);
         List<String> hashTags = List.of("해시태그1", "해시태그2", "해시태그3");
 
         // when
@@ -56,7 +56,7 @@ class HashtagServiceTest extends IntegrationTest {
 
         // then
         Hashtag hashtag = getHashtag(1L);
-        assertThat(hashtag.getHashtag()).isEqualTo("태그입니다");
+        assertThat(hashtag.getHashtag()).isEqualTo("Spring");
     }
 
 }

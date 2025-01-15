@@ -48,8 +48,37 @@ VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니�
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (10, '열 번째 게시글', '열 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 3);
 
-insert into hashtag (id, hashtag) values (1, '태그입니다');
-insert into post_hashtag (id, post_id, hashtag_id, created_at, updated_at) values (1, 10, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+-- 해시태그 데이터
+INSERT INTO hashtag (id, hashtag) VALUES
+(1, 'Spring'),
+(2, 'JPA'),
+(3, 'QueryDSL'),
+(4, 'Java'),
+(5, 'React'),
+(6, 'AWS'),
+(7, 'Docker'),
+(8, 'Kubernetes'),
+(9, 'MSA'),
+(10, 'DevOps');
+
+INSERT INTO deepdive_commnuity_hashtag_relation
+(hashtag_relation_id, post_id, hashtag_id, created_at, updated_at) VALUES
+(1, 1, 1, DATEADD('DAY', -1, CURRENT_TIMESTAMP), DATEADD('DAY', -1, CURRENT_TIMESTAMP)),
+(2, 1, 2, DATEADD('DAY', -1, CURRENT_TIMESTAMP), DATEADD('DAY', -1, CURRENT_TIMESTAMP)),
+(3, 2, 1, DATEADD('DAY', -2, CURRENT_TIMESTAMP), DATEADD('DAY', -2, CURRENT_TIMESTAMP)),
+(4, 2, 3, DATEADD('DAY', -2, CURRENT_TIMESTAMP), DATEADD('DAY', -2, CURRENT_TIMESTAMP)),
+(5, 3, 1, DATEADD('DAY', -3, CURRENT_TIMESTAMP), DATEADD('DAY', -3, CURRENT_TIMESTAMP)),
+(6, 3, 4, DATEADD('DAY', -3, CURRENT_TIMESTAMP), DATEADD('DAY', -3, CURRENT_TIMESTAMP)),
+(7, 4, 5, DATEADD('DAY', -4, CURRENT_TIMESTAMP), DATEADD('DAY', -4, CURRENT_TIMESTAMP)),
+(8, 5, 6, DATEADD('DAY', -5, CURRENT_TIMESTAMP), DATEADD('DAY', -5, CURRENT_TIMESTAMP)),
+(9, 6, 7, DATEADD('DAY', -6, CURRENT_TIMESTAMP), DATEADD('DAY', -6, CURRENT_TIMESTAMP)),
+(10, 7, 8, DATEADD('DAY', -6, CURRENT_TIMESTAMP), DATEADD('DAY', -6, CURRENT_TIMESTAMP));
+
+-- 일주일 이전 데이터
+INSERT INTO deepdive_commnuity_hashtag_relation
+(hashtag_relation_id, post_id, hashtag_id, created_at, updated_at) VALUES
+(11, 7, 9, DATEADD('DAY', -8, CURRENT_TIMESTAMP), DATEADD('DAY', -8, CURRENT_TIMESTAMP)),
+(12, 9, 10, DATEADD('DAY', -9, CURRENT_TIMESTAMP), DATEADD('DAY', -9, CURRENT_TIMESTAMP));
 
 insert into deepdive_community_file (file_id, file_key, file_url, file_type, reference_id, created_at, updated_at)
 values (1, 'default-image/posts/thumbnail.png', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 'POST_CONTENT', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

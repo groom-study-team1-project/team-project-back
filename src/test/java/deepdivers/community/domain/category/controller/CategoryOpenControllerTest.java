@@ -10,6 +10,7 @@ import deepdivers.community.domain.category.controller.interfaces.CategoryQueryR
 import deepdivers.community.domain.category.dto.code.CategoryStatusCode;
 import deepdivers.community.domain.category.dto.response.CategoryResponse;
 import deepdivers.community.domain.category.dto.response.MemberPostCountByCategoryResponse;
+import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import io.restassured.common.mapper.TypeRef;
@@ -54,7 +55,7 @@ class CategoryOpenControllerTest extends ControllerTest {
 	void 카테고리별_게시글_조회_요청이_된다() {
 		// given
 		List<MemberPostCountByCategoryResponse> mockCategoryResponses
-			= List.of(new MemberPostCountByCategoryResponse(1L, "title", 1L));
+			= List.of(new MemberPostCountByCategoryResponse(1L, "title", CategoryType.GENERAL, 1L));
 		given(categoryQueryRepository.countMemberPostsByCategory(anyLong())).willReturn(mockCategoryResponses);
 
 		// when
