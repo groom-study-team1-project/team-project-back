@@ -6,14 +6,17 @@ import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.controller.docs.PostApiControllerDocs;
 import deepdivers.community.domain.like.dto.LikeRequest;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
+import deepdivers.community.domain.post.dto.request.ProjectPostRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
 import deepdivers.community.domain.like.service.LikeService;
 import deepdivers.community.domain.post.service.PostService;
+import deepdivers.community.domain.post.service.ProjectPostService;
 import deepdivers.community.global.security.Auth;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PostApiController implements PostApiControllerDocs {
 
 	private final PostService postService;
-	private final LikeService likeService;
+	private final ProjectPostService projectPostService;
 
 	@Override
 	@PostMapping("/upload")
@@ -60,26 +63,32 @@ public class PostApiController implements PostApiControllerDocs {
 		return ResponseEntity.ok(response);
 	}
 
-	@PostMapping("/like")
-	public ResponseEntity<NoContent> likePost(
-			@Auth final Member member,
-			@RequestBody final LikeRequest request
+	@PostMapping("/project/upload")
+	public ResponseEntity<API<Long>> createProject(
+		@Auth final Member member,
+		@Valid @RequestBody final ProjectPostRequest dto
 	) {
-		final NoContent response = likeService.likePost(request, member.getId());
-		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(response);
+		final API<Long> result = projectPostService.createProjectPost(member, dto);
+		return ResponseEntity.ok(result);
 	}
 
-	@PostMapping("/unlike")
-	public ResponseEntity<NoContent> unlikePost(
-			@Auth final Member member,
-			@RequestBody final LikeRequest request
+	@PostMapping("/project/edit/{projectId}")
+	public ResponseEntity<API<Long>> editProject(
+		@Auth final Member member,
+		@Valid @RequestBody final ProjectPostRequest dto,
+		@PathVariable final Long projectId
 	) {
-		final NoContent response = likeService.unlikePost(request, member.getId());
-		return ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(response);
+		final API<Long> result = projectPostService.updateProjectPost(projectId, member, dto);
+		return ResponseEntity.ok(result);
+	}
+
+	@DeleteMapping("/project/remove/{projectId}")
+	public ResponseEntity<NoContent> removeProject(
+		@Auth final Member member,
+		@PathVariable final Long projectId
+	) {
+		final NoContent noContent = projectPostService.deletePost(projectId, member);
+		return ResponseEntity.ok(noContent);
 	}
 
 }

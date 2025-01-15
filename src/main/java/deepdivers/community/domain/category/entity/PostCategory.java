@@ -1,7 +1,12 @@
 package deepdivers.community.domain.category.entity;
 
+import deepdivers.community.domain.category.exception.CategoryExceptionCode;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.post.domain.PostCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,13 +38,26 @@ public class PostCategory {
     @Column(length = 100)
     private String description;
 
-    private PostCategory(String title, String description) {
+    @Column(nullable = false)
+    @Enumerated(value = EnumType.STRING)
+    private CategoryType categoryType;
+
+    public PostCategory(String title, String description, CategoryType categoryType) {
         this.title = title;
         this.description = description;
+        this.categoryType = categoryType;
     }
 
-    public static PostCategory createCategory(String title, String description) {
-        return new PostCategory(title, description);
+    public boolean isGeneralCategory() {
+        return categoryType == CategoryType.GENERAL;
+    }
+
+    public boolean isProjectCategory() {
+        return categoryType == CategoryType.PROJECT;
+    }
+
+    public boolean isSameCategoryType(final PostCategory category) {
+        return categoryType == category.getCategoryType();
     }
 
 }

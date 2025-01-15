@@ -6,7 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import deepdivers.community.domain.IntegrationTest;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.exception.NotFoundException;
-import deepdivers.community.domain.image.repository.entity.Image;
+import deepdivers.community.domain.file.repository.entity.File;
+import deepdivers.community.domain.file.repository.entity.FileType;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
@@ -69,10 +70,10 @@ class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("게시글 수정이 성공하면 수정된 정보를 반환한다")
-    void updatePostSuccessTest() {
+    void updateSuccessTest() {
         // Given
         Member member = getMember(1L);
-        PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
+        PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 3L, List.of(), List.of());
         createTestObject("default-image/posts/thumbnail.png");
 
         // When
@@ -80,7 +81,7 @@ class PostServiceTest extends IntegrationTest {
 
         // Then
         Post updatedPost = getPost(1L);
-        assertThat(updatedPost.getCategory().getId()).isEqualTo(2L);
+        assertThat(updatedPost.getCategory().getId()).isEqualTo(3L);
     }
 
     @Test
@@ -92,13 +93,13 @@ class PostServiceTest extends IntegrationTest {
 
         // When & Then
         assertThatThrownBy(() -> postService.updatePost(999L, request, member))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
     @Test
     @DisplayName("게시글 작성자가 아닌 멤버가 수정 요청 시 예외가 발생한다")
-    void updatePostByNonAuthorThrowsException() {
+    void updateByNonAuthorThrowsException() {
         // Given
         Member member = getMember(2L);
         PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 2L, List.of(), List.of());
@@ -111,7 +112,7 @@ class PostServiceTest extends IntegrationTest {
 
     @Test
     @DisplayName("수정 요청에서 존재하지 않는 카테고리를 지정할 경우 예외가 발생한다")
-    void updatePostWithInvalidCategoryThrowsException() {
+    void updateWithInvalidCategoryThrowsException() {
         // Given
         Member member = getMember(1L);
         PostSaveRequest request = new PostSaveRequest("Title", "Content", "Thumbnail", 5L, List.of(), List.of());
@@ -145,7 +146,7 @@ class PostServiceTest extends IntegrationTest {
 
         // When & Then
         assertThatThrownBy(() -> postService.deletePost(invalidPostId, member))
-                .isInstanceOf(BadRequestException.class)
+                .isInstanceOf(NotFoundException.class)
                 .hasFieldOrPropertyWithValue("exceptionType", PostExceptionCode.POST_NOT_FOUND);
     }
 
@@ -192,8 +193,8 @@ class PostServiceTest extends IntegrationTest {
         postService.updatePost(1L, request, member);
 
         // Then
-        List<Image> postContentImages = getPostContentImages(1L);
-        List<String> imageKeys = postContentImages.stream().map(Image::getImageKey).toList();
+        List<File> postContentFiles = getPostImages(1L, FileType.POST_CONTENT);
+        List<String> imageKeys = postContentFiles.stream().map(File::getFileKey).toList();
         assertThat(imageKeys).isEqualTo(List.of("posts/image2.png", "posts/image3.png"));
     }
 

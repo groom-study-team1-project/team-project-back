@@ -1,20 +1,24 @@
 package deepdivers.community.domain.post.service;
 
+import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.category.service.CategoryService;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.common.dto.response.NoContent;
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.common.exception.NotFoundException;
+import deepdivers.community.domain.file.application.FileService;
+import deepdivers.community.domain.file.repository.entity.FileType;
 import deepdivers.community.domain.hashtag.service.HashtagService;
-import deepdivers.community.domain.image.application.ImageService;
 import deepdivers.community.domain.member.entity.Member;
+import deepdivers.community.domain.post.domain.PostCreator;
+import deepdivers.community.domain.post.domain.adaptor.GeneralPostAdaptor;
+import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.dto.request.PostSaveRequest;
 import deepdivers.community.domain.post.dto.response.PostSaveResponse;
-import deepdivers.community.domain.post.dto.code.PostStatusCode;
-import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.entity.Post;
-import deepdivers.community.domain.category.entity.PostCategory;
 import deepdivers.community.domain.post.entity.PostStatus;
+import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.repository.jpa.PostRepository;
-import deepdivers.community.domain.common.exception.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,34 +33,43 @@ public class PostService {
     private final PostRepository postRepository;
     private final CategoryService categoryService;
     private final HashtagService hashtagService;
-    private final ImageService imageService;
+    private final FileService fileService;
 
     public API<PostSaveResponse> createPost(final PostSaveRequest request, final Member member) {
-        final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
-        final Post post = Post.of(request, postCategory, member);
+        final PostCategory category = categoryService.getCategoryById(request.categoryId());
+        categoryService.validateGeneralCategory(category);
+
+        final PostCreator postCreator = new GeneralPostAdaptor(request, category, member);
+        final Post post = Post.of(postCreator);
 
         final Post savedPost = postRepository.save(post);
         hashtagService.createPostHashtags(post, request.hashtags());
-        imageService.createPostContentImage(request.imageKeys(), savedPost.getId());
+        fileService.createPostImage(request.imageKeys(), savedPost.getId(), FileType.POST_CONTENT);
 
         return API.of(PostStatusCode.POST_CREATE_SUCCESS, PostSaveResponse.from(savedPost));
     }
 
     public API<PostSaveResponse> updatePost(final Long postId, final PostSaveRequest request, final Member member) {
-        final PostCategory postCategory = categoryService.getCategoryById(request.categoryId());
         final Post post = getPostByIdWithThrow(postId);
         validatePostAuthor(member, post);
 
-        final Post updatedPost = post.updatePost(request, postCategory);
+        final PostCategory category = categoryService.getCategoryById(request.categoryId());
+        categoryService.validateGeneralCategory(category);
+
+        final PostCreator postCreator = new GeneralPostAdaptor(request, category, member);
+        final Post updatedPost = post.update(postCreator);
+
         hashtagService.updatePostHashtags(updatedPost, request.hashtags());
-        imageService.updatePostContentImage(request.imageKeys(), updatedPost.getId());
+        fileService.updatePostImage(request.imageKeys(), updatedPost.getId(), FileType.POST_CONTENT);
 
         return API.of(PostStatusCode.POST_UPDATE_SUCCESS, PostSaveResponse.from(updatedPost));
     }
 
     public NoContent deletePost(final Long postId, final Member member) {
         final Post post = getPostByIdWithThrow(postId);
+
         validatePostAuthor(member, post);
+        categoryService.validateGeneralCategory(post.getCategory());
 
         post.deletePost();
 
@@ -65,7 +78,7 @@ public class PostService {
 
     private Post getPostByIdWithThrow(final Long postId) {
         return postRepository.findByIdAndStatus(postId, PostStatus.ACTIVE)
-                .orElseThrow(() -> new BadRequestException(PostExceptionCode.POST_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException(PostExceptionCode.POST_NOT_FOUND));
     }
 
     private void validatePostAuthor(final Member member, final Post post) {

@@ -5,9 +5,9 @@ import deepdivers.community.domain.hashtag.entity.Hashtag;
 import deepdivers.community.domain.hashtag.entity.PostHashtag;
 import deepdivers.community.domain.hashtag.repository.jpa.HashtagRepository;
 import deepdivers.community.domain.hashtag.repository.jpa.PostHashtagRepository;
-import deepdivers.community.domain.image.repository.entity.ImageType;
-import deepdivers.community.domain.image.repository.entity.Image;
-import deepdivers.community.domain.image.repository.jpa.JpaImageRepository;
+import deepdivers.community.domain.file.repository.entity.FileType;
+import deepdivers.community.domain.file.repository.entity.File;
+import deepdivers.community.domain.file.repository.jpa.JpaFileRepository;
 import deepdivers.community.domain.member.entity.Member;
 import deepdivers.community.domain.member.repository.jpa.MemberRepository;
 import deepdivers.community.domain.post.entity.Post;
@@ -43,7 +43,8 @@ public class IntegrationTest {
     @Autowired PostRepository postRepository;
     @Autowired CommentRepository commentRepository;
     @Autowired PostHashtagRepository postHashtagRepository;
-    @Autowired JpaImageRepository imageRepository;
+    @Autowired
+    JpaFileRepository imageRepository;
     @Autowired HashtagRepository hashtagRepository;
 
     @Autowired protected S3Client s3Client;
@@ -58,10 +59,10 @@ public class IntegrationTest {
         return postRepository.findById(id).get();
     }
 
-    protected List<Image> getPostContentImages(Long id) {
+    protected List<File> getPostImages(Long id, FileType type) {
         return imageRepository.findAll()
             .stream()
-            .filter(image -> image.getReferenceId().equals(id) && image.getImageType() == ImageType.POST_CONTENT)
+            .filter(image -> image.getReferenceId().equals(id) && image.getFileType() == type)
             .toList();
     }
 

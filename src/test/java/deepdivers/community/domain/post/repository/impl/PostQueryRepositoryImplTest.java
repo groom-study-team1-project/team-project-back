@@ -51,7 +51,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result).hasSize(2);
     }
 
     @Test
@@ -203,6 +203,42 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
 
         // then
         assertThat(result.getFirst().getPostId()).isEqualTo(10);
+    }
+
+    @Test
+    void 최대_조회개수가_정해져있다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, 100);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result).hasSizeLessThan(31);
+    }
+
+    @Test
+    void 최소_최대_조회개수_사이만큼_조회가_된다() {
+        // given
+        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, 7);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then --> deleted data 제외된 결과 값
+        assertThat(result).hasSize(6);
+    }
+
+    @Test
+    void 최소_limit_제한이_있다() {
+        // given, test.sql
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, 2);
+
+        // when
+        List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
+
+        // then
+        assertThat(result).hasSize(5);
     }
 
 }

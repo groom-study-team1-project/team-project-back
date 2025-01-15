@@ -21,10 +21,10 @@ INSERT INTO member (email, password, about_me, comment_count, post_count, blog_a
 VALUES ('email10@test.com', '$2a$10$kL5QsZWD23lNIY8pBa1UQep.WaRgv9/cMSODJmDLt6DS/sL4jagxu', 'About me 10', 0, 1, 'http://blog10.com', 'http://github.com/user10', '010-1234-0010', CURRENT_TIMESTAMP, 'default-image/users/test-image10.png', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/users/test-image10.png', 'User10', 'user10', 'NORMAL', 'REGISTERED', CURRENT_TIMESTAMP, 'EMPTY');
 
 -- Post 테이블 기본 카테고리 INSERT 쿼리
-INSERT INTO deepdive_commnuity_post_category (category_id, title, description) VALUES (1, '자유게시판', '자유게시판 입니다.');
-INSERT INTO deepdive_commnuity_post_category (category_id, title, description) VALUES (2, '프로젝트 자랑 게시판', '프로젝트 자랑 게시판 입니다.');
-INSERT INTO deepdive_commnuity_post_category (category_id, title, description) VALUES (3, '질문 게시판', '질문 게시판 입니다.');
-INSERT INTO deepdive_commnuity_post_category (category_id, title, description) VALUES (4, '공지사항 게시판', '공지사항 게시판 입니다.');
+INSERT INTO deepdive_commnuity_post_category (category_id, title, description, category_type) VALUES (1, '자유게시판', '자유게시판 입니다.', 'GENERAL');
+INSERT INTO deepdive_commnuity_post_category (category_id, title, description, category_type) VALUES (2, '프로젝트 자랑 게시판', '프로젝트 자랑 게시판 입니다.', 'PROJECT');
+INSERT INTO deepdive_commnuity_post_category (category_id, title, description, category_type) VALUES (3, '질문 게시판', '질문 게시판 입니다.', 'GENERAL');
+INSERT INTO deepdive_commnuity_post_category (category_id, title, description, category_type) VALUES (4, '공지사항 게시판', '공지사항 게시판 입니다.', 'GENERAL');
 
 -- Post 테이블 INSERT 쿼리
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
@@ -51,7 +51,7 @@ VALUES (10, '열 번째 게시글', '열 번째 게시글의 내용입니다.', 
 insert into hashtag (id, hashtag) values (1, '태그입니다');
 insert into post_hashtag (id, post_id, hashtag_id, created_at, updated_at) values (1, 10, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
-insert into deepdive_community_image (image_id, image_key, image_url, image_type, reference_id, created_at, updated_at)
+insert into deepdive_community_file (file_id, file_key, file_url, file_type, reference_id, created_at, updated_at)
 values (1, 'default-image/posts/thumbnail.png', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 'POST_CONTENT', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO comment (id, member_id, post_id, parent_comment_id, content, reply_count, like_count, status, created_at, updated_at)

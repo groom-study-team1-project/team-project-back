@@ -12,11 +12,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import deepdivers.community.domain.ControllerTest;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.post.aspect.ViewCountAspect;
+import deepdivers.community.domain.post.controller.interfaces.ProjectPostQueryRepository;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
+import deepdivers.community.domain.post.dto.response.ProjectPostDetailResponse;
+import deepdivers.community.domain.post.dto.response.ProjectPostPreviewResponse;
 import deepdivers.community.domain.post.repository.jpa.PostRepository;
 import deepdivers.community.utils.PostDtoGenerator;
 import io.restassured.common.mapper.TypeRef;
@@ -36,9 +39,8 @@ import org.springframework.test.web.servlet.MockMvc;
 class PostOpenControllerTest extends ControllerTest {
 
 	@MockBean private PostQueryRepository postQueryRepository;
+	@MockBean private ProjectPostQueryRepository projectPostQueryRepository;
     @MockBean private PostRepository postRepository;
-	@Autowired
-	MockMvc mockMvc;
 
 	@Test
 	@DisplayName("게시글 상세 조회 요청이 성공적으로 처리되면 200 OK와 함께 응답을 반환한다")
@@ -165,6 +167,66 @@ class PostOpenControllerTest extends ControllerTest {
 		// then
 		API<List<PostPreviewResponse>> mockResponse = API.of(PostStatusCode.MY_POSTS_GETTING_SUCCESS, mockQueryResult);
 		assertThat(mockResponse).usingRecursiveComparison().isEqualTo(response);
+	}
+
+	@Test
+	void 프로젝트_게시글_전체_조회가_성공한다() {
+		// given
+		List<ProjectPostPreviewResponse> mockResp = List.of(PostDtoGenerator.generateProjectPostPreview());
+		given(projectPostQueryRepository.findAllPosts(isNull(), any(GetPostsRequest.class))).willReturn(mockResp);
+
+		// when
+		API<List<ProjectPostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
+			.when().get("/open/posts/project")
+			.then().log().all()
+			.status(HttpStatus.OK)
+			.extract()
+			.as(new TypeRef<>() {
+			});
+
+		// then
+		API<List<ProjectPostPreviewResponse>> expected = API.of(PostStatusCode.POST_VIEW_SUCCESS, mockResp);
+		assertThat(response).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	@Test
+	void 사용자가_작성한_프로젝트_게시글_조회가_성공한다() {
+		// given
+		List<ProjectPostPreviewResponse> mockResp = List.of(PostDtoGenerator.generateProjectPostPreview());
+		given(projectPostQueryRepository.findAllPosts(anyLong(), any(GetPostsRequest.class))).willReturn(mockResp);
+
+		// when
+		API<List<ProjectPostPreviewResponse>> response = RestAssuredMockMvc.given().log().all()
+			.pathParam("memberId", 1L).when().get("/open/posts/project/me/{memberId}")
+			.then().log().all()
+			.status(HttpStatus.OK)
+			.extract()
+			.as(new TypeRef<>() {
+			});
+
+		// then
+		API<List<ProjectPostPreviewResponse>> expected = API.of(PostStatusCode.POST_VIEW_SUCCESS, mockResp);
+		assertThat(response).usingRecursiveComparison().isEqualTo(expected);
+	}
+
+	@Test
+	void 프로젝트_게시글_상세_조회가_성공한다() {
+		// given
+		ProjectPostDetailResponse mockResp = PostDtoGenerator.generateProjectDetail();
+		given(projectPostQueryRepository.readPostByPostId(anyLong(), anyLong())).willReturn(mockResp);
+
+		// when
+		API<ProjectPostDetailResponse> response = RestAssuredMockMvc.given().log().all()
+			.pathParam("postId", 1L).when().get("/open/posts/project/{postId}")
+			.then().log().all()
+			.status(HttpStatus.OK)
+			.extract()
+			.as(new TypeRef<>() {
+			});
+
+		// then
+		API<ProjectPostDetailResponse> expected = API.of(PostStatusCode.POST_VIEW_SUCCESS, mockResp);
+		assertThat(response).usingRecursiveComparison().isEqualTo(expected);
 	}
 
 }

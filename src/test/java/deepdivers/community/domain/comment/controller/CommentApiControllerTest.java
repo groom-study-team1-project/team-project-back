@@ -32,7 +32,6 @@ import org.springframework.http.HttpStatus;
 @WebMvcTest(controllers = CommentApiController.class)
 class CommentApiControllerTest extends ControllerTest {
 
-    @MockBean LikeService likeService;
     @MockBean CommentService commentService;
 
     @BeforeEach
@@ -245,82 +244,6 @@ class CommentApiControllerTest extends ControllerTest {
             .status(HttpStatus.BAD_REQUEST)
             .body("code", equalTo(101))
             .body("message", containsString("댓글 내용이 필요합니다."));
-    }
-
-    @Test
-    void 댓글_좋아요_요청이_성공한다() {
-        // given
-        LikeRequest request = new LikeRequest(1L);
-        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
-        given(likeService.likeComment(any(LikeRequest.class), anyLong())).willReturn(mockResponse);
-
-        // when
-        NoContent response = RestAssuredMockMvc.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/api/comments/like")
-            .then().log().all()
-            .status(HttpStatus.OK)
-            .extract()
-            .as(new TypeRef<>() {
-            });
-
-        // then
-        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
-    }
-
-    @Test
-    void 댓글_좋아요시_댓글_식별자가_없으면_예외가_발생한다() {
-        // given
-        LikeRequest request = new LikeRequest(null);
-
-        // when & then
-        RestAssuredMockMvc.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/api/comments/like")
-            .then().log().all()
-            .status(HttpStatus.BAD_REQUEST)
-            .body("code", equalTo(101))
-            .body("message", containsString("대상 정보가 필요합니다."));
-    }
-
-    @Test
-    void 댓글_좋아요_취소_요청이_성공한다() {
-        // given
-        LikeRequest request = new LikeRequest(1L);
-        NoContent mockResponse = NoContent.from(CommentStatusCode.COMMENT_CREATE_SUCCESS);
-        given(likeService.unlikeComment(any(LikeRequest.class), anyLong())).willReturn(mockResponse);
-
-        // when
-        NoContent response = RestAssuredMockMvc.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/api/comments/unlike")
-            .then().log().all()
-            .status(HttpStatus.OK)
-            .extract()
-            .as(new TypeRef<>() {
-            });
-
-        // then
-        assertThat(response).usingRecursiveComparison().isEqualTo(mockResponse);
-    }
-
-    @Test
-    void 댓글_좋아요_취소시_댓글_식별자가_없으면_예외가_발생한다() {
-        // given
-        LikeRequest request = new LikeRequest(null);
-
-        // when & then
-        RestAssuredMockMvc.given().log().all()
-            .contentType(ContentType.JSON)
-            .body(request)
-            .when().post("/api/comments/unlike")
-            .then().log().all()
-            .status(HttpStatus.BAD_REQUEST)
-            .body("code", equalTo(101))
-            .body("message", containsString("대상 정보가 필요합니다."));
     }
 
 }
