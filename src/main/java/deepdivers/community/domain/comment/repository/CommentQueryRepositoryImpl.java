@@ -14,6 +14,7 @@ import deepdivers.community.domain.comment.entity.CommentStatus;
 import deepdivers.community.domain.like.entity.LikeTarget;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -48,13 +49,20 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
             .leftJoin(like).on(hasLike(viewerId))
             .where(
                 comment.post.id.eq(postId),
-                comment.id.lt(lastCommentId),
+                getLt(lastCommentId),
                 comment.parentCommentId.isNull(),
                 comment.status.eq(CommentStatus.REGISTERED)
             )
             .orderBy(comment.id.desc())
             .limit(5)
             .fetch();
+    }
+
+    private static BooleanExpression getLt(Long lastCommentId) {
+        if (lastCommentId == null) {
+            return null;
+        }
+        return comment.id.lt(lastCommentId);
     }
 
     @Override
@@ -82,7 +90,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
             .leftJoin(like).on(hasLike(memberId))
             .where(
                 comment.parentCommentId.eq(commentId),
-                comment.id.lt(lastCommentId),
+                getLt(lastCommentId),
                 comment.status.eq(CommentStatus.REGISTERED)
             )
             .orderBy(comment.id.desc())
