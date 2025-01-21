@@ -14,4 +14,6 @@ public interface ProjectPostQueryRepository {
 
     ProjectPostPageResponse generateNormalPostPageQuery(GetPostsRequest request);
 
+    List<ProjectPostPreviewResponse> searchPosts(String keyword, GetPostsRequest dto);
+
 }

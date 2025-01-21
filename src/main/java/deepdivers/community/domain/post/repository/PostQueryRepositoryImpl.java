@@ -87,6 +87,20 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         return new NormalPostPageResponse(popularHashtags, popularPosts, top10Posts);
     }
 
+    @Override
+    public List<PostPreviewResponse> searchPosts(final String keyword, final GetPostsRequest dto) {
+        final List<PostPreviewResponse> postPreviewResponses = extractPostPreview(null, dto, keyword);
+        final List<Long> postIds = postPreviewResponses.stream().map(PostPreviewResponse::getPostId).toList();
+        final Map<Long, List<String>> hashtagsByPosts = hashtagQueryRepository.findAllHashtagByPosts(postIds);
+
+        postPreviewResponses.forEach(postPreviewResponse -> {
+            final Long postId = postPreviewResponse.getPostId();
+            postPreviewResponse.setHashtags(hashtagsByPosts.getOrDefault(postId, Collections.emptyList()));
+        });
+
+        return postPreviewResponses;
+    }
+
     private List<PopularPostResponse> findWeeklyPopularPostByCategory(final Long categoryId) {
         return queryFactory
             .select(Projections.fields(
@@ -124,6 +138,27 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
                 ),
                 PostQueryUtils.determineCategoryCondition(dto.categoryId(), CategoryType.GENERAL),
                 post.status.eq(PostStatus.ACTIVE)
+            )
+            .orderBy(PostQueryUtils.determinePostSortCondition(dto.postSortType()))
+            .limit(PostQueryUtils.getLimitOrDefault(dto.limit()))
+            .fetch();
+    }
+
+    private List<PostPreviewResponse> extractPostPreview(final Long memberId, final GetPostsRequest dto, final String keyword) {
+        return queryFactory.select(PostQBeanGenerator.createPreview(PostPreviewResponse.class))
+            .from(post)
+            .join(member).on(member.id.eq(post.member.id))
+            .where(
+                PostQueryUtils.determineAuthorCheckingCondition(memberId),
+                PostQueryUtils.deterMineLastContentCondition(
+                    dto.lastPostId(),
+                    dto.lastViewCount(),
+                    dto.lastCommentCount(),
+                    dto.postSortType()
+                ),
+                PostQueryUtils.determineCategoryCondition(dto.categoryId(), CategoryType.GENERAL),
+                post.status.eq(PostStatus.ACTIVE),
+                post.title.title.like("%" + keyword + "%")
             )
             .orderBy(PostQueryUtils.determinePostSortCondition(dto.postSortType()))
             .limit(PostQueryUtils.getLimitOrDefault(dto.limit()))
