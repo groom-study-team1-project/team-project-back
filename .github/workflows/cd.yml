@@ -40,8 +40,7 @@ jobs:
 
       - name: Update docker data info
         run: |
-          sudo sed -i "s|image:.*|image: ${{ secrets.DOCKERHUB_USER_NAME }}/${{ secrets.DOCKERHUB_DEV_REPOSITORY }}:${{ github.sha }}|g" ${{ secrets.FILE_NAME }}
-
+          sudo sed -i "/app:/,/ports:/ s|image:.*|image: ${{ secrets.DOCKERHUB_USER_NAME }}/${{ secrets.DOCKERHUB_DEV_REPOSITORY }}:${{ github.sha }}|" ${{ secrets.FILE_NAME }}
       - name: Stop application container
         run: docker-compose stop app
 
@@ -50,28 +49,33 @@ jobs:
 
       - name: Create .env file
         run: |
-          echo "AWS_CREDENTIALS_ACCESS_KEY=${{ secrets.AWS_CREDENTIALS_ACCESS_KEY }}" > .env
-          echo "AWS_CREDENTIALS_SECRET_KEY=${{ secrets.AWS_CREDENTIALS_SECRET_KEY }}" >> .env
-          echo "AWS_S3_ENDPOINT=${{ secrets.AWS_S3_ENDPOINT }}" >> .env
-          echo "AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}" >> .env
-          echo "AWS_STATIC_REGION=${{ secrets.AWS_STATIC_REGION }}" >> .env
-          echo "DATASOURCE_DRIVER=${{ secrets.DATASOURCE_DRIVER }}" >> .env
-          echo "DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }}" >> .env
-          echo "DATASOURCE_URL=${{ secrets.DATASOURCE_URL }}" >> .env
-          echo "DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }}" >> .env
-          echo "HIBERNATE_DDL_AUTO=${{ secrets.HIBERNATE_DDL_AUTO }}" >> .env
-          echo "JPA_DATABASE_PLATFORM=${{ secrets.JPA_DATABASE_PLATFORM }}" >> .env
-          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
-          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> .env
-          echo "TOKEN_ACCESS_EXP=${{ secrets.TOKEN_ACCESS_EXP }}" >> .env
-          echo "TOKEN_REFRESH_EXP=${{ secrets.TOKEN_REFRESH_EXP }}" >> .env
-          echo "TOKEN_SECRET_KEY=${{ secrets.TOKEN_SECRET_KEY }}" >> .env
+          echo "AWS_CREDENTIALS_ACCESS_KEY=${{ secrets.AWS_CREDENTIALS_ACCESS_KEY }}" > ~/.env
+          echo "AWS_CREDENTIALS_SECRET_KEY=${{ secrets.AWS_CREDENTIALS_SECRET_KEY }}" >> ~/.env
+          echo "AWS_S3_ENDPOINT=${{ secrets.AWS_S3_ENDPOINT }}" >> ~/.env
+          echo "AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}" >> ~/.env
+          echo "AWS_STATIC_REGION=${{ secrets.AWS_STATIC_REGION }}" >> ~/.env
+          echo "DATASOURCE_DRIVER=${{ secrets.DATASOURCE_DRIVER }}" >> ~/.env
+          echo "DATASOURCE_PASSWORD=${{ secrets.DATASOURCE_PASSWORD }}" >> ~/.env
+          echo "DATASOURCE_URL=${{ secrets.DATASOURCE_URL }}" >> ~/.env
+          echo "DATASOURCE_USERNAME=${{ secrets.DATASOURCE_USERNAME }}" >> ~/.env
+          echo "HIBERNATE_DDL_AUTO=${{ secrets.HIBERNATE_DDL_AUTO }}" >> ~/.env
+          echo "JPA_DATABASE_PLATFORM=${{ secrets.JPA_DATABASE_PLATFORM }}" >> ~/.env
+          echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> ~/.env
+          echo "SERVER_URL=${{ secrets.SERVER_URL }}" >> ~/.env
+          echo "TOKEN_ACCESS_EXP=${{ secrets.TOKEN_ACCESS_EXP }}" >> ~/.env
+          echo "TOKEN_REFRESH_EXP=${{ secrets.TOKEN_REFRESH_EXP }}" >> ~/.env
+          echo "TOKEN_SECRET_KEY=${{ secrets.TOKEN_SECRET_KEY }}" >> ~/.env
+          echo "DATASOURCE_PASSWORD_DEV=${{ secrets.DATASOURCE_PASSWORD_DEV }}" >> ~/.env
+          echo "DATASOURCE_URL_DEV=${{ secrets.DATASOURCE_URL_DEV }}" >> ~/.env
+          echo "DATASOURCE_USERNAME_DEV=${{ secrets.DATASOURCE_USERNAME_DEV }}" >> ~/.env
+          echo "SPRING_PROFILES_ACTIVE=dev" >> ~/.env
+          echo "REDIS_HOST=redis" >> ~/.env
 
       - name: docker app service container start
         run: docker-compose up -d app
 
       - name: Remove .env file
-        run: rm .env
+        run: rm ~/.env
 
       - name: delete old docker image
         run: docker system prune -f

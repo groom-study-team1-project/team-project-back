@@ -212,7 +212,7 @@ class PostOpenControllerTest extends ControllerTest {
 	@Test
 	void 프로젝트_게시글_상세_조회가_성공한다() {
 		// given
-		ProjectPostDetailResponse mockResp = PostDtoGenerator.generateProjectDetail();
+		ProjectPostDetailResponse mockResp = new ProjectPostDetailResponse(false, false);
 		given(projectPostQueryRepository.readPostByPostId(anyLong(), anyLong())).willReturn(mockResp);
 
 		// when
