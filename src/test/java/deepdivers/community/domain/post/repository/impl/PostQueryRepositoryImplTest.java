@@ -19,7 +19,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 전쳬_게시글_목록을_가져온다() {
         // given, test.sql
-        GetPostsRequest dto = new GetPostsRequest(null, null, null, null);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, null, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -32,7 +32,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @DisplayName("카테고리 정보만 있을 경우 카테고리 별 삭제되지 않은 전체 게시글 목록이 조회가 된다.")
     void givenNullLastPostIdAndCategoryIdWhenFindAllPostsThenReturnPostsByCategory() {
         // given, test.sql
-        GetPostsRequest dto = new GetPostsRequest(1L, null, null, null);
+        GetPostsRequest dto = new GetPostsRequest(1L, null, null, null, null, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -45,7 +45,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @DisplayName("마지막 포스트 정보만 있을 경우 모든 카테고리의 삭제되지 않은 게시글 목록이 조회가 된다.")
     void givenLastPostIdAndNullCategoryIdWhenFindAllPostsThenReturnPostsAmongPostIdSmallerThanLastPostId() {
         // given, test.sql
-        GetPostsRequest dto = new GetPostsRequest(null, 5L, null, null);
+        GetPostsRequest dto = new GetPostsRequest(null, 5L, null, null, null, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -58,7 +58,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @DisplayName("마지막 포스트 정보와 카테 고리 정보가 있을 경우 카테고리 별 삭제되지 않은 게시글 목록이 조회가 된다.")
     void givenLastPostIdAndCategoryIdWhenFindAllPostsThenReturnNoDeletePosts() {
         // given, test.sql
-        GetPostsRequest dto = new GetPostsRequest(1L, 5L, null, null);
+        GetPostsRequest dto = new GetPostsRequest(1L, 5L, null, null, null, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -71,7 +71,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @DisplayName("마지막 게시글 id가 1번일 경우, 조회 시 0개가 조회된다.")
     void givenLastPostIdWhenFindAllPostsThenReturnEmptyPosts() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, 1L, null, null);
+        GetPostsRequest dto = new GetPostsRequest(null, 1L, null, null, null, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -83,7 +83,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 특정_사용자의_게시글_작성_목록을_가져올_수_있다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, null, null);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, null, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(1L, dto);
@@ -172,7 +172,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 게시글_조회_수를_기준으로_조회할_수_있다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.HOT, null);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, PostSortType.HOT, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -184,7 +184,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 게시글_댓글_수를_기준으로_조회할_수_있다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.COMMENT, null);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, PostSortType.COMMENT, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -196,7 +196,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 게시글_인기_수를_기준으로_조회할_수_있다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, null);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, PostSortType.LATEST, null);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -208,7 +208,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 최대_조회개수가_정해져있다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, 100);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, PostSortType.LATEST, 100);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -220,7 +220,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 최소_최대_조회개수_사이만큼_조회가_된다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, PostSortType.LATEST, 7);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, PostSortType.LATEST, 7);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);
@@ -232,7 +232,7 @@ class PostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 최소_limit_제한이_있다() {
         // given, test.sql
-        GetPostsRequest dto = new GetPostsRequest(null, null, null, 2);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, null, 2);
 
         // when
         List<PostPreviewResponse> result = postQueryRepository.findAllPosts(null, dto);

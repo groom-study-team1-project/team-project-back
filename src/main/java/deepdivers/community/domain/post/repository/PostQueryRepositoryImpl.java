@@ -1,23 +1,29 @@
 package deepdivers.community.domain.post.repository;
 
+import static deepdivers.community.domain.category.entity.QPostCategory.postCategory;
 import static deepdivers.community.domain.like.entity.QLike.like;
 import static deepdivers.community.domain.member.entity.QMember.member;
 import static deepdivers.community.domain.post.entity.QPost.post;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.common.exception.NotFoundException;
 import deepdivers.community.domain.file.application.interfaces.FileQueryRepository;
 import deepdivers.community.domain.file.repository.entity.FileType;
 import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
+import deepdivers.community.domain.hashtag.dto.PopularHashtagResponse;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
+import deepdivers.community.domain.post.dto.response.NormalPostPageResponse;
+import deepdivers.community.domain.post.dto.response.PopularPostResponse;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.entity.PostStatus;
 import deepdivers.community.domain.post.exception.PostExceptionCode;
 import deepdivers.community.domain.post.repository.utils.PostQBeanGenerator;
 import deepdivers.community.domain.post.repository.utils.PostQueryUtils;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +34,8 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class PostQueryRepositoryImpl implements PostQueryRepository {
 
+    private static final int WEEKLY_BASE_DAY = 7;
+
     private final JPAQueryFactory queryFactory;
     private final HashtagQueryRepository hashtagQueryRepository;
     private final FileQueryRepository fileQueryRepository;
@@ -36,7 +44,6 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
     public List<PostPreviewResponse> findAllPosts(final Long memberId, final GetPostsRequest dto) {
         final List<PostPreviewResponse> postPreviewResponses = extractPostPreview(memberId, dto);
         final List<Long> postIds = postPreviewResponses.stream().map(PostPreviewResponse::getPostId).toList();
-        System.out.println(postIds);
         final Map<Long, List<String>> hashtagsByPosts = hashtagQueryRepository.findAllHashtagByPosts(postIds);
 
         postPreviewResponses.forEach(postPreviewResponse -> {
@@ -67,6 +74,41 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
         return postDetailResponse;
     }
 
+    @Override
+    public NormalPostPageResponse getNormalPostPageQuery(final GetPostsRequest dto) {
+        // 인기 해시태그 정보
+        final List<PopularHashtagResponse> popularHashtags =
+            hashtagQueryRepository.findWeeklyPopularHashtagByCategory(dto.categoryId(), CategoryType.GENERAL);
+        // 인기 게시글 정보
+        final List<PopularPostResponse> popularPosts = findWeeklyPopularPostByCategory(dto.categoryId());
+        // 기본 10개의 게시글 데이터
+        final List<PostPreviewResponse> top10Posts = findAllPosts(null, dto);
+
+        return new NormalPostPageResponse(popularHashtags, popularPosts, top10Posts);
+    }
+
+    private List<PopularPostResponse> findWeeklyPopularPostByCategory(final Long categoryId) {
+        return queryFactory
+            .select(Projections.fields(
+                PopularPostResponse.class,
+                post.id.as("postId"),
+                post.title.title.as("title"),
+                post.content.content.as("content"),
+                post.thumbnail.as("thumbnailUrl")
+            ))
+            .from(post)
+            .join(post.category, postCategory)
+            .where(
+                post.createdAt.after(LocalDateTime.now().minusDays(WEEKLY_BASE_DAY)),
+                post.status.eq(PostStatus.ACTIVE),
+                postCategory.id.eq(categoryId),
+                postCategory.categoryType.eq(CategoryType.GENERAL)
+            )
+            .orderBy(post.viewCount.desc())
+            .limit(5)
+            .fetch();
+    }
+
 
     private List<PostPreviewResponse> extractPostPreview(final Long memberId, final GetPostsRequest dto) {
         return queryFactory.select(PostQBeanGenerator.createPreview(PostPreviewResponse.class))
@@ -74,7 +116,12 @@ public class PostQueryRepositoryImpl implements PostQueryRepository {
             .join(member).on(member.id.eq(post.member.id))
             .where(
                 PostQueryUtils.determineAuthorCheckingCondition(memberId),
-                PostQueryUtils.deterMineLastContentCondition(dto.lastPostId()),
+                PostQueryUtils.deterMineLastContentCondition(
+                    dto.lastPostId(),
+                    dto.lastViewCount(),
+                    dto.lastCommentCount(),
+                    dto.postSortType()
+                ),
                 PostQueryUtils.determineCategoryCondition(dto.categoryId(), CategoryType.GENERAL),
                 post.status.eq(PostStatus.ACTIVE)
             )

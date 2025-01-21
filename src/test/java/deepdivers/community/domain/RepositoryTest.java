@@ -32,7 +32,8 @@ import org.springframework.test.annotation.DirtiesContext;
     MemberQueryRepositoryImpl.class,
     FileQueryRepositoryImpl.class,
     CategoryQueryRepositoryImpl.class,
-    ProjectPostQueryRepositoryImpl.class
+    ProjectPostQueryRepositoryImpl.class,
+    HashtagQueryRepositoryImpl.class,
 })
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @DirtiesContext
@@ -45,5 +46,6 @@ public class RepositoryTest {
     @Autowired protected MemberQueryRepository memberQueryRepository;
     @Autowired protected CategoryQueryRepository categoryQueryRepository;
     @Autowired protected ProjectPostQueryRepository projectPostQueryRepository;
+    @Autowired protected HashtagQueryRepository hashTagQueryRepository;
 
 }

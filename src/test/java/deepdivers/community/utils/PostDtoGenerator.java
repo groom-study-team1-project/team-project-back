@@ -21,7 +21,7 @@ public class PostDtoGenerator {
     }
 
     public static ProjectPostDetailResponse generateProjectDetail() {
-        return new ProjectPostDetailResponse();
+        return new ProjectPostDetailResponse(false, false);
     }
 
 }

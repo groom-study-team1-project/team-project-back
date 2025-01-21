@@ -157,6 +157,10 @@ public class Member extends TimeBaseEntity {
         activityStats.incrementPostCount();
     }
 
+    public void decrementPostCount() {
+        activityStats.decrementPostCount();
+    }
+
     public void updateProfileImage(final String imageKey, final String imageUrl) {
         image = ProfileImage.of(imageKey, imageUrl);
     }

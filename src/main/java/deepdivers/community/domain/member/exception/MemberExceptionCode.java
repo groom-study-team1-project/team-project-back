@@ -20,7 +20,7 @@ public enum MemberExceptionCode implements ExceptionCode {
     NOT_FOUND_MEMBER(2009, "사용자 정보를 찾을 수 없습니다."),
     INVALID_EMAIL_FORMAT(2010, "이메일 형식을 맞춰주세요."),
     INVALID_PASSWORD(2011, "비밀번호가 틀렸습니다."),
-    ALREADY_USING_PASSWORD(2012, "동일한 비밀번호로 변경할 수 없습니다.");
+    ALREADY_USING_PASSWORD(2012, "동일한 비밀번호로 변경할 수 없습니다."), INVALID_ACCESS(2013, "잘못된 접근입니다.");
 
     private final int code;
     private final String message;

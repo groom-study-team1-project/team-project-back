@@ -17,7 +17,7 @@ class ProjectPostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 프로젝트_게시글을_가져올_수_있다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, null, null);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, null, null);
 
         // when
         List<ProjectPostPreviewResponse> result = projectPostQueryRepository.findAllPosts(null, dto);
@@ -29,7 +29,7 @@ class ProjectPostQueryRepositoryImplTest extends RepositoryTest {
     @Test
     void 사용자별_프로젝트_게시글을_가져올_수_있다() {
         // given
-        GetPostsRequest dto = new GetPostsRequest(null, null, null, null);
+        GetPostsRequest dto = new GetPostsRequest(null, null, null, null, null, null);
 
         // when
         List<ProjectPostPreviewResponse> result = projectPostQueryRepository.findAllPosts(2L, dto);

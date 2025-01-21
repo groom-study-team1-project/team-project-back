@@ -38,9 +38,11 @@ public class ViewCountAspect {
 
             final HttpServletRequest request = attr.getRequest();
             final HttpServletResponse response = attr.getResponse();
-            if (response == null) {
+
+            if (response == null || "OPTIONS".equalsIgnoreCase(request.getMethod())) {
                 return joinPoint.proceed();
             }
+
 
             final Long postId = (Long) joinPoint.getArgs()[0];
             final String cookieName = VIEW_COOKIE_PREFIX + postId;
