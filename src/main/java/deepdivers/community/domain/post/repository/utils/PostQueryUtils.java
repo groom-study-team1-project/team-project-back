@@ -54,7 +54,7 @@ public class PostQueryUtils {
             case COMMENT -> post.commentCount.lt(lastCommentCount)
                 .or(post.commentCount.eq(lastCommentCount)
                     .and(post.id.lt(lastContentId)));
-            default -> post.id.lt(lastContentId);
+            case null, default -> post.id.lt(lastContentId);
         };
     }
 

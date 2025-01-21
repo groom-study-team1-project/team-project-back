@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class ProjectPostDetailResponse extends ProjectPostPreviewResponse {
 
-    private boolean isLikedMe;
-    private boolean isWroteMe;
+    private boolean likedMe;
+    private boolean wroteMe;
 
 }
