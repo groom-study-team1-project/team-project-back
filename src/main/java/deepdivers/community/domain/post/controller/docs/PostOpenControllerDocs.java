@@ -5,19 +5,16 @@ import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.NormalPostPageResponse;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.common.dto.response.ExceptionResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostDetailResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostPageResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostPreviewResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "05. 게시글", description = "비회원 게시글 조회 API")
 public interface PostOpenControllerDocs {
@@ -71,10 +68,25 @@ public interface PostOpenControllerDocs {
 	)
 	ResponseEntity<API<NormalPostPageResponse>> getNormalPostApi(GetPostsRequest dto);
 
-	@Operation(summary = "프로젝트 게시글 페이지 API", description = "일반 게시글 페이지 API 응답")
+	@Operation(summary = "프로젝트 게시글 페이지 API", description = "프로젝트 게시글 페이지 API 응답")
 	@ApiResponse(
 		responseCode = "1009",
 		description = "사용자가 작성한 게시글 조회에 성공하였습니다."
 	)
 	ResponseEntity<API<ProjectPostPageResponse>> getProjectPostApi(GetPostsRequest request);
+
+	@Operation(summary = "일반 게시글 검색 API", description = "일반 게시글 검색 응답")
+	@ApiResponse(
+		responseCode = "1009",
+		description = "사용자가 작성한 게시글 조회에 성공하였습니다."
+	)
+	ResponseEntity<API<List<PostPreviewResponse>>> searchPostApi(String keyword, GetPostsRequest dto);
+
+	@Operation(summary = "프로젝트 게시글 검색 API", description = "프로젝트 게시글 검색 응답")
+	@ApiResponse(
+		responseCode = "1009",
+		description = "사용자가 작성한 게시글 조회에 성공하였습니다."
+	)
+	ResponseEntity<API<List<ProjectPostPreviewResponse>>> searchProjectPostApi(String keyword, GetPostsRequest dto);
+
 }

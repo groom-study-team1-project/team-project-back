@@ -3,13 +3,13 @@ package deepdivers.community.domain.post.controller;
 import deepdivers.community.domain.common.dto.response.API;
 import deepdivers.community.domain.post.aspect.IncreaseViewCount;
 import deepdivers.community.domain.post.controller.docs.PostOpenControllerDocs;
+import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.domain.post.controller.interfaces.ProjectPostQueryRepository;
+import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
 import deepdivers.community.domain.post.dto.response.NormalPostPageResponse;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
-import deepdivers.community.domain.post.dto.code.PostStatusCode;
-import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.domain.post.dto.response.ProjectPostDetailResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostPageResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostPreviewResponse;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -108,6 +109,29 @@ public class PostOpenController implements PostOpenControllerDocs {
 		return ResponseEntity.ok(API.of(
 			PostStatusCode.POST_VIEW_SUCCESS,
 			pqRepository.generateNormalPostPageQuery(request)
+		));
+	}
+
+	@GetMapping("/search")
+	public ResponseEntity<API<List<PostPreviewResponse>>> searchPostApi(
+		@RequestParam final String keyword,
+		@ModelAttribute final GetPostsRequest dto
+	) {
+		return ResponseEntity.ok(API.of(
+			PostStatusCode.POST_VIEW_SUCCESS,
+			postQueryRepository.searchPosts(keyword, dto)
+		));
+	}
+
+	@GetMapping("/project/search")
+	public ResponseEntity<API<List<ProjectPostPreviewResponse>>> searchProjectPostApi(
+		@RequestParam final String keyword,
+		@ModelAttribute final GetPostsRequest dto
+	) {
+
+		return ResponseEntity.ok(API.of(
+			PostStatusCode.POST_VIEW_SUCCESS,
+			pqRepository.searchPosts(keyword, dto)
 		));
 	}
 

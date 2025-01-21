@@ -1,6 +1,7 @@
 package deepdivers.community.domain.post.controller.interfaces;
 
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
+import deepdivers.community.domain.post.dto.request.PostSearchRequest;
 import deepdivers.community.domain.post.dto.response.NormalPostPageResponse;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
@@ -13,5 +14,7 @@ public interface PostQueryRepository {
     PostDetailResponse readPostByPostId(Long postId, Long viewerId);
 
     NormalPostPageResponse getNormalPostPageQuery(GetPostsRequest dto);
+
+    List<PostPreviewResponse> searchPosts(String keyword, GetPostsRequest dto);
 
 }
