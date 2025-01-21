@@ -8,6 +8,7 @@ import static deepdivers.community.domain.post.entity.QPost.post;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.hashtag.controller.interfaces.HashtagQueryRepository;
 import deepdivers.community.domain.hashtag.dto.PopularHashtagResponse;
 import deepdivers.community.domain.post.entity.PostStatus;
@@ -46,7 +47,10 @@ public class HashtagQueryRepositoryImpl implements HashtagQueryRepository {
     }
 
     @Override
-    public List<PopularHashtagResponse> findWeeklyPopularHashtagByCategory(final Long categoryId) {
+    public List<PopularHashtagResponse> findWeeklyPopularHashtagByCategory(
+        final Long categoryId,
+        final CategoryType categoryType
+    ) {
         return queryFactory
             .select(Projections.fields(
                 PopularHashtagResponse.class,
@@ -59,7 +63,8 @@ public class HashtagQueryRepositoryImpl implements HashtagQueryRepository {
             .where(
                 postHashtag.createdAt.after(LocalDateTime.now().minusDays(WEEKLY_BASE_DAY)),
                 post.status.eq(PostStatus.ACTIVE),
-                postCategory.id.eq(categoryId)
+                postCategory.id.eq(categoryId),
+                postCategory.categoryType.eq(categoryType)
             )
             .groupBy(postHashtag.hashtag.id)
             .orderBy(postHashtag.count().desc())

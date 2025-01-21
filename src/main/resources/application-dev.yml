@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: ${DATASOURCE_URL_DEV}
+    username: ${DATASOURCE_USERNAME_DEV}
+    password: ${DATASOURCE_PASSWORD_DEV}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+  cloud:
+    aws:
+      s3:
+        bucket: deepdiver-community-files-dev
+  sql:
+    init:
+      mode: never

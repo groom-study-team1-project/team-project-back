@@ -1,5 +1,7 @@
 package deepdivers.community.domain.member.entity;
 
+import deepdivers.community.domain.common.exception.BadRequestException;
+import deepdivers.community.domain.member.exception.MemberExceptionCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -30,4 +32,12 @@ public class ActivityStats {
     public void incrementPostCount() {
         postCount++;
     }
+
+    public void decrementPostCount() {
+        if (postCount <= 0) {
+            throw new BadRequestException(MemberExceptionCode.INVALID_ACCESS);
+        }
+        postCount--;
+    }
+
 }

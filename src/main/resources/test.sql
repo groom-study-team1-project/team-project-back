@@ -28,23 +28,32 @@ INSERT INTO deepdive_commnuity_post_category (category_id, title, description, c
 
 -- Post 테이블 INSERT 쿼리
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (1, '첫 번째 게시글', '첫 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 2, 1, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 1, 1);
+VALUES (1, '첫 번째 게시글', '첫 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 2, 1, 0, 'ACTIVE', DATEADD('DAY', -9, CURRENT_TIMESTAMP), DATEADD('DAY', -9, CURRENT_TIMESTAMP), 1, 1);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (2, '두 번째 게시글', '두 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 2, 2);
+VALUES (2, '두 번째 게시글', '두 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', DATEADD('DAY', -8, CURRENT_TIMESTAMP), DATEADD('DAY', -8, CURRENT_TIMESTAMP), 2, 2);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (3, '세 번째 게시글', '세 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'DELETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 3, 3);
+VALUES (3, '세 번째 게시글', '세 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'DELETED', DATEADD('DAY', -7, CURRENT_TIMESTAMP), DATEADD('DAY', -7, CURRENT_TIMESTAMP), 3, 3);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (4, '네 번째 게시글', '네 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 4, 1);
+VALUES (4, '네 번째 게시글', '네 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', DATEADD('DAY', -6, CURRENT_TIMESTAMP), DATEADD('DAY', -6, CURRENT_TIMESTAMP), 4, 1);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (5, '다섯 번째 게시글', '다섯 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 5, 2);
+VALUES (5, '다섯 번째 게시글', '다섯 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', DATEADD('DAY', -5, CURRENT_TIMESTAMP), DATEADD('DAY', -5, CURRENT_TIMESTAMP), 5, 2);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (6, '여섯 번째 게시글', '여섯 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 6, 3);
+VALUES (6, '여섯 번째 게시글', '여섯 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', DATEADD('DAY', -4, CURRENT_TIMESTAMP), DATEADD('DAY', -4, CURRENT_TIMESTAMP), 6, 3);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (7, '일곱 번째 게시글', '일곱 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 7, 4);
+VALUES (7, '일곱 번째 게시글', '일곱 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', DATEADD('DAY', -3, CURRENT_TIMESTAMP), DATEADD('DAY', -3, CURRENT_TIMESTAMP), 7, 4);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (8, '여덟 번째 게시글', '여덟 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 4, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 8, 1);
+VALUES (8, '여덟 번째 게시글', '여덟 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 4, 'ACTIVE', DATEADD('DAY', -2, CURRENT_TIMESTAMP), DATEADD('DAY', -2, CURRENT_TIMESTAMP), 8, 1);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
-VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 9, 2);
+VALUES (9, '아홉 번째 게시글', '아홉 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', DATEADD('DAY', -1, CURRENT_TIMESTAMP), DATEADD('DAY', -1, CURRENT_TIMESTAMP), 9, 2);
+
 INSERT INTO post (id, post_title, post_content, thumbnail, comment_count, like_count, view_count, status, created_at, updated_at, member_id, category_id)
 VALUES (10, '열 번째 게시글', '열 번째 게시글의 내용입니다.', 'https://deepdiver-community-files-dev.s3.ap-northeast-2.amazonaws.com/default-image/posts/thumbnail.png', 0, 0, 0, 'ACTIVE', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 10, 3);
 

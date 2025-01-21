@@ -12,7 +12,6 @@ import deepdivers.community.domain.category.dto.response.CategoryResponse;
 import deepdivers.community.domain.category.dto.response.MemberPostCountByCategoryResponse;
 import deepdivers.community.domain.category.entity.CategoryType;
 import deepdivers.community.domain.common.dto.response.API;
-import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
 import java.util.List;

@@ -37,11 +37,25 @@ public class PostQueryUtils {
         };
     }
 
-    public static Predicate deterMineLastContentCondition(final Long lastContentId) {
+    public static Predicate deterMineLastContentCondition(
+        final Long lastContentId,
+        final Integer lastViewCount,
+        final Integer lastCommentCount,
+        final PostSortType sortType
+    ) {
         if (lastContentId == null) {
             return null;
         }
-        return post.id.lt(lastContentId);
+
+        return switch (sortType) {
+            case HOT -> post.viewCount.lt(lastViewCount)
+                .or(post.viewCount.eq(lastViewCount)
+                    .and(post.id.lt(lastContentId)));
+            case COMMENT -> post.commentCount.lt(lastCommentCount)
+                .or(post.commentCount.eq(lastCommentCount)
+                    .and(post.id.lt(lastContentId)));
+            default -> post.id.lt(lastContentId);
+        };
     }
 
     public static BooleanExpression determineAuthorCheckingCondition(final Long memberId) {

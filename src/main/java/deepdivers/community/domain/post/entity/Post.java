@@ -27,7 +27,7 @@ public class Post extends TimeBaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private Member member;
 
     @Embedded
@@ -41,7 +41,7 @@ public class Post extends TimeBaseEntity {
     private String thumbnail;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false, foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private PostCategory category;
 
     @Column(nullable = false)
@@ -57,7 +57,7 @@ public class Post extends TimeBaseEntity {
     private Integer viewCount;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "varchar(50)")
     private PostStatus status;
 
     protected Post(final PostCreator creator) {
@@ -98,6 +98,7 @@ public class Post extends TimeBaseEntity {
         if (this.status == PostStatus.DELETED) {
             throw new NotFoundException(PostExceptionCode.POST_NOT_FOUND);
         }
+        this.member.decrementPostCount();
         this.status = PostStatus.DELETED;
     }
 

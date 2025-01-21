@@ -5,11 +5,13 @@ import deepdivers.community.domain.post.aspect.IncreaseViewCount;
 import deepdivers.community.domain.post.controller.docs.PostOpenControllerDocs;
 import deepdivers.community.domain.post.controller.interfaces.ProjectPostQueryRepository;
 import deepdivers.community.domain.post.dto.request.GetPostsRequest;
+import deepdivers.community.domain.post.dto.response.NormalPostPageResponse;
 import deepdivers.community.domain.post.dto.response.PostDetailResponse;
 import deepdivers.community.domain.post.dto.response.PostPreviewResponse;
 import deepdivers.community.domain.post.dto.code.PostStatusCode;
 import deepdivers.community.domain.post.controller.interfaces.PostQueryRepository;
 import deepdivers.community.domain.post.dto.response.ProjectPostDetailResponse;
+import deepdivers.community.domain.post.dto.response.ProjectPostPageResponse;
 import deepdivers.community.domain.post.dto.response.ProjectPostPreviewResponse;
 import deepdivers.community.global.security.Auth;
 import java.util.List;
@@ -44,6 +46,14 @@ public class PostOpenController implements PostOpenControllerDocs {
 		return ResponseEntity.ok(API.of(
 			PostStatusCode.POST_VIEW_SUCCESS,
 			postQueryRepository.findAllPosts(null, dto)
+		));
+	}
+
+	@GetMapping("/page")
+	public ResponseEntity<API<NormalPostPageResponse>> getNormalPostApi(@ModelAttribute final GetPostsRequest dto) {
+		return ResponseEntity.ok(API.of(
+			PostStatusCode.POST_VIEW_SUCCESS,
+			postQueryRepository.getNormalPostPageQuery(dto)
 		));
 	}
 
@@ -88,6 +98,16 @@ public class PostOpenController implements PostOpenControllerDocs {
 		return ResponseEntity.ok(API.of(
 			PostStatusCode.POST_VIEW_SUCCESS,
 			pqRepository.findAllPosts(memberId, dto)
+		));
+	}
+
+	@GetMapping("/project/page")
+	public ResponseEntity<API<ProjectPostPageResponse>> getProjectPostApi(
+		@ModelAttribute final GetPostsRequest request
+	) {
+		return ResponseEntity.ok(API.of(
+			PostStatusCode.POST_VIEW_SUCCESS,
+			pqRepository.generateNormalPostPageQuery(request)
 		));
 	}
 

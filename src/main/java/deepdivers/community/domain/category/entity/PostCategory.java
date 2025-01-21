@@ -1,8 +1,5 @@
 package deepdivers.community.domain.category.entity;
 
-import deepdivers.community.domain.category.exception.CategoryExceptionCode;
-import deepdivers.community.domain.common.exception.BadRequestException;
-import deepdivers.community.domain.post.domain.PostCreator;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(
-    name = "deepdive_commnuity_post_category",
+    name = "deepdive_community_post_category",
     uniqueConstraints = @UniqueConstraint(columnNames = "title")
 )
 public class PostCategory {
